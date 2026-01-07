@@ -49,21 +49,23 @@ The project is configured with path aliases for cleaner imports:
 
 ```typescript
 // Instead of relative imports:
-import { Button } from '../../../components/Button'
+import { Button } from '../../../components/Button';
 
 // Use absolute imports with aliases:
-import { Button } from '@/components/Button'
+import { Button } from '@/components/Button';
 ```
 
 Available aliases:
+
 - `@/*` - Maps to `src/*`
 
 Examples:
+
 ```typescript
-import { useAuth } from '@/hooks/useAuth'
-import { api } from '@/services/api'
-import { formatCurrency } from '@/utils/formatters'
-import type { User } from '@/types/user'
+import { useAuth } from '@/hooks/useAuth';
+import { api } from '@/services/api';
+import { formatCurrency } from '@/utils/formatters';
+import type { User } from '@/types/user';
 ```
 
 ## Getting Started
@@ -76,12 +78,14 @@ import type { User } from '@/types/user'
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd project-casino_app
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -93,6 +97,7 @@ bun install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 # or
@@ -144,6 +149,7 @@ Create a `.env.local` file in the root directory for environment-specific variab
 ### Commit Conventions
 
 Follow conventional commits format:
+
 ```
 type(scope): description
 
@@ -152,6 +158,44 @@ feat(auth): add login functionality
 fix(ui): resolve button styling issue
 docs(readme): update setup instructions
 ```
+
+### Git Hooks with Husky
+
+This project uses [Husky](https://typicode.github.io/husky/) to manage Git hooks and ensure code quality before commits.
+
+#### Configured Hooks
+
+**Pre-commit Hook:**
+
+- Runs `lint-staged` to automatically lint and format staged files
+- Ensures only properly formatted and linted code is committed
+- Checks JavaScript/TypeScript files with ESLint and Prettier
+- Formats JSON, Markdown, and CSS files with Prettier
+
+**Commit Message Hook:**
+
+- Validates commit messages follow conventional commits format
+- Enforces commit message structure: `type(scope): description`
+- Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+#### What Happens on Commit
+
+When you run `git commit`:
+
+1. Pre-commit hook runs and automatically fixes linting/formatting issues on staged files
+2. If fixes are applied, you may need to stage the changes and commit again
+3. Commit message is validated against conventional commits format
+4. If validation fails, the commit is rejected with an error message
+
+#### Bypassing Hooks (Not Recommended)
+
+In rare cases where you need to bypass hooks:
+
+```bash
+git commit --no-verify -m "your message"
+```
+
+Note: This should only be used in exceptional circumstances.
 
 ## Learn More
 
