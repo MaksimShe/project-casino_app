@@ -27,7 +27,7 @@ export default function Registration() {
     <div className="flex h-[100vh] w-full items-center justify-center">
       <div className="h-fill box-border flex w-[462px] flex-col items-center gap-8 rounded-[var(--main-radius)] bg-[#100F22] p-10 pt-4">
         <div className="flex w-full flex-col items-center justify-center">
-          <Image src="../logo/logo.svg" alt="logo" width={96} height={96} />
+          <Image src="/logo/logo.svg" alt="logo" width={96} height={96} />
           <h1>Blaze casino</h1>
           <h2>Welcome!</h2>
           <form className="mt-10 flex w-full flex-col gap-2">
