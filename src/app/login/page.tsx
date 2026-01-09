@@ -17,6 +17,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [mounted, setMounted] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   const { mutate: login, isPending, error } = useLogin();
 
@@ -54,7 +55,7 @@ export default function Login() {
 
   return (
     <>
-      <AnimatedBackground />
+      <AnimatedBackground eyeState={isPasswordFocused} />
       <div className="flex h-[100vh] w-full items-center justify-center">
         <div className="h-fill box-border flex w-[462px] flex-col items-center gap-8 rounded-[var(--main-radius)] bg-[#100F22] p-10 pt-4 max-sm:scale-85">
           <div className="flex w-full flex-col items-center justify-center">
@@ -92,6 +93,8 @@ export default function Login() {
                   }}
                   required
                   disabled={isPending}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
                 />
               </div>
 
