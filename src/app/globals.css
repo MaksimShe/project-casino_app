@@ -74,9 +74,17 @@ h2 {
 }
 
 h3 {
-  font-family: 'Satoshi', sans-serif;
-  font-weight: bold;
-  font-size: 32px;
+  font-family: 'Inter', sans-serif;
+  color: var(--main-text-color);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+h4 {
+  font-family: 'Inter', sans-serif;
+  color: var(--second-text-color);
+  font-weight: 400;
+  font-size: 13px;
 }
 
 button {
