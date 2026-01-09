@@ -2,7 +2,7 @@
 
 import { Input } from '@/shared/Input';
 import Image from 'next/image';
-import { useState, type FormEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogin } from '@/hooks/useAuth';
 import { isAuthenticated } from '@/utils/token';
@@ -10,37 +10,33 @@ import { validatePassword } from '@/utils/validation';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { AuthError } from '@/shared/AuthError';
 import { PasswordInput } from '@/shared/PasswordInput';
+import { useForm, Controller } from 'react-hook-form';
+
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [mounted, setMounted] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const { register: rhfRegister, handleSubmit, control } = useForm<LoginForm>();
 
   const { mutate: login, isPending, error } = useLogin();
 
   useEffect(() => {
-    setMounted(true);
     if (isAuthenticated()) {
       router.push('/');
     }
   }, [router]);
 
-  // Don't render until mounted (prevents hydration mismatch)
-  if (!mounted) {
-    return null;
-  }
-
   if (isAuthenticated()) {
     return null;
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const validation = validatePassword(password);
+  const onSubmit = (data: LoginForm) => {
+    const validation = validatePassword(data.password);
     if (!validation.isValid) {
       setValidationErrors(validation.errors);
       return;
@@ -48,8 +44,8 @@ export default function Login() {
 
     setValidationErrors([]);
     login({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     });
   };
 
@@ -63,38 +59,40 @@ export default function Login() {
             <h1>Blaze casino</h1>
             <h2>Welcome!</h2>
             <form
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit(onSubmit)}
               className="mt-10 flex w-full flex-col gap-2"
             >
               <div className="flex w-full flex-col justify-center gap-2">
                 <label htmlFor="email">Email</label>
                 <Input
                   id="email"
-                  name="email"
                   type="email"
                   placeholder="Enter email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
+                  {...rhfRegister('email', {
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^\S+@\S+$/,
+                      message: 'Invalid email',
+                    },
+                  })}
                   disabled={isPending}
                 />
               </div>
 
               <div className="flex w-full flex-col justify-center gap-2">
                 <label htmlFor="password">Password</label>
-                <PasswordInput
-                  value={password}
-                  onChange={e => {
-                    setPassword(e.target.value);
-                    // Clear validation errors when user types
-                    if (validationErrors.length > 0) {
-                      setValidationErrors([]);
-                    }
-                  }}
-                  required
-                  disabled={isPending}
-                  onFocus={() => setIsPasswordFocused(true)}
-                  onBlur={() => setIsPasswordFocused(false)}
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{ required: 'Password is required' }}
+                  render={({ field }) => (
+                    <PasswordInput
+                      {...field}
+                      disabled={isPending}
+                      onFocus={() => setIsPasswordFocused(true)}
+                      onBlur={() => setIsPasswordFocused(false)}
+                    />
+                  )}
                 />
               </div>
 

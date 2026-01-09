@@ -1,5 +1,5 @@
-import { type AuthApiError } from '@/services/auth.service';
 import { type FC } from 'react';
+import { type AuthApiError } from '@/services/AuthService.class';
 
 interface Props {
   error: AuthApiError | null;
