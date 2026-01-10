@@ -2,47 +2,39 @@
 
 import { Input } from '@/shared/Input';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useRegister } from '@/hooks/useAuth';
-import { authService } from '@/services/AuthService.class';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { validatePassword } from '@/utils/validation';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { AuthError } from '@/shared/AuthError';
 import { PasswordInput } from '@/shared/PasswordInput';
 import { useForm, Controller } from 'react-hook-form';
-
-type RegisterForm = {
-  username: string;
-  email: string;
-  password: string;
-};
+import { type RegisterRequest } from '@/types/auth';
+import { ROUTES } from '@/constants/routes';
 
 export default function Registration() {
-  const router = useRouter();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   const {
-    register: rhfRegister,
+    register: registerValue,
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<RegisterForm>();
+  } = useForm<RegisterRequest>();
 
   const { mutate: register, isPending, error } = useRegister();
+  const { isAuthenticated } = useAuthRedirect();
 
-  useEffect(() => {
-    if (authService.isAuthenticated()) {
-      router.push('/');
-    }
-  }, [router]);
-
-  if (authService.isAuthenticated()) {
+  if (isAuthenticated) {
     return null;
   }
 
-  const onSubmit = (data: RegisterForm) => {
+  const togglePasswordFocus = (focused: boolean) => () =>
+    setIsPasswordFocused(focused);
+
+  const handleRegister = (data: RegisterRequest) => {
     const validation = validatePassword(data.password);
     if (!validation.isValid) {
       setValidationErrors(validation.errors);
@@ -67,7 +59,7 @@ export default function Registration() {
             <h1>Blaze casino</h1>
             <h2>Welcome!</h2>
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(handleRegister)}
               className="mt-10 flex w-full flex-col gap-2"
             >
               <div className="flex w-full flex-col justify-center gap-2">
@@ -77,7 +69,7 @@ export default function Registration() {
                   type="text"
                   placeholder="Enter username"
                   disabled={isPending}
-                  {...rhfRegister('username', {
+                  {...registerValue('username', {
                     required: 'Username is required',
                     pattern: {
                       value: /^[a-zA-Z0-9_]{4,11}$/,
@@ -98,7 +90,7 @@ export default function Registration() {
                   id="email"
                   type="email"
                   placeholder="Enter email"
-                  {...rhfRegister('email', {
+                  {...registerValue('email', {
                     required: 'Email is required',
                     pattern: {
                       value: /^\S+@\S+$/,
@@ -124,8 +116,8 @@ export default function Registration() {
                     <PasswordInput
                       {...field}
                       disabled={isPending}
-                      onFocus={() => setIsPasswordFocused(true)}
-                      onBlur={() => setIsPasswordFocused(false)}
+                      onFocus={togglePasswordFocus(true)}
+                      onBlur={togglePasswordFocus(false)}
                     />
                   )}
                 />
@@ -148,7 +140,7 @@ export default function Registration() {
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-4">
             <p className="text-[#51A2FF] transition-colors duration-200 hover:text-[#AAD2FF]">
-              <a href="/login">Already have an account? Login</a>
+              <a href={ROUTES.LOGIN}>Already have an account? Login</a>
             </p>
             <p className="w-full border-t pt-4 text-center text-xs">
               Your account data is stored locally in your browser

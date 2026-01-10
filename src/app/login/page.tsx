@@ -2,40 +2,37 @@
 
 import { Input } from '@/shared/Input';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useLogin } from '@/hooks/useAuth';
-import { isAuthenticated } from '@/utils/token';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { validatePassword } from '@/utils/validation';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { AuthError } from '@/shared/AuthError';
 import { PasswordInput } from '@/shared/PasswordInput';
 import { useForm, Controller } from 'react-hook-form';
-
-type LoginForm = {
-  email: string;
-  password: string;
-};
+import { type LoginRequest } from '@/types/auth';
+import { ROUTES } from '@/constants/routes';
 
 export default function Login() {
-  const router = useRouter();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-  const { register: rhfRegister, handleSubmit, control } = useForm<LoginForm>();
+  const {
+    register: registerValue,
+    handleSubmit,
+    control,
+  } = useForm<LoginRequest>();
 
   const { mutate: login, isPending, error } = useLogin();
+  const { isAuthenticated } = useAuthRedirect();
 
-  useEffect(() => {
-    if (isAuthenticated()) {
-      router.push('/');
-    }
-  }, [router]);
-
-  if (isAuthenticated()) {
+  if (isAuthenticated) {
     return null;
   }
 
-  const onSubmit = (data: LoginForm) => {
+  const togglePasswordFocus = (focused: boolean) => () =>
+    setIsPasswordFocused(focused);
+
+  const handleLogin = (data: LoginRequest) => {
     const validation = validatePassword(data.password);
     if (!validation.isValid) {
       setValidationErrors(validation.errors);
@@ -59,7 +56,7 @@ export default function Login() {
             <h1>Blaze casino</h1>
             <h2>Welcome!</h2>
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(handleLogin)}
               className="mt-10 flex w-full flex-col gap-2"
             >
               <div className="flex w-full flex-col justify-center gap-2">
@@ -68,7 +65,7 @@ export default function Login() {
                   id="email"
                   type="email"
                   placeholder="Enter email"
-                  {...rhfRegister('email', {
+                  {...registerValue('email', {
                     required: 'Email is required',
                     pattern: {
                       value: /^\S+@\S+$/,
@@ -89,8 +86,8 @@ export default function Login() {
                     <PasswordInput
                       {...field}
                       disabled={isPending}
-                      onFocus={() => setIsPasswordFocused(true)}
-                      onBlur={() => setIsPasswordFocused(false)}
+                      onFocus={togglePasswordFocus(true)}
+                      onBlur={togglePasswordFocus(false)}
                     />
                   )}
                 />
@@ -116,7 +113,7 @@ export default function Login() {
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-4">
             <p className="text-[#51A2FF] transition-colors duration-200 hover:text-[#AAD2FF]">
-              <a href="/registration">Don`t have an account? Register</a>
+              <a href={ROUTES.REGISTRATION}>Don`t have an account? Register</a>
             </p>
             <p className="w-full border-t pt-4 text-center text-xs">
               Your account data is stored locally in your browser

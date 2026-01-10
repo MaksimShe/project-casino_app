@@ -1,18 +1,11 @@
 'use client';
 
 import { Leaderboard } from '@/components/Leaderboard';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { isAuthenticated } from '@/utils/token';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+import { ROUTES } from '@/constants/routes';
 
 export default function MainPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      router.push('/homepage');
-    }
-  }, [router]);
+  useAuthRedirect(ROUTES.HOMEPAGE);
 
   return (
     <div className="mt-20 ml-20">

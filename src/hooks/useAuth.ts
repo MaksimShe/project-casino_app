@@ -7,6 +7,7 @@ import {
   type LoginRequest,
   type LoginResponse,
 } from '@/types/auth';
+import { ROUTES } from '@/constants/routes';
 
 export function useRegister() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function useRegister() {
         accessToken: loginData.accessToken,
         refreshToken: loginData.refreshToken,
       });
-      router.push('/');
+      router.push(ROUTES.HOME);
     },
     retry: false,
   });
@@ -41,7 +42,7 @@ export function useLogin() {
       });
 
       // Redirect to home page after successful login
-      router.push('/');
+      router.push(ROUTES.HOME);
     },
     retry: false,
   });
@@ -54,11 +55,11 @@ export function useLogout() {
     mutationFn: () => authService.logout(),
     onSuccess: () => {
       authService.removeTokens();
-      router.push('/login');
+      router.push(ROUTES.LOGIN);
     },
     onError: () => {
       authService.removeTokens();
-      router.push('/login');
+      router.push(ROUTES.LOGIN);
     },
     retry: false,
   });
