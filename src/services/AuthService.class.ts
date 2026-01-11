@@ -84,13 +84,32 @@ class AuthService {
         ...options,
       });
 
-      const data = await response.json();
+      // Get response text first to handle empty responses
+      const text = await response.text();
+
+      // Try to parse as JSON, handle empty responses
+      let data: T | null = null;
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          // Response is not valid JSON
+          throw new AuthApiError(
+            `Invalid response from server: ${text.substring(0, 100)}`,
+            response.status
+          );
+        }
+      }
 
       if (!response.ok) {
-        throw new AuthApiError(
-          data.message || 'An error occurred',
-          response.status
-        );
+        const errorMessage =
+          (data as { message?: string })?.message ||
+          `Request failed with status ${response.status}`;
+        throw new AuthApiError(errorMessage, response.status);
+      }
+
+      if (data === null) {
+        throw new AuthApiError('Empty response from server', response.status);
       }
 
       return data;
