@@ -24,7 +24,7 @@ export function useRegister() {
         accessToken: loginData.accessToken,
         refreshToken: loginData.refreshToken,
       });
-      router.push(ROUTES.HOME);
+      router.push(ROUTES.HOMEPAGE);
     },
     retry: false,
   });
@@ -42,7 +42,7 @@ export function useLogin() {
       });
 
       // Redirect to home page after successful login
-      router.push(ROUTES.HOME);
+      router.push(ROUTES.HOMEPAGE);
     },
     retry: false,
   });
