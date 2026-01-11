@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import coin from '@/../public/leaderboard_icons/dollar.svg';
-import cup from '@/../public/leaderboard_icons/gold cup.svg';
-import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
-import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
-import thirdPlace from '@/../public/leaderboard_icons/3rd-place.svg';
+import coin from '../../../public/leaderboard_icons/dollar.svg';
+import cup from '../../../public/leaderboard_icons/gold cup.svg';
+import firstPlace from '../../../public/leaderboard_icons/1st-place.svg';
+import secondPlace from '../../../public/leaderboard_icons/2nd-place.svg';
+import thirdPlace from '../../../public/leaderboard_icons/3rd-place.svg';
 
 const tepmLead = [
   {
@@ -98,7 +98,7 @@ export const Leaderboard = () => {
     }
   };
   return (
-    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4">
+    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4 max-lg:w-full">
       <Image
         src={cup}
         alt="Cup"
@@ -128,7 +128,7 @@ export const Leaderboard = () => {
               </div>
               <div className="flex justify-between">
                 <h4>{player.games} games</h4>
-                <h4>{player.winrate}% win</h4>
+                <p className="text-sm text-green-400">{player.winrate}% win</p>
               </div>
             </div>
           </div>
