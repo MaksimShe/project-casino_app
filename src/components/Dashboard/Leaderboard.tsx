@@ -98,7 +98,7 @@ export const Leaderboard = () => {
     }
   };
   return (
-    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4">
+    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4 max-lg:w-full">
       <Image
         src={cup}
         alt="Cup"

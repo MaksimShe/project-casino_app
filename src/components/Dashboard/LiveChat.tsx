@@ -61,7 +61,7 @@ const messages = [
 
 export const LiveChat = () => {
   return (
-    <div className="h-[90vh] w-80">
+    <div className="h-full w-full max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-10">
       <div className="text-white">
         <p className="text-center text-2xl font-bold">
           L
@@ -101,12 +101,14 @@ export const LiveChat = () => {
         ))}
       </div>
 
-      <div className="mt-2 flex w-full items-center justify-between">
-        <Input
-          placeholder="Write a message..."
-          className="h-12 rounded-4xl bg-[#7C7CE854]"
-        />
-        <button className="h-12 w-12 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-white">
+      <div className="mt-2 flex w-full items-center gap-2">
+        <div className="flex-1">
+          <Input
+            placeholder="Write a message..."
+            className="h-12 w-full rounded-4xl bg-[#7C7CE854] text-white"
+          />
+        </div>
+        <button className="h-12 w-12 shrink-0 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-white">
           ↑
         </button>
       </div>
