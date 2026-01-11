@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import coin from '@/../public/leaderboard_icons/dollar.svg';
-import cup from '@/../public/leaderboard_icons/gold cup.svg';
-import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
-import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
-import thirdPlace from '@/../public/leaderboard_icons/3rd-place.svg';
+import coin from '../../../public/leaderboard_icons/dollar.svg';
+import cup from '../../../public/leaderboard_icons/gold cup.svg';
+import firstPlace from '../../../public/leaderboard_icons/1st-place.svg';
+import secondPlace from '../../../public/leaderboard_icons/2nd-place.svg';
+import thirdPlace from '../../../public/leaderboard_icons/3rd-place.svg';
 
 const tepmLead = [
   {
