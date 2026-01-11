@@ -49,7 +49,7 @@ const gamesSelect = [
 
 export const GameSelector = () => {
   return (
-    <div className="grid grid-cols-2 gap-x-7">
+    <div className="grid grid-cols-2 gap-8">
       {gamesSelect.map(game => (
         <div
           key={game.name}

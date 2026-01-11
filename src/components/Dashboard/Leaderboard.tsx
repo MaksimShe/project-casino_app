@@ -128,7 +128,7 @@ export const Leaderboard = () => {
               </div>
               <div className="flex justify-between">
                 <h4>{player.games} games</h4>
-                <h4>{player.winrate}% win</h4>
+                <p className="text-sm text-green-400">{player.winrate}% win</p>
               </div>
             </div>
           </div>
