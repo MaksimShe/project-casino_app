@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import logoIcon from '@/../public/logo/logo-header.svg';
 import coinIcon from '@/../public/leaderboard_icons/dollar.svg';
 import settingIcon from '@/../public/logo/setting.svg';
@@ -11,15 +11,17 @@ import sideMenuIcon from '@/../public/logo/side-menu.svg';
 import inventoryIcon from '@/../public/logo/invertory.svg';
 
 import { ROUTES } from '@/constants/routes';
-
-const balance = 10000;
+import { authService } from '@/services/AuthService.class';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const HIDDEN_HEADER_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTRATION];
 
 export const Header = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const { data: user } = useCurrentUser();
 
   const handleCloseSidebar = () => {
     setIsClosing(true);
@@ -27,6 +29,25 @@ export const Header = () => {
       setIsSidebarOpen(false);
       setIsClosing(false);
     }, 300);
+  };
+
+  const handleSettingsClick = () => {
+    if (user) {
+      console.log('User Info:', user);
+    } else {
+      console.log('User is not authenticated');
+    }
+  }; // temp, letter i`ll delete it
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      authService.removeTokens();
+      router.push(ROUTES.LOGIN);
+    }
   };
 
   if (HIDDEN_HEADER_ROUTES.includes(pathname as typeof ROUTES.LOGIN)) {
@@ -50,23 +71,29 @@ export const Header = () => {
         </button>
 
         <div className="flex gap-2 rounded-4xl border px-6 py-3 max-lg:px-4 max-lg:py-2">
-          <Image
-            src={coinIcon}
-            alt="dollar"
-            height={32}
-            width={32}
-            className="max-lg:h-6 max-lg:w-6"
-          />
-          <span className="text-xl text-white max-lg:text-base">{balance}</span>
+          <div className="relative h-8 w-8 max-lg:h-6 max-lg:w-6">
+            <Image
+              src={coinIcon}
+              alt="dollar"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span className="text-xl text-white max-lg:text-base">
+            {user?.balance?.toFixed(2) ?? '--'}
+          </span>
         </div>
 
         <div className="flex items-center gap-20 max-lg:hidden">
           <div className="flex items-center">ava</div>
           <div className="flex gap-4">
-            <button>
+            <button onClick={handleSettingsClick}>
               <Image src={settingIcon} alt="setting" height={26} width={26} />
             </button>
-            <button className="inline-flex h-10 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white">
+            <button
+              onClick={handleLogout}
+              className="inline-flex h-10 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white"
+            >
               Log out
               <Image src={logoutIcon} alt="logout" height={32} width={32} />
             </button>
@@ -106,14 +133,20 @@ export const Header = () => {
                 />
                 <span>Inventory</span>
               </button>
-              <button className="flex items-center gap-3 rounded-xl bg-[#423E6980] p-3 text-white hover:bg-[#24243F]">
+              <button
+                onClick={handleSettingsClick}
+                className="flex items-center gap-3 rounded-xl bg-[#423E6980] p-3 text-white hover:bg-[#24243F]"
+              >
                 <Image src={settingIcon} alt="setting" height={24} width={24} />
                 <span>Settings</span>
               </button>
             </div>
 
             <div className="mt-auto">
-              <button className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-3 font-bold text-white">
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-3 font-bold text-white"
+              >
                 <Image src={logoutIcon} alt="logout" height={24} width={24} />
                 <span>Log out</span>
               </button>

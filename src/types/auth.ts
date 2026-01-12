@@ -19,13 +19,16 @@ export interface RegisterResponse {
   email: string;
 }
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
 export interface TokenStorage {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface CurrentUserResponse {
+  username: string;
+  email: string;
+  balance: number;
+  totalWagered: number;
+  gamesPlayed: number;
+  totalWon: number;
 }

@@ -1,18 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Leaderboard } from '@/components/Dashboard/Leaderboard';
-import { useAuthRedirect } from '@/hooks/useAuthRedirect';
-import { ROUTES } from '@/constants/routes';
-import { GameSelector } from '@/components/Dashboard/GameSelector';
-import { LiveChat } from '@/components/Dashboard/LiveChat';
+import { Leaderboard } from '@/components/Dashboard/LeaderBoard/Leaderboard';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+import { GameSelector } from '@/components/Dashboard/GameSelector/GameSelector';
+import { LiveChat } from '@/components/Dashboard/LiveChat/LiveChat';
 import chatIcon from '@/../public/logo/chat.svg';
 import Image from 'next/image';
 
 export default function MainPage() {
-  useAuthRedirect(ROUTES.HOMEPAGE);
+  const { isAuthenticated, isLoading } = useRequireAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  if (isLoading || !isAuthenticated) {
+    return null;
+  }
 
   const handleCloseChat = () => {
     setIsClosing(true);
