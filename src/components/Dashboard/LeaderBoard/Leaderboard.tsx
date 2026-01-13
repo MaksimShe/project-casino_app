@@ -66,9 +66,9 @@ export const Leaderboard = () => {
           <Image
             src={firstPlace}
             alt="1"
-            height={60}
-            width={60}
-            className="mr-2 ml-1"
+            height={50}
+            width={50}
+            className="mx-4"
           />
         );
       case 2:
@@ -76,9 +76,9 @@ export const Leaderboard = () => {
           <Image
             src={secondPlace}
             alt="2"
-            height={60}
-            width={60}
-            className="mr-2 ml-1"
+            height={50}
+            width={50}
+            className="mx-4"
           />
         );
       case 3:
@@ -86,19 +86,21 @@ export const Leaderboard = () => {
           <Image
             src={thirdPlace}
             alt="3"
-            height={60}
-            width={60}
-            className="mr-2 ml-1"
+            height={50}
+            width={50}
+            className="mx-4"
           />
         );
       default:
         return (
-          <h1 className="flex w-20 items-center justify-center">{place}</h1>
+          <span className="flex w-20 items-center justify-center text-2xl font-semibold text-white">
+            {place}
+          </span>
         );
     }
   };
   return (
-    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4">
+    <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4 max-lg:w-full">
       <Image
         src={cup}
         alt="Cup"
@@ -108,17 +110,17 @@ export const Leaderboard = () => {
       />
 
       <div className="mb-6 flex flex-col items-center">
-        <p className="text-3xl font-bold text-white">Leaderboard</p>
-        <p className="text-xl">Top players</p>
+        <p className="text-2xl font-bold text-white">Leaderboard</p>
+        <p className="text-[16px]">Top players</p>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {tepmLead.map((player, index) => (
           <div
             key={player.name}
             className="flex rounded-xl bg-[#24243F] shadow-[0px_2px_10px_0px_#BFD8FF33]"
           >
             {topImage(index + 1)}
-            <div className="box-border flex w-full flex-col gap-1 p-3 pl-0">
+            <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
               <div className="flex justify-between">
                 <h3>{player.name}</h3>
                 <div className="flex gap-2">
@@ -128,7 +130,9 @@ export const Leaderboard = () => {
               </div>
               <div className="flex justify-between">
                 <h4>{player.games} games</h4>
-                <h4>{player.winrate}% win</h4>
+                <p className="text-sm text-[var(--system-success-color)]">
+                  {player.winrate}% win
+                </p>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -19,7 +20,10 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         id={id}
-        className={`rounded-xl bg-white px-4 py-2 text-black placeholder:text-[#ADB5BD] ${className}`}
+        className={twMerge(
+          'rounded-xl bg-white px-4 py-2 text-black placeholder:text-[#ADB5BD]',
+          className
+        )}
         {...props}
       />
     </div>

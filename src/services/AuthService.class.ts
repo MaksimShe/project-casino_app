@@ -4,6 +4,7 @@ import {
   type LoginRequest,
   type LoginResponse,
   type TokenStorage,
+  type CurrentUserResponse,
 } from '@/types/auth';
 
 export class AuthApiError extends Error {
@@ -73,7 +74,8 @@ class AuthService {
   // API Methods
   private async fetchApi<T>(
     endpoint: string,
-    options?: RequestInit
+    options?: RequestInit,
+    skipRefresh = false
   ): Promise<T> {
     try {
       const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
@@ -84,13 +86,49 @@ class AuthService {
         ...options,
       });
 
-      const data = await response.json();
+      // Get response text first to handle empty responses
+      const text = await response.text();
+
+      // Try to parse as JSON, handle empty responses
+      let data: T | null = null;
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          // Response is not valid JSON
+          throw new AuthApiError(
+            `Invalid response from server: ${text.substring(0, 100)}`,
+            response.status
+          );
+        }
+      }
+
+      // Handle 401 - try to refresh token and retry
+      if (response.status === 401 && !skipRefresh) {
+        const refreshed = await this.refreshTokens();
+        if (refreshed) {
+          // Retry the request with new token
+          const newAccessToken = this.getAccessToken();
+          const newOptions = {
+            ...options,
+            headers: {
+              ...options?.headers,
+              Authorization: `Bearer ${newAccessToken}`,
+            },
+          };
+          return this.fetchApi<T>(endpoint, newOptions, true);
+        }
+      }
 
       if (!response.ok) {
-        throw new AuthApiError(
-          data.message || 'An error occurred',
-          response.status
-        );
+        const errorMessage =
+          (data as { message?: string })?.message ||
+          `Request failed with status ${response.status}`;
+        throw new AuthApiError(errorMessage, response.status);
+      }
+
+      if (data === null) {
+        throw new AuthApiError('Empty response from server', response.status);
       }
 
       return data;
@@ -104,6 +142,38 @@ class AuthService {
       }
 
       throw new AuthApiError('An unknown error occurred', 500);
+    }
+  }
+
+  public async refreshTokens(): Promise<boolean> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        this.removeTokens();
+        return false;
+      }
+
+      const data = await response.json();
+      this.saveTokens({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      });
+      return true;
+    } catch {
+      this.removeTokens();
+      return false;
     }
   }
 
@@ -129,6 +199,20 @@ class AuthService {
 
     await this.fetchApi<{ message: string }>('/auth/logout', {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
+
+  public async getCurrentUser(): Promise<CurrentUserResponse> {
+    const accessToken = this.getAccessToken();
+    if (!accessToken) {
+      throw new AuthApiError('No access token found', 401);
+    }
+
+    return this.fetchApi<CurrentUserResponse>('/users/current', {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
