@@ -8,7 +8,7 @@ interface Props {
 
 export const LiveChatBody: FC<Props> = ({ messages }) => {
   return (
-    <div className="mt-4 flex h-[83%] flex-col items-center overflow-y-auto">
+    <div className="mt-4 flex h-[83%] flex-col items-center overflow-y-auto max-lg:h-[90%] max-lg:pb-20">
       {messages.map(message => (
         <LiveChatMessage message={message} key={message.messageBody} />
       ))}

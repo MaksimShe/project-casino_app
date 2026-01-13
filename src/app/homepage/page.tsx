@@ -5,6 +5,7 @@ import { Leaderboard } from '@/components/Dashboard/LeaderBoard/Leaderboard';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { GameSelector } from '@/components/Dashboard/GameSelector/GameSelector';
 import { LiveChat } from '@/components/Dashboard/LiveChat/LiveChat';
+import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import chatIcon from '@/../public/logo/chat.svg';
 import Image from 'next/image';
 
@@ -14,7 +15,7 @@ export default function MainPage() {
   const [isClosing, setIsClosing] = useState(false);
 
   if (isLoading || !isAuthenticated) {
-    return null;
+    return <FullScreenLoader message="Welcome to Blaze Casino" />;
   }
 
   const handleCloseChat = () => {

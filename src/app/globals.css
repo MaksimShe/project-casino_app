@@ -55,7 +55,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   color: var(--second-text-color);
-  margin-top: 120px;
+  margin-top: 140px;
 }
 
 h1 {
@@ -86,6 +86,11 @@ h4 {
   color: var(--second-text-color);
   font-weight: 400;
   font-size: 13px;
+}
+
+span {
+  font-family: 'Inter', sans-serif;
+  color: var(--main-text-color);
 }
 
 button {

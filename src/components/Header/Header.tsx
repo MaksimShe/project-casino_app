@@ -58,9 +58,9 @@ export const Header = () => {
     <>
       <header className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-gradient-to-b from-[#0F0C29] via-[#312C5F] to-[#24243E] px-16 max-lg:h-16 max-lg:px-4">
         <div className="inline-flex h-full items-center gap-2 max-lg:hidden">
-          <h1>Blaze</h1>
-          <Image src={logoIcon} alt="logo" height={64} width={64} />
-          <h1>Casino</h1>
+          <span className="text-2xl font-black text-white">Blaze</span>
+          <Image src={logoIcon} alt="logo" height={48} width={48} />
+          <span className="text-2xl font-black text-white">Casino</span>
         </div>
 
         <button
@@ -145,10 +145,10 @@ export const Header = () => {
             <div className="mt-auto">
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-3 font-bold text-white"
+                className="flex w-full items-center justify-center gap-0.5 rounded-xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-3 font-bold text-white"
               >
-                <Image src={logoutIcon} alt="logout" height={24} width={24} />
                 <span>Log out</span>
+                <Image src={logoutIcon} alt="logout" height={24} width={24} />
               </button>
             </div>
           </div>

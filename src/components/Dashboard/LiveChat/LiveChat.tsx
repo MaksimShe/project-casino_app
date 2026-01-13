@@ -79,7 +79,7 @@ const messages: Message[] = [
 
 export const LiveChat = () => {
   return (
-    <div className="h-full w-full max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-10">
+    <div className="relative h-full w-full max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-6">
       <LiveChatHeader chatInfo={chatInfo} />
       <LiveChatBody messages={messages} />
       <LiveChatFooter />

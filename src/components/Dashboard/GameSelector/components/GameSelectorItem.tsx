@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { type FC } from 'react';
-import { type Game } from '@/components/Dashboard/GameSelector/GameSelector';
+import { type Game } from '../constants';
 
 interface Props {
   game: Game;
@@ -13,8 +13,8 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
       <div
         className="absolute top-6 left-6 z-10 rounded-3xl px-6 py-1 max-lg:top-3 max-lg:left-3 max-lg:px-3 max-lg:text-xs"
         style={{
-          backgroundColor: game.badge.color,
-          boxShadow: `0px 0px 16px 0px ${game.badge.color}`,
+          background: game.badge.gradient,
+          boxShadow: `0px 0px 16px 0px ${game.badge.shadowColor}`,
         }}
       >
         <p className="font-bold text-white">{game.badge.text}</p>

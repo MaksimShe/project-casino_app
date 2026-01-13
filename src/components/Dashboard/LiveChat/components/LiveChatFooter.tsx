@@ -2,7 +2,7 @@ import { Input } from '@/shared/Input';
 
 export const LiveChatFooter = () => {
   return (
-    <div className="mt-2 flex w-full items-center gap-2">
+    <div className="mt-2 flex items-center gap-2 max-lg:absolute max-lg:right-6 max-lg:bottom-8 max-lg:left-6">
       <div className="flex-1">
         <Input
           placeholder="Write a message..."
