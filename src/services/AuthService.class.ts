@@ -5,6 +5,8 @@ import {
   type LoginResponse,
   type TokenStorage,
   type CurrentUserResponse,
+  type LeaderboardResponse,
+  type LeaderboardPeriod,
 } from '@/types/auth';
 
 export class AuthApiError extends Error {
@@ -212,6 +214,22 @@ class AuthService {
     }
 
     return this.fetchApi<CurrentUserResponse>('/users/current', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
+
+  public async getLeaderboard(
+    period: LeaderboardPeriod = 'all'
+  ): Promise<LeaderboardResponse> {
+    const accessToken = this.getAccessToken();
+    if (!accessToken) {
+      throw new AuthApiError('No access token found', 401);
+    }
+
+    return this.fetchApi<LeaderboardResponse>(`/leaderboard?period=${period}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
