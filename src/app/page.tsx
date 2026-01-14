@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/utils/token';
 import { ROUTES } from '@/constants/routes';
+import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 
 export default function Home() {
   const router = useRouter();
@@ -17,6 +18,10 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div className="-mt-[130px] h-[100vh] w-full bg-gradient-to-b from-[#0F0C29] via-[#302B63] to-[#24243E]" />
+    <div className="-mt-[130px] h-[100vh] w-full bg-gradient-to-b from-[#0F0C29] via-[#302B63] to-[#24243E]">
+      <FullScreenLoader />
+    </div>
   );
 }
+
+//SheFing1@gmail.com lg and pw
