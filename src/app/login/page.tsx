@@ -6,16 +6,15 @@ import { useState } from 'react';
 import { useLogin } from '@/hooks/useAuth';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { validatePassword } from '@/utils/validation';
-import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { AuthError } from '@/shared/AuthError';
 import { PasswordInput } from '@/shared/PasswordInput';
 import { useForm, Controller } from 'react-hook-form';
 import { type LoginRequest } from '@/types/auth';
 import { ROUTES } from '@/constants/routes';
+import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 
 export default function Login() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const {
     register: registerValue,
     handleSubmit,
@@ -23,14 +22,11 @@ export default function Login() {
   } = useForm<LoginRequest>();
 
   const { mutate: login, isPending, error } = useLogin();
-  const { isAuthenticated } = useAuthRedirect();
+  const { isAuthenticated, isLoading } = useAuthRedirect();
 
-  if (isAuthenticated) {
-    return null;
+  if (isLoading || isAuthenticated) {
+    return <FullScreenLoader />;
   }
-
-  const togglePasswordFocus = (focused: boolean) => () =>
-    setIsPasswordFocused(focused);
 
   const handleLogin = (data: LoginRequest) => {
     const validation = validatePassword(data.password);
@@ -48,7 +44,7 @@ export default function Login() {
 
   return (
     <>
-      <AnimatedBackground eyeState={isPasswordFocused} />
+      {/*<AnimatedBackground eyeState={isPasswordFocused} />*/}
       <div className="flex h-[100vh] w-full items-center justify-center">
         <div className="h-fill box-border flex w-[462px] flex-col items-center gap-8 rounded-[var(--main-radius)] bg-[#100F22] p-10 pt-4 max-sm:scale-85">
           <div className="flex w-full flex-col items-center justify-center">
@@ -83,12 +79,7 @@ export default function Login() {
                   control={control}
                   rules={{ required: 'Password is required' }}
                   render={({ field }) => (
-                    <PasswordInput
-                      {...field}
-                      disabled={isPending}
-                      onFocus={togglePasswordFocus(true)}
-                      onBlur={togglePasswordFocus(false)}
-                    />
+                    <PasswordInput {...field} disabled={isPending} />
                   )}
                 />
               </div>

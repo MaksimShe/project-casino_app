@@ -1,19 +1,24 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/utils/token';
 import { ROUTES } from '@/constants/routes';
 
 export function useAuthRedirect(redirectTo: string = ROUTES.HOMEPAGE) {
   const router = useRouter();
-  const isAuth = isAuthenticated();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    if (isAuth) {
+    const authStatus = isAuthenticated();
+    setIsAuth(authStatus);
+    setIsLoading(false);
+
+    if (authStatus) {
       router.push(redirectTo);
     }
-  }, [isAuth, redirectTo, router]);
+  }, [redirectTo, router]);
 
-  return { isAuthenticated: isAuth };
+  return { isAuthenticated: isAuth, isLoading };
 }
