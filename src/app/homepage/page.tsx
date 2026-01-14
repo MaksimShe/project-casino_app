@@ -56,7 +56,7 @@ export default function MainPage() {
           style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
           <div
-            className={`relative h-[80%] w-full ${
+            className={`relative h-[90%] w-full ${
               isClosing ? 'animate-slide-down' : 'animate-slide-up'
             }`}
           >

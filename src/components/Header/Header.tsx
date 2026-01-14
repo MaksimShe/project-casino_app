@@ -69,30 +69,47 @@ export const Header = () => {
         >
           <Image src={sideMenuIcon} alt="menu" height={32} width={32} />
         </button>
-
-        <div className="flex gap-2 rounded-4xl border px-6 py-3 max-lg:px-4 max-lg:py-2">
-          <div className="relative h-8 w-8 max-lg:h-6 max-lg:w-6">
-            <Image
-              src={coinIcon}
-              alt="dollar"
-              fill
-              className="object-contain"
-            />
+        <div className="flex items-center gap-14 max-lg:hidden">
+          <div className="flex items-center gap-4">
+            <div className="flex gap-2 rounded-4xl border px-6 py-3 max-lg:px-4 max-lg:py-2">
+              <div className="relative h-8 w-8 max-lg:h-6 max-lg:w-6">
+                <Image
+                  src={coinIcon}
+                  alt="dollar"
+                  fill
+                  sizes="32px"
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-xl text-white max-lg:text-base">
+                {user?.balance?.toFixed(2) ?? '--'}
+              </span>
+            </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-0.5">
+              <div className="relative h-full w-full overflow-hidden rounded-full">
+                {user?.avatarURL ? (
+                  <Image
+                    src={user.avatarURL}
+                    alt="avatar"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center bg-[#0F0C29] text-lg font-bold text-white">
+                    {user?.username?.charAt(0).toUpperCase() ?? '?'}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          <span className="text-xl text-white max-lg:text-base">
-            {user?.balance?.toFixed(2) ?? '--'}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-20 max-lg:hidden">
-          <div className="flex items-center">ava</div>
           <div className="flex gap-4">
             <button onClick={handleSettingsClick}>
               <Image src={settingIcon} alt="setting" height={26} width={26} />
             </button>
             <button
               onClick={handleLogout}
-              className="inline-flex h-10 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white"
+              className="inline-flex h-10 w-28 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white"
             >
               Log out
               <Image src={logoutIcon} alt="logout" height={32} width={32} />
@@ -100,8 +117,22 @@ export const Header = () => {
           </div>
         </div>
 
-        <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-[#24243F] max-lg:flex">
-          <span className="text-white">A</span>
+        <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-0.5 max-lg:flex">
+          <div className="relative h-full w-full overflow-hidden rounded-full">
+            {user?.avatarURL ? (
+              <Image
+                src={user.avatarURL}
+                alt="avatar"
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center bg-[#0F0C29] font-bold text-white">
+                {user?.username?.charAt(0).toUpperCase() ?? '?'}
+              </span>
+            )}
+          </div>
         </div>
       </header>
 

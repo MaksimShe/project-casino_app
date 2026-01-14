@@ -25,8 +25,10 @@ export interface TokenStorage {
 }
 
 export interface CurrentUserResponse {
+  _id: string;
   username: string;
   email: string;
+  avatarURL: string;
   balance: number;
   totalWagered: number;
   gamesPlayed: number;
