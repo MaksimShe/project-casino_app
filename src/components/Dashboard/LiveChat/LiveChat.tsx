@@ -12,7 +12,7 @@ export const LiveChat = () => {
   );
 
   return (
-    <div className="relative flex h-full w-full flex-col max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-6">
+    <div className="relative flex h-full w-full flex-col items-center max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-6">
       <LiveChatHeader />
 
       <LiveChatBody

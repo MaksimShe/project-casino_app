@@ -41,7 +41,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mt-2 flex items-center gap-2 max-lg:absolute max-lg:right-6 max-lg:bottom-8 max-lg:left-6"
+      className="mt-2 flex w-11/12 items-center gap-2 max-lg:absolute max-lg:right-6 max-lg:bottom-8 max-lg:left-6"
     >
       <div className="flex-1">
         <Input

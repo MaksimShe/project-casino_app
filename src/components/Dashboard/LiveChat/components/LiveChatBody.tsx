@@ -62,11 +62,14 @@ export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
   }
 
   return (
-    <div ref={parentRef} className="mt-4 flex-1 overflow-y-auto max-lg:pb-20">
+    <div
+      ref={parentRef}
+      className="mt-4 w-[120%] flex-1 overflow-y-auto pl-10 max-lg:pb-20 max-lg:pl-14"
+    >
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
-          width: '100%',
+          width: '87%',
           position: 'relative',
         }}
       >

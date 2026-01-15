@@ -1,6 +1,6 @@
 export const LiveChatHeader = () => {
   return (
-    <div className="text-white">
+    <div className="w-full text-white">
       <div className="flex items-center justify-center">
         <p className="text-center text-2xl font-bold">
           L
