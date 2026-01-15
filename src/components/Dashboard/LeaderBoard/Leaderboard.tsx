@@ -6,59 +6,12 @@ import cup from '@/../public/leaderboard_icons/gold cup.svg';
 import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
 import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
 import thirdPlace from '@/../public/leaderboard_icons/3rd-place.svg';
-
-const tepmLead = [
-  {
-    name: 'Slavic',
-    games: 124,
-    coins: 5000,
-    winrate: 55,
-  },
-  {
-    name: 'Vanya',
-    games: 122,
-    coins: 3000,
-    winrate: 44,
-  },
-  {
-    name: 'Dina',
-    games: 154,
-    coins: 1230,
-    winrate: 33,
-  },
-  {
-    name: 'Stas',
-    games: 532,
-    coins: 11422,
-    winrate: 66,
-  },
-  {
-    name: 'Tuz',
-    games: 733,
-    coins: 4314,
-    winrate: 95,
-  },
-  {
-    name: 'Sanya',
-    games: 6,
-    coins: 1600,
-    winrate: 35,
-  },
-  {
-    name: 'Dimooon',
-    games: 333,
-    coins: 3333,
-    winrate: 33,
-  },
-  {
-    name: 'Hookah',
-    games: 95,
-    coins: 4252,
-    winrate: 60,
-  },
-];
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { formatNumber } from '@/utils/format';
 
 export const Leaderboard = () => {
+  const { data, isLoading, error } = useLeaderboard('all');
+
   const topImage = (place: number) => {
     switch (place) {
       case 1:
@@ -99,6 +52,12 @@ export const Leaderboard = () => {
         );
     }
   };
+  const players = data?.players ?? [];
+  const currentUser = data?.currentUser;
+  const isCurrentUserInTop = players.some(
+    p => currentUser && p.username === currentUser.username
+  );
+
   return (
     <div className="relative box-border flex w-72 flex-col rounded-2xl bg-[#423E69] p-4 max-lg:w-full">
       <Image
@@ -114,29 +73,67 @@ export const Leaderboard = () => {
         <p className="text-[16px]">Top players</p>
       </div>
       <div className="flex flex-col gap-4">
-        {tepmLead.map((player, index) => (
-          <div
-            key={player.name}
-            className="flex rounded-xl bg-[#24243F] shadow-[0px_2px_10px_0px_#BFD8FF33]"
-          >
-            {topImage(index + 1)}
-            <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
-              <div className="flex justify-between">
-                <h3>{player.name}</h3>
-                <div className="flex gap-2">
-                  <Image src={coin} alt="coin" width={16} height={16} />
-                  <h3>{player.coins}</h3>
+        {isLoading && <p className="text-center text-white">Loading...</p>}
+        {error && (
+          <p className="text-center text-red-400">Failed to load leaderboard</p>
+        )}
+        {players.map(player => {
+          const isCurrentPlayer =
+            currentUser && player.username === currentUser.username;
+          return (
+            <div
+              key={player.username}
+              className={`flex rounded-xl shadow-[0px_2px_10px_0px_#BFD8FF33] ${
+                isCurrentPlayer
+                  ? 'bg-[#3A3766] ring-2 ring-[var(--system-success-color)]'
+                  : 'bg-[#24243F]'
+              }`}
+            >
+              {topImage(player.rank)}
+              <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
+                <div className="flex justify-between">
+                  <h3>{player.username}</h3>
+                  <div className="flex gap-2">
+                    <Image src={coin} alt="coin" width={16} height={16} />
+                    <h3>{formatNumber(player.totalWagered)}</h3>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <h4>{player.gamesPlayed} games</h4>
+                  <p className="text-sm text-[var(--system-success-color)]">
+                    {formatNumber(player.winRate)}% win
+                  </p>
                 </div>
               </div>
-              <div className="flex justify-between">
-                <h4>{player.games} games</h4>
-                <p className="text-sm text-[var(--system-success-color)]">
-                  {player.winrate}% win
-                </p>
+            </div>
+          );
+        })}
+        {currentUser && !isCurrentUserInTop && (
+          <>
+            <div className="my-2 border-t border-dashed border-gray-500" />
+            <div className="flex rounded-xl bg-[#3A3766]">
+              {topImage(currentUser.rank)}
+              <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
+                <div className="flex justify-between">
+                  <h3>{currentUser.username} (You)</h3>
+                  <div className="flex gap-2">
+                    <Image src={coin} alt="coin" width={16} height={16} />
+                    <h3>{formatNumber(currentUser.totalWagered)}</h3>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <h4>{currentUser.gamesPlayed} games</h4>
+                  <p className="text-sm text-[var(--system-success-color)]">
+                    {formatNumber(currentUser.winRate)}% win
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          </>
+        )}
+        {!isLoading && !error && players.length === 0 && (
+          <p className="text-center text-white">No players yet</p>
+        )}
       </div>
     </div>
   );

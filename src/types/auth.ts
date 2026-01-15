@@ -25,10 +25,27 @@ export interface TokenStorage {
 }
 
 export interface CurrentUserResponse {
+  _id: string;
   username: string;
   email: string;
+  avatarURL: string;
   balance: number;
   totalWagered: number;
   gamesPlayed: number;
   totalWon: number;
 }
+
+export interface LeaderboardPlayer {
+  rank: number;
+  username: string;
+  totalWagered: number;
+  gamesPlayed: number;
+  winRate: number;
+}
+
+export interface LeaderboardResponse {
+  players: LeaderboardPlayer[];
+  currentUser: LeaderboardPlayer | null;
+}
+
+export type LeaderboardPeriod = 'daily' | 'weekly' | 'monthly' | 'all';
