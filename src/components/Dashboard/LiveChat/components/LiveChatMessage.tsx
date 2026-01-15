@@ -48,7 +48,9 @@ export const LiveChatMessage: FC<Props> = memo(({ message }) => {
       </div>
 
       <div className="mt-2">
-        <p className="text-white">{message.text}</p>
+        <p className="w-full break-words whitespace-pre-wrap text-white">
+          {message.text}
+        </p>
       </div>
     </div>
   );

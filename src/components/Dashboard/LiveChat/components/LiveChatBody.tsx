@@ -64,7 +64,7 @@ export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
   return (
     <div
       ref={parentRef}
-      className="mt-4 w-[120%] flex-1 overflow-y-auto pl-10 max-lg:pb-20 max-lg:pl-14"
+      className="mt-4 w-[120%] flex-1 overflow-y-auto pt-8 pl-10 max-lg:pb-20 max-lg:pl-14"
     >
       <div
         style={{
