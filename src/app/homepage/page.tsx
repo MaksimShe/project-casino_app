@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Leaderboard } from '@/components/Dashboard/LeaderBoard/Leaderboard';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { GameSelector } from '@/components/Dashboard/GameSelector/GameSelector';
@@ -13,6 +13,18 @@ export default function MainPage() {
   const { isAuthenticated, isLoading } = useRequireAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (isChatOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isChatOpen]);
 
   if (isLoading || !isAuthenticated) {
     return <FullScreenLoader message="Welcome to Blaze Casino" />;
@@ -27,7 +39,7 @@ export default function MainPage() {
   };
 
   return (
-    <div className="m-10 flex items-center justify-between max-lg:mx-4 max-lg:flex-col">
+    <div className="m-10 flex items-center justify-between max-xl:m-6 max-lg:mx-4 max-lg:flex-col">
       {/* Desktop: Leaderboard - GameSelector - LiveChat */}
       {/* Mobile: GameSelector - Leaderboard */}
       <div className="order-1 max-lg:order-2 max-lg:mt-10 max-lg:w-full">
@@ -36,7 +48,7 @@ export default function MainPage() {
       <div className="order-2 max-lg:order-1 max-lg:w-full">
         <GameSelector />
       </div>
-      <div className="order-3 h-[92vh] w-80 max-lg:hidden">
+      <div className="order-3 h-[83vh] w-80 max-xl:w-60 max-lg:hidden">
         <LiveChat />
       </div>
 

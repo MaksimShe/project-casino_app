@@ -50,12 +50,14 @@
 
 body {
   background: linear-gradient(180deg, #0f0c29 0%, #312c5f 50%, #24243e 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 16px;
   line-height: 1.6;
   color: var(--second-text-color);
-  margin-top: 140px;
+  padding-top: 140px;
 }
 
 h1 {
