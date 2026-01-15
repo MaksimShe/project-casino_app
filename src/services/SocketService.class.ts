@@ -15,6 +15,10 @@ class SocketService {
   private static instance: SocketService;
   private socket: Socket | null = null;
   private readonly BASE_URL: string;
+  private pendingListeners: Array<{
+    event: string;
+    callback: (...args: any[]) => void;
+  }> = [];
 
   private constructor() {
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
@@ -28,16 +32,30 @@ class SocketService {
     return SocketService.instance;
   }
 
+  private attachPendingListeners(): void {
+    if (this.pendingListeners.length > 0) {
+      this.pendingListeners.forEach(({ event, callback }) => {
+        this.socket?.on(event, callback);
+      });
+      this.pendingListeners = [];
+    }
+  }
+
   public connect(): Socket {
+    // If socket exists and is connected, just attach any pending listeners and return
     if (this.socket?.connected) {
+      this.attachPendingListeners();
       return this.socket;
     }
 
+    // If socket exists but is disconnected, reconnect and attach pending listeners
     if (this.socket && !this.socket.connected) {
       this.socket.connect();
+      this.attachPendingListeners();
       return this.socket;
     }
 
+    // Create new socket
     const token = authService.getAccessToken();
 
     this.socket = io(this.BASE_URL, {
@@ -49,6 +67,9 @@ class SocketService {
       timeout: 10000,
     });
 
+    // Attach any pending listeners
+    this.attachPendingListeners();
+
     return this.socket;
   }
 
@@ -57,6 +78,7 @@ class SocketService {
       this.socket.disconnect();
       this.socket = null;
     }
+    this.pendingListeners = [];
   }
 
   public isConnected(): boolean {
@@ -79,36 +101,48 @@ class SocketService {
     this.socket?.emit(SOCKET_EVENTS.SEND_MESSAGE, payload);
   }
 
+  private registerListener(
+    event: string,
+    callback: (...args: any[]) => void
+  ): void {
+    if (this.socket) {
+      this.socket.on(event, callback);
+    } else {
+      this.pendingListeners.push({ event, callback });
+    }
+  }
+
   public onRooms(callback: SocketEventCallback<ChatRoom[]>): void {
-    this.socket?.on(SOCKET_EVENTS.ROOMS, callback);
+    this.registerListener(SOCKET_EVENTS.ROOMS, callback);
   }
 
   public onHistory(callback: SocketEventCallback<ChatHistoryPayload>): void {
-    this.socket?.on(SOCKET_EVENTS.HISTORY, callback);
+    this.registerListener(SOCKET_EVENTS.HISTORY, callback);
   }
 
   public onMessage(callback: SocketEventCallback<ServerMessage>): void {
-    this.socket?.on(SOCKET_EVENTS.MESSAGE, callback);
+    this.registerListener(SOCKET_EVENTS.MESSAGE, callback);
   }
 
   public onError(callback: SocketEventCallback<ChatErrorPayload>): void {
-    this.socket?.on(SOCKET_EVENTS.ERROR, callback);
+    this.registerListener(SOCKET_EVENTS.ERROR, callback);
   }
 
   public onConnect(callback: () => void): void {
-    this.socket?.on('connect', callback);
+    this.registerListener('connect', callback);
   }
 
   public onDisconnect(callback: (reason: string) => void): void {
-    this.socket?.on('disconnect', callback);
+    this.registerListener('disconnect', callback);
   }
 
   public onConnectError(callback: (error: Error) => void): void {
-    this.socket?.on('connect_error', callback);
+    this.registerListener('connect_error', callback);
   }
 
   public offAll(): void {
     this.socket?.removeAllListeners();
+    this.pendingListeners = [];
   }
 }
 
