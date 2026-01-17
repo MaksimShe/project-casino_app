@@ -4,12 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { socketService } from '@/services/SocketService.class';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { CHAT_ROOMS, CHAT_CONFIG } from '@/constants/chat';
-import type {
-  ChatMessage,
-  ChatRoom,
-  ConnectionStatus,
-  ServerMessage,
-} from '@/types/chat';
+import { ConnectionStatus } from '@/types/chat';
+import type { ChatMessage, ChatRoom, ServerMessage } from '@/types/chat';
 
 function normalizeMessage(msg: ServerMessage): ChatMessage {
   return {
@@ -43,8 +39,9 @@ export function useChat(
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [currentRoom, setCurrentRoom] = useState<string>(initialRoom);
-  const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.DISCONNECTED
+  );
   const [error, setError] = useState<string | null>(null);
 
   const previousRoomRef = useRef<string | null>(null);
@@ -57,25 +54,25 @@ export function useChat(
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    setConnectionStatus('connecting');
+    setConnectionStatus(ConnectionStatus.CONNECTING);
     setError(null);
 
     // Set up all event handlers BEFORE connecting
     socketService.onConnect(() => {
-      setConnectionStatus('connected');
+      setConnectionStatus(ConnectionStatus.CONNECTED);
       setError(null);
       socketService.joinRoom(currentRoomRef.current);
     });
 
     socketService.onDisconnect(reason => {
-      setConnectionStatus('disconnected');
+      setConnectionStatus(ConnectionStatus.DISCONNECTED);
       if (reason === 'io server disconnect') {
         setError('Disconnected by server');
       }
     });
 
     socketService.onConnectError(err => {
-      setConnectionStatus('error');
+      setConnectionStatus(ConnectionStatus.ERROR);
       setError(err.message || 'Connection failed');
     });
 
@@ -115,14 +112,14 @@ export function useChat(
 
     // Check if already connected (can happen on mobile/hot reload)
     if (socketService.isConnected()) {
-      setConnectionStatus('connected');
+      setConnectionStatus(ConnectionStatus.CONNECTED);
       socketService.joinRoom(currentRoomRef.current);
     }
 
     // Connection timeout - prevent endless loading
     const timeout = setTimeout(() => {
       if (!socketService.isConnected()) {
-        setConnectionStatus('error');
+        setConnectionStatus(ConnectionStatus.ERROR);
         setError('Connection timeout');
       }
     }, 10000);
@@ -134,7 +131,7 @@ export function useChat(
   }, []);
 
   useEffect(() => {
-    if (connectionStatus !== 'connected') return;
+    if (connectionStatus !== ConnectionStatus.CONNECTED) return;
 
     const prevRoom = previousRoomRef.current;
     if (prevRoom && prevRoom !== currentRoom) {
@@ -148,7 +145,12 @@ export function useChat(
 
   const sendMessage = useCallback(
     (text: string) => {
-      if (!text.trim() || !user || connectionStatus !== 'connected') return;
+      if (
+        !text.trim() ||
+        !user ||
+        connectionStatus !== ConnectionStatus.CONNECTED
+      )
+        return;
 
       socketService.sendMessage({
         roomId: currentRoom,
@@ -171,7 +173,7 @@ export function useChat(
 
   const reconnect = useCallback(() => {
     socketService.disconnect();
-    setConnectionStatus('connecting');
+    setConnectionStatus(ConnectionStatus.CONNECTING);
     socketService.connect();
   }, []);
 

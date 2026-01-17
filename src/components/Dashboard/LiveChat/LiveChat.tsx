@@ -5,6 +5,7 @@ import { LiveChatBody } from '@/components/Dashboard/LiveChat/components/LiveCha
 import { LiveChatFooter } from '@/components/Dashboard/LiveChat/components/LiveChatFooter';
 import { useChat } from '@/hooks/useChat';
 import { CHAT_ROOMS } from '@/constants/chat';
+import { ConnectionStatus } from '@/types/chat';
 
 export const LiveChat = () => {
   const { messages, connectionStatus, error, sendMessage } = useChat(
@@ -17,13 +18,13 @@ export const LiveChat = () => {
 
       <LiveChatBody
         messages={messages}
-        isLoading={connectionStatus === 'connecting'}
+        isLoading={connectionStatus === ConnectionStatus.CONNECTING}
         error={error}
       />
 
       <LiveChatFooter
         onSendMessage={sendMessage}
-        disabled={connectionStatus !== 'connected'}
+        disabled={connectionStatus !== ConnectionStatus.CONNECTED}
       />
     </div>
   );

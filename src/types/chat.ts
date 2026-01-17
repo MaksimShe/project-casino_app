@@ -25,11 +25,12 @@ export interface ChatMessage {
   avatarURL?: string;
 }
 
-export type ConnectionStatus =
-  | 'connecting'
-  | 'connected'
-  | 'disconnected'
-  | 'error';
+export enum ConnectionStatus {
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  DISCONNECTED = 'disconnected',
+  ERROR = 'error',
+}
 
 export interface SendMessagePayload {
   roomId: string;

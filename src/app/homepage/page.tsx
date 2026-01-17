@@ -15,12 +15,7 @@ export default function MainPage() {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (isChatOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
+    document.body.style.overflow = isChatOpen ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
