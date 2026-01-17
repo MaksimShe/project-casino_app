@@ -16,7 +16,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="flex h-[100vh] w-full flex-col items-center justify-center bg-gradient-to-b from-[#0F0C29] via-[#302B63] to-[#24243E]">
+    <div className="-mt-[140px] flex h-[100vh] w-full flex-col items-center justify-center bg-gradient-to-b from-[#0F0C29] via-[#302B63] to-[#24243E]">
       <div className="flex flex-col items-center gap-6 text-center">
         <Image src="/logo/logo.svg" alt="logo" width={96} height={96} />
         <h1 className="text-8xl font-bold text-white">404</h1>

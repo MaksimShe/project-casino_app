@@ -41,9 +41,11 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
       </div>
 
       <div className="absolute bottom-8 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4">
-        <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-white transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
-          Free play
-        </button>
+        <a href={game.link}>
+          <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-white transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
+            Free play
+          </button>
+        </a>
       </div>
     </div>
   );
