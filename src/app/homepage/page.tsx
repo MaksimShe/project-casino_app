@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Leaderboard } from '@/components/Dashboard/LeaderBoard/Leaderboard';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { GameSelector } from '@/components/Dashboard/GameSelector/GameSelector';
@@ -8,18 +8,14 @@ import { LiveChat } from '@/components/Dashboard/LiveChat/LiveChat';
 import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import chatIcon from '@/../public/logo/chat.svg';
 import Image from 'next/image';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 export default function MainPage() {
   const { isAuthenticated, isLoading } = useRequireAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  useEffect(() => {
-    document.body.style.overflow = isChatOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isChatOpen]);
+  useLockBodyScroll(isChatOpen);
 
   if (isLoading || !isAuthenticated) {
     return <FullScreenLoader message="Welcome to Blaze Casino" />;

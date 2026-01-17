@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
 import Image from 'next/image';
 import logoIcon from '@/../public/logo/logo-header.svg';
 import settingIcon from '@/../public/logo/setting.svg';
 import logoutIcon from '@/../public/logo/login.svg';
 import inventoryIcon from '@/../public/logo/invertory.svg';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 interface SideBarProps {
   isOpen: boolean;
@@ -22,17 +22,7 @@ export const SideBar = ({
   onSettingsClick,
   onLogout,
 }: SideBarProps) => {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) return null;
 

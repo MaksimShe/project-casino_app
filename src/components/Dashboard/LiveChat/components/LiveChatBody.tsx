@@ -32,7 +32,7 @@ export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
     if (messages.length > 0) {
       scrollToBottom();
     }
-  }, [messages.length, scrollToBottom]);
+  }, [scrollToBottom]);
 
   if (isLoading) {
     return (
