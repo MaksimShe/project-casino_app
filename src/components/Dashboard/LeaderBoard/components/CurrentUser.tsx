@@ -17,7 +17,6 @@ export const CurrentUser = ({
 }: CurrentUserProps) => {
   return (
     <>
-      <div className="my-2 border-t border-dashed border-gray-500" />
       <LeaderBoardItem
         username={username}
         rank={rank}

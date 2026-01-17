@@ -50,13 +50,17 @@ export const Leaderboard = () => {
           );
         })}
         {currentUser && !isCurrentUserInTop && (
-          <CurrentUser
-            username={currentUser.username}
-            rank={currentUser.rank}
-            totalWagered={currentUser.totalWagered}
-            gamesPlayed={currentUser.gamesPlayed}
-            winRate={currentUser.winRate}
-          />
+          <div className="rounded-lg bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]">
+            <div className="rounded-md bg-black">
+              <CurrentUser
+                username={currentUser.username}
+                rank={currentUser.rank}
+                totalWagered={currentUser.totalWagered}
+                gamesPlayed={currentUser.gamesPlayed}
+                winRate={currentUser.winRate}
+              />
+            </div>
+          </div>
         )}
         {!isLoading && !error && players.length === 0 && <NoPlayersYet />}
       </div>
