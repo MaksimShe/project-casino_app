@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 import logoIcon from '@/../public/logo/logo-header.svg';
 import settingIcon from '@/../public/logo/setting.svg';
 import logoutIcon from '@/../public/logo/login.svg';
@@ -28,12 +29,18 @@ export const SideBar = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 hidden max-lg:block ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
+      className={twMerge(
+        'fixed inset-0 z-50 hidden max-lg:block',
+        isClosing ? 'animate-fade-out' : 'animate-fade-in'
+      )}
     >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       <div
-        className={`absolute top-0 left-0 flex h-full w-72 flex-col bg-[#0F0C29] p-6 ${isClosing ? 'animate-slide-left' : 'animate-slide-right'}`}
+        className={twMerge(
+          'absolute top-0 left-0 flex h-full w-72 flex-col bg-[#0F0C29] p-6',
+          isClosing ? 'animate-slide-left' : 'animate-slide-right'
+        )}
       >
         <div className="mb-8 flex items-center gap-2">
           <p className="text-2xl font-bold text-white">Blaze</p>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 import coin from '@/../public/leaderboard_icons/dollar.svg';
 import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
 import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
@@ -67,29 +68,30 @@ export const LeaderBoardItem = ({
 }: LeaderBoardItemProps) => {
   return (
     <div
-      className={`flex rounded-xl shadow-[0px_2px_10px_0px_#BFD8FF33] ${
-        isCurrentUser
-          ? 'bg-[#3A3766] ring-2 ring-[var(--system-success-color)]'
-          : 'bg-[#24243F]'
-      }`}
+      className={twMerge(
+        'flex rounded-xl shadow-[0px_2px_10px_0px_#BFD8FF33]',
+        isCurrentUser && 'bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]'
+      )}
     >
-      {getRankImage(rank)}
-      <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
-        <div className="flex justify-between">
-          <h3>
-            {username}
-            {showYouLabel && ' (You)'}
-          </h3>
-          <div className="flex gap-2">
-            <Image src={coin} alt="coin" width={16} height={16} />
-            <h3>{formatNumber(totalWagered)}</h3>
+      <div className="flex w-full rounded-[10px] bg-[#24243F]">
+        {getRankImage(rank)}
+        <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
+          <div className="flex justify-between">
+            <h3>
+              {username}
+              {showYouLabel && ' (You)'}
+            </h3>
+            <div className="flex gap-2">
+              <Image src={coin} alt="coin" width={16} height={16} />
+              <h3>{formatNumber(totalWagered)}</h3>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-between">
-          <h4>{gamesPlayed} games</h4>
-          <p className="text-sm text-[var(--system-success-color)]">
-            {formatNumber(winRate)}% win
-          </p>
+          <div className="flex justify-between">
+            <h4>{gamesPlayed} games</h4>
+            <p className="text-sm text-[var(--system-success-color)]">
+              {formatNumber(winRate)}% win
+            </p>
+          </div>
         </div>
       </div>
     </div>

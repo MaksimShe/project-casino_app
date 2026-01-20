@@ -3,6 +3,7 @@ import caseImg from '@/../public/game_select/case.png';
 import minesImg from '@/../public/game_select/mines.png';
 import plinkoImg from '@/../public/game_select/plinko.png';
 import { type StaticImageData } from 'next/image';
+import { ROUTES } from '@/constants/routes';
 
 export interface GameBadge {
   text: string;
@@ -37,7 +38,7 @@ export const GAMES: Game[] = [
   {
     name: 'Crash',
     description: "Watch the multiplier rise and cash out before it's gone",
-    link: 'dd',
+    link: ROUTES.CRASHGAME,
     image: crashImg,
     badge: {
       text: 'New',
@@ -48,7 +49,7 @@ export const GAMES: Game[] = [
   {
     name: 'Case',
     description: 'Open cases and win random rewards',
-    link: 'dd',
+    link: ROUTES.CASEGAME,
     image: caseImg,
     badge: {
       text: 'Hot',
@@ -59,7 +60,7 @@ export const GAMES: Game[] = [
   {
     name: 'Mines',
     description: 'Avoid the mines and collect bigger rewards',
-    link: 'dd',
+    link: ROUTES.MINESGAME,
     image: minesImg,
     badge: {
       text: 'New',
@@ -70,7 +71,7 @@ export const GAMES: Game[] = [
   {
     name: 'Plinko',
     description: 'Drop the ball, watch it bounce, and win prizes',
-    link: 'dd',
+    link: ROUTES.PLINKOGAME,
     image: plinkoImg,
     badge: {
       text: 'Popular',

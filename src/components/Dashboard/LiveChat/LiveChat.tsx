@@ -8,14 +8,16 @@ import { CHAT_ROOMS } from '@/constants/chat';
 import { ConnectionStatus } from '@/types/chat';
 
 export const LiveChat = () => {
-  const { messages, connectionStatus, error, sendMessage } = useChat(
-    CHAT_ROOMS.GENERAL
-  );
+  const { messages, rooms, currentRoom, connectionStatus, error, sendMessage } =
+    useChat(CHAT_ROOMS.GENERAL);
   const isLoading = connectionStatus === ConnectionStatus.CONNECTING;
+
+  const currentRoomData = rooms.find(room => room.id === currentRoom);
+  const onlineCount = currentRoomData?.activeUsers ?? 0;
 
   return (
     <div className="relative flex h-full w-full flex-col items-center max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-6">
-      <LiveChatHeader />
+      <LiveChatHeader onlineCount={onlineCount} />
 
       <LiveChatBody messages={messages} isLoading={isLoading} error={error} />
 
