@@ -8,11 +8,14 @@ import { LiveChat } from '@/components/Dashboard/LiveChat/LiveChat';
 import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import chatIcon from '@/../public/logo/chat.svg';
 import Image from 'next/image';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 export default function MainPage() {
   const { isAuthenticated, isLoading } = useRequireAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  useLockBodyScroll(isChatOpen);
 
   if (isLoading || !isAuthenticated) {
     return <FullScreenLoader message="Welcome to Blaze Casino" />;
@@ -27,7 +30,7 @@ export default function MainPage() {
   };
 
   return (
-    <div className="m-10 flex items-center justify-between max-lg:mx-4 max-lg:flex-col">
+    <div className="m-10 flex items-center justify-between max-xl:m-6 max-lg:mx-4 max-lg:flex-col">
       {/* Desktop: Leaderboard - GameSelector - LiveChat */}
       {/* Mobile: GameSelector - Leaderboard */}
       <div className="order-1 max-lg:order-2 max-lg:mt-10 max-lg:w-full">
@@ -36,7 +39,7 @@ export default function MainPage() {
       <div className="order-2 max-lg:order-1 max-lg:w-full">
         <GameSelector />
       </div>
-      <div className="order-3 h-[92vh] w-80 max-lg:hidden">
+      <div className="order-3 h-[83vh] w-80 max-xl:w-60 max-lg:hidden">
         <LiveChat />
       </div>
 

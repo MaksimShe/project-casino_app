@@ -8,11 +8,12 @@ import coinIcon from '@/../public/leaderboard_icons/dollar.svg';
 import settingIcon from '@/../public/logo/setting.svg';
 import logoutIcon from '@/../public/logo/login.svg';
 import sideMenuIcon from '@/../public/logo/side-menu.svg';
-import inventoryIcon from '@/../public/logo/invertory.svg';
+import { formatNumber } from '@/utils/format';
 
 import { ROUTES } from '@/constants/routes';
 import { authService } from '@/services/AuthService.class';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SideBar } from '@/components/SideBar/SideBar';
 
 const HIDDEN_HEADER_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTRATION];
 
@@ -32,12 +33,8 @@ export const Header = () => {
   };
 
   const handleSettingsClick = () => {
-    if (user) {
-      console.log('User Info:', user);
-    } else {
-      console.log('User is not authenticated');
-    }
-  }; // temp, letter i`ll delete it
+    // TODO: Implement settings functionality
+  };
 
   const handleLogout = async () => {
     try {
@@ -56,7 +53,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-gradient-to-b from-[#0F0C29] via-[#312C5F] to-[#24243E] px-16 max-lg:h-16 max-lg:px-4">
+      <header className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-gradient-to-b from-[#0F0C29] via-[#312C5F] to-[#24243E] px-16 max-lg:h-16 max-lg:bg-none max-lg:px-4">
         <div className="inline-flex h-full items-center gap-2 max-lg:hidden">
           <span className="text-2xl font-black text-white">Blaze</span>
           <Image src={logoIcon} alt="logo" height={48} width={48} />
@@ -69,19 +66,33 @@ export const Header = () => {
         >
           <Image src={sideMenuIcon} alt="menu" height={32} width={32} />
         </button>
+
+        <div className="hidden flex-1 items-center justify-center max-lg:flex">
+          <div className="flex gap-2 rounded-4xl border px-4 py-2 backdrop-blur-sm">
+            <Image
+              src={coinIcon}
+              alt="dollar"
+              height={24}
+              width={24}
+              className="h-6 w-6 object-contain"
+            />
+            <span className="text-base text-white">
+              {user?.balance === undefined ? '--' : formatNumber(user?.balance)}
+            </span>
+          </div>
+        </div>
+
         <div className="flex items-center gap-14 max-lg:hidden">
           <div className="flex items-center gap-4">
-            <div className="flex gap-2 rounded-4xl border px-6 py-3 max-lg:px-4 max-lg:py-2">
-              <div className="relative h-8 w-8 max-lg:h-6 max-lg:w-6">
-                <Image
-                  src={coinIcon}
-                  alt="dollar"
-                  fill
-                  sizes="32px"
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-xl text-white max-lg:text-base">
+            <div className="flex gap-2 rounded-4xl border px-6 py-3">
+              <Image
+                src={coinIcon}
+                alt="dollar"
+                height={32}
+                width={32}
+                className="h-8 w-8 object-contain"
+              />
+              <span className="text-xl text-white">
                 {user?.balance?.toFixed(2) ?? '--'}
               </span>
             </div>
@@ -136,55 +147,13 @@ export const Header = () => {
         </div>
       </header>
 
-      {isSidebarOpen && (
-        <div
-          className={`fixed inset-0 z-50 hidden max-lg:block ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
-        >
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={handleCloseSidebar}
-          />
-
-          <div
-            className={`absolute top-0 left-0 flex h-full w-72 flex-col bg-[#0F0C29] p-6 ${isClosing ? 'animate-slide-left' : 'animate-slide-right'}`}
-          >
-            <div className="mb-8 flex items-center gap-2">
-              <p className="text-2xl font-bold text-white">Blaze</p>
-              <Image src={logoIcon} alt="logo" height={48} width={48} />
-              <p className="text-2xl font-bold text-white">Casino</p>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <button className="flex items-center gap-3 rounded-xl bg-[#423E6980] p-3 text-white hover:bg-[#24243F]">
-                <Image
-                  src={inventoryIcon}
-                  alt="inventory"
-                  height={24}
-                  width={18}
-                />
-                <span>Inventory</span>
-              </button>
-              <button
-                onClick={handleSettingsClick}
-                className="flex items-center gap-3 rounded-xl bg-[#423E6980] p-3 text-white hover:bg-[#24243F]"
-              >
-                <Image src={settingIcon} alt="setting" height={24} width={24} />
-                <span>Settings</span>
-              </button>
-            </div>
-
-            <div className="mt-auto">
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center justify-center gap-0.5 rounded-xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-3 font-bold text-white"
-              >
-                <span>Log out</span>
-                <Image src={logoutIcon} alt="logout" height={24} width={24} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SideBar
+        isOpen={isSidebarOpen}
+        isClosing={isClosing}
+        onClose={handleCloseSidebar}
+        onSettingsClick={handleSettingsClick}
+        onLogout={handleLogout}
+      />
     </>
   );
 };

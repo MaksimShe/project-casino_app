@@ -1,29 +1,59 @@
-import { type Message } from '@/components/Dashboard/LiveChat/LiveChat';
-import { type FC } from 'react';
+'use client';
+
+import { type FC, memo } from 'react';
+import Image from 'next/image';
+import { type ChatMessage } from '@/types/chat';
 
 interface Props {
-  message: Message;
+  message: ChatMessage;
 }
 
-export const LiveChatMessage: FC<Props> = ({ message }) => {
+const getInitials = (username: string) => {
+  return username
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+export const LiveChatMessage: FC<Props> = memo(({ message }) => {
   return (
-    <div
-      key={`${message.messageBody} + ${message.time} + ${message.author.username}`}
-      className="mb-3 w-11/12 rounded-xl bg-[#24243F] p-4 shadow-[0px_2px_10px_0px_#BFD8FF33]"
-    >
+    <div className="mx-auto mb-1.5 w-11/12 overflow-visible rounded-xl bg-[#24243F] p-4 shadow-[0px_2px_10px_0px_#BFD8FF33]">
       <div className="flex items-center justify-between border-b pb-1.5">
-        <div className="flex items-center gap-4 font-bold text-white">
-          <p className="w-12 rounded-2xl bg-[linear-gradient(116deg,_#3A88FF_-6%,_#004BBC_84%)] p-1 text-center font-medium">
-            {message.author.hzSomeV}
-          </p>
-          <p>{message.author.username}</p>
+        <div className="relative flex items-center gap-3 font-bold text-white">
+          <div
+            className="absolute -top-8 -left-8 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-0.5"
+            style={{ boxShadow: '0px 0px 16px 0px #FFCD71' }}
+          >
+            <div className="relative h-full w-full overflow-hidden rounded-full bg-gradient-to-br from-[#3A88FF] to-[#004BBC]">
+              {message.avatarURL ? (
+                <Image
+                  src={message.avatarURL}
+                  alt={message.username}
+                  fill
+                  className="object-cover"
+                  sizes="40px"
+                />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
+                  {getInitials(message.username)}
+                </span>
+              )}
+            </div>
+          </div>
+          <p>{message.username}</p>
         </div>
-        <p>{message.time}</p>
+        <p className="text-sm text-white/70">{message.time}</p>
       </div>
 
       <div className="mt-2">
-        <p>{message.messageBody}</p>
+        <p className="w-full break-words whitespace-pre-wrap text-white">
+          {message.text}
+        </p>
       </div>
     </div>
   );
-};
+});
+
+LiveChatMessage.displayName = 'LiveChatMessage';
