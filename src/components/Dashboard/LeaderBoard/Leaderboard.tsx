@@ -2,7 +2,6 @@ import Image from 'next/image';
 import cup from '@/../public/leaderboard_icons/gold cup.svg';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { LeaderBoardItem } from './components/LeaderBoardItem';
-import { CurrentUser } from './components/CurrentUser';
 import { NoPlayersYet } from './components/NoPlayersYet';
 
 export const Leaderboard = () => {
@@ -52,7 +51,7 @@ export const Leaderboard = () => {
         {currentUser && !isCurrentUserInTop && (
           <div className="rounded-lg bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]">
             <div className="rounded-md bg-black">
-              <CurrentUser
+              <LeaderBoardItem
                 username={currentUser.username}
                 rank={currentUser.rank}
                 totalWagered={currentUser.totalWagered}
