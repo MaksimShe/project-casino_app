@@ -5,6 +5,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { LiveChatMessage } from './LiveChatMessage';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { type ChatMessage } from '@/types/chat';
+import { VIRTUALIZER_CONFIG } from '../constants';
 
 interface Props {
   messages: ChatMessage[];
@@ -14,19 +15,27 @@ interface Props {
 
 export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
   const parentRef = useRef<HTMLDivElement>(null);
+  const autoScrollRef = useRef<{ handleVirtualizerChange: () => void } | null>(
+    null
+  );
 
   const virtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 120,
-    overscan: 5,
-    gap: 16,
+    estimateSize: () => VIRTUALIZER_CONFIG.ESTIMATED_SIZE,
+    overscan: VIRTUALIZER_CONFIG.OVERSCAN,
+    gap: VIRTUALIZER_CONFIG.GAP,
+    onChange: () => {
+      autoScrollRef.current?.handleVirtualizerChange();
+    },
   });
 
-  const { scrollToBottom } = useAutoScroll({
+  const { scrollToBottom, handleVirtualizerChange } = useAutoScroll({
     virtualizer,
     itemCount: messages.length,
   });
+
+  autoScrollRef.current = { handleVirtualizerChange };
 
   useEffect(() => {
     if (messages.length > 0) {

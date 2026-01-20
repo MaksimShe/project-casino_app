@@ -23,8 +23,8 @@ export const CurrentUser = ({
         totalWagered={totalWagered}
         gamesPlayed={gamesPlayed}
         winRate={winRate}
-        isCurrentUser={true}
-        showYouLabel={true}
+        isCurrentUser
+        showYouLabel
       />
     </>
   );

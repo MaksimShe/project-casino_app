@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { type Virtualizer } from '@tanstack/react-virtual';
 
 interface UseAutoScrollOptions {
@@ -36,24 +36,23 @@ export function useAutoScroll({
     });
   }, [virtualizer, itemCount]);
 
-  useEffect(() => {
-    if (itemCount > prevItemCountRef.current) {
-      if (isAtBottom) {
-        requestAnimationFrame(() => {
-          scrollToBottom();
-        });
-      }
-    }
-    prevItemCountRef.current = itemCount;
-  }, [itemCount, isAtBottom, scrollToBottom]);
-
   const handleScroll = useCallback(() => {
     setIsAtBottom(checkIsAtBottom());
   }, [checkIsAtBottom]);
 
+  const handleVirtualizerChange = useCallback(() => {
+    if (itemCount > prevItemCountRef.current && isAtBottom) {
+      requestAnimationFrame(() => {
+        scrollToBottom();
+      });
+    }
+    prevItemCountRef.current = itemCount;
+  }, [itemCount, isAtBottom, scrollToBottom]);
+
   return {
     scrollToBottom,
     handleScroll,
+    handleVirtualizerChange,
     isAtBottom,
   };
 }

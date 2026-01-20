@@ -1,6 +1,7 @@
 export interface ChatRoom {
   id: string;
   name: string;
+  activeUsers: number;
 }
 
 export interface ServerMessage {

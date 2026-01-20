@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 import coin from '@/../public/leaderboard_icons/dollar.svg';
 import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
 import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
@@ -67,11 +68,10 @@ export const LeaderBoardItem = ({
 }: LeaderBoardItemProps) => {
   return (
     <div
-      className={`flex rounded-xl shadow-[0px_2px_10px_0px_#BFD8FF33] ${
-        isCurrentUser
-          ? 'bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]'
-          : ''
-      }`}
+      className={twMerge(
+        'flex rounded-xl shadow-[0px_2px_10px_0px_#BFD8FF33]',
+        isCurrentUser && 'bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]'
+      )}
     >
       <div className="flex w-full rounded-[10px] bg-[#24243F]">
         {getRankImage(rank)}
