@@ -1,6 +1,9 @@
 'use client';
 
 import { type FC, useState, useEffect } from 'react';
+import dollarIcon from '@/../public/leaderboard_icons/dollar-icon.svg';
+import walletIcon from '@/../public/leaderboard_icons/wallet.svg';
+import Image from 'next/image';
 
 export interface ButtonState {
   label: string;
@@ -68,8 +71,10 @@ export const ActionButton: FC<ActionButtonProps> = ({
     }, 150);
   };
 
-  const defaultPrimaryClass = 'bg-red-500 hover:bg-red-600';
-  const defaultSecondaryClass = 'bg-yellow-500 hover:bg-yellow-600 text-black';
+  const defaultPrimaryClass =
+    'bg-gradient-to-t from-[#BA0034] to-[#FF185F] hover:shadow-[0_0_10px_#FF185F]';
+  const defaultSecondaryClass =
+    'bg-gradient-to-b from-[#FFCD71] to-[#E59603] hover:shadow-[0_0_10px_#E59603]';
 
   const buttonClass =
     currentState.className ||
@@ -79,7 +84,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     <button
       onClick={handleClick}
       disabled={disabled || isAnimating}
-      className={`w-full rounded-lg py-2 text-sm font-semibold transition-all duration-150 ${buttonClass} ${
+      className={`relative w-full rounded-full py-2 text-[16px] font-semibold text-white transition-all duration-150 ${buttonClass} ${
         disabled ? 'cursor-not-allowed opacity-50' : ''
       } ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}
     >
@@ -90,6 +95,17 @@ export const ActionButton: FC<ActionButtonProps> = ({
       >
         {currentState.label}
       </span>
+      <Image
+        src={isSecondary ? dollarIcon : walletIcon}
+        alt="wallet"
+        width={20}
+        height={20}
+        className={`absolute top-1/2 right-3 -translate-y-1/2 transition-all duration-150 ${
+          isAnimating
+            ? 'translate-y-[-calc(50%-0.25rem)] opacity-0'
+            : 'opacity-100'
+        }`}
+      />
     </button>
   );
 };

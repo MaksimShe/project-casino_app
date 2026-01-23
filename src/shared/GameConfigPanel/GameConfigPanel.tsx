@@ -31,6 +31,7 @@ interface Props {
   onOptionToggleChange?: (name: string, enabled: boolean) => void;
   buttonDisabled?: boolean;
   betAmount?: number;
+  balance?: number;
 }
 
 export default function GameConfigPanel({
@@ -48,6 +49,7 @@ export default function GameConfigPanel({
   onOptionToggleChange,
   buttonDisabled,
   betAmount: controlledBetAmount,
+  balance,
 }: Props) {
   const config: GameConfig | undefined = gamesConfig[game];
   const [internalBetAmount, setInternalBetAmount] = useState(10);
@@ -101,7 +103,7 @@ export default function GameConfigPanel({
   }));
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-8 rounded-xl bg-[#423E6980] px-8 py-6">
+    <div className="flex h-fit w-full max-w-sm flex-col gap-8 rounded-xl bg-[#423E6980] px-8 py-6">
       <p className="text-center text-3xl font-semibold text-white">
         {config.title} Configuration
       </p>
@@ -116,6 +118,7 @@ export default function GameConfigPanel({
                 value={betAmount}
                 onChange={handleBetChange}
                 maxValue={CONFIG_PANEL.MAX_BET}
+                balance={balance}
               />
             );
           }
@@ -149,7 +152,11 @@ export default function GameConfigPanel({
         secondaryState={secondaryButton || defaultSecondary}
         isSecondary={isGameActive}
         onToggle={onActionToggle}
-        disabled={buttonDisabled}
+        disabled={
+          buttonDisabled ||
+          betAmount < 1 ||
+          (balance !== undefined && (balance < 1 || betAmount > balance))
+        }
       />
       <InfoDisplay items={infoItems} />
     </div>
