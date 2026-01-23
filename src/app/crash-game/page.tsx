@@ -354,16 +354,7 @@ export default function CrashGamePage() {
       socket.removeAllListeners();
       socket.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getMultiplierColor = () => {
-    if (gameState === 'crashed') return 'text-red-500';
-    if (multiplier >= 10) return 'text-purple-400';
-    if (multiplier >= 5) return 'text-yellow-400';
-    if (multiplier >= 2) return 'text-green-400';
-    return 'text-white';
-  };
 
   const getStatusText = () => {
     if (!isConnected) {
@@ -452,10 +443,8 @@ export default function CrashGamePage() {
             </div>
             {/* Main Multiplier */}
             <div className="z-10 flex flex-col items-center">
-              <span
-                className={`text-7xl font-bold transition-colors lg:text-9xl ${getMultiplierColor()}`}
-              >
-                {multiplier}x
+              <span className="text-7xl font-bold transition-colors lg:text-9xl">
+                {formatNumber(multiplier)}x
               </span>
               {gameState === 'crashed' && crashPoint && (
                 <span className="mt-2 text-xl text-red-400">
