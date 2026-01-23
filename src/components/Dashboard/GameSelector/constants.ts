@@ -5,6 +5,13 @@ import plinkoImg from '@/../public/game_select/plinko.png';
 import { type StaticImageData } from 'next/image';
 import { ROUTES } from '@/constants/routes';
 
+export enum GameType {
+  CRASH = 'crash',
+  CASE = 'case',
+  MINES = 'mines',
+  PLINKO = 'plinko',
+}
+
 export interface GameBadge {
   text: string;
   gradient: string;

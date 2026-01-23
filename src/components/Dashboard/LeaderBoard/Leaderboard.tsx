@@ -7,7 +7,7 @@ import { NoPlayersYet } from './components/NoPlayersYet';
 export const Leaderboard = () => {
   const { data, isLoading, error } = useLeaderboard('all');
 
-  const players = data?.players ?? [];
+  const players = data?.players.slice(0, 8) ?? [];
   const currentUser = data?.currentUser;
   const isCurrentUserInTop = players.some(
     p => currentUser && p.username === currentUser.username

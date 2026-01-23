@@ -98,12 +98,22 @@ h4 {
 
 span {
   font-family: 'Inter', sans-serif;
-  color: var(--main-text-color);
 }
 
 button {
   font-family: 'Satoshi', sans-serif;
   cursor: pointer;
+}
+
+/* Hide number input spinners */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 
 /* Chat slide animations */
