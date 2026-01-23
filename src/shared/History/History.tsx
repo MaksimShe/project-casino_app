@@ -15,6 +15,7 @@ import {
   type CrashHistoryType,
 } from '@/hooks/useHistoryTable';
 import { formatNumber } from '@/utils/format';
+import { HISTORY_CONFIG } from '@/shared/History/constants';
 
 // Detect game type from URL pathname
 function getGameTypeFromPath(pathname: string): HistoryGameType | null {
@@ -27,7 +28,7 @@ function getGameTypeFromPath(pathname: string): HistoryGameType | null {
 
 // Format value based on its type and key name
 function formatValue(key: string, value: unknown): React.ReactNode {
-  if (value === null || value === undefined) return '-';
+  if (value === null || value === undefined) return '—';
 
   // Handle dates (createdAt, startsAt, etc.)
   if (
@@ -69,14 +70,32 @@ function formatValue(key: string, value: unknown): React.ReactNode {
     }
   }
 
+  if (key.toLowerCase().includes('point')) {
+    const numValue = Number(value);
+    let colorClass = '';
+    if (numValue < 2) {
+      colorClass = 'text-gray-300';
+    } else if (numValue < 10) {
+      colorClass = 'text-yellow-300';
+    } else if (numValue < 100) {
+      colorClass = 'text-blue-300';
+    } else {
+      colorClass = 'text-purple-300';
+    }
+    if (!isNaN(numValue)) {
+      return <span className={colorClass}>{formatNumber(numValue)}x</span>;
+    }
+  }
+
   // Handle multipliers
-  if (
-    key.toLowerCase().includes('multiplier') ||
-    key.toLowerCase().includes('point')
-  ) {
+  if (key.toLowerCase().includes('multiplier')) {
     const numValue = Number(value);
     if (!isNaN(numValue)) {
-      return <span className="text-green-400">{numValue.toFixed(2)}x</span>;
+      return (
+        <span className="text-[var(--system-success-color)]">
+          {formatNumber(numValue)}x
+        </span>
+      );
     }
   }
 
@@ -86,24 +105,14 @@ function formatValue(key: string, value: unknown): React.ReactNode {
     let colorClass = 'bg-gray-500/20 text-gray-400';
 
     if (statusValue === 'won') {
-      colorClass = 'bg-green-500/20 text-green-400';
-    } else if (
-      statusValue === 'lost' ||
-      statusValue === 'failed' ||
-      statusValue === 'crashed'
-    ) {
-      colorClass = 'bg-red-500/20 text-red-400';
-    } else if (
-      statusValue === 'active' ||
-      statusValue === 'running' ||
-      statusValue === 'pending'
-    ) {
-      colorClass = 'bg-yellow-500/20 text-yellow-400';
+      colorClass = 'text-[var(--system-success-color)]';
+    } else {
+      colorClass = 'text-[var(--system-error-color)]';
     }
 
     return (
-      <span className={`rounded px-2 py-1 text-xs ${colorClass}`}>
-        {String(value)}
+      <span className={`rounded px-2 py-1 text-sm ${colorClass}`}>
+        {String(value).charAt(0).toUpperCase() + String(value).slice(1)}
       </span>
     );
   }
@@ -114,7 +123,7 @@ function formatValue(key: string, value: unknown): React.ReactNode {
     key.toLowerCase().includes('risk')
   ) {
     const levelValue = String(value).toLowerCase();
-    let colorClass = 'bg-gray-500/20 text-gray-400';
+    let colorClass = 'bg-gray-500/20 text-[var(--second-text-color)]';
 
     if (levelValue === 'legendary' || levelValue === 'high') {
       colorClass = 'bg-red-500/20 text-red-400';
@@ -252,13 +261,13 @@ function UniversalTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg">
-      <table className="w-full rounded-t-2xl border-2 border-[#ADB5BD33] text-sm shadow-none">
-        <thead>
+    <div className="h-64 overflow-auto rounded-t-lg">
+      <table className="w-full rounded-t-2xl border-x-2 border-[#ADB5BD33] text-sm shadow-none">
+        <thead className="sticky top-0 z-10">
           {table.getHeaderGroups().map(headerGroup => (
             <tr
               key={headerGroup.id}
-              className="bg-[#ADB5BD33] text-left text-gray-300"
+              className="bg-[#ADB5BD33] text-left text-gray-300 backdrop-blur-sm"
             >
               {headerGroup.headers.map(header => (
                 <th key={header.id} className="px-4 py-3 font-bold">
@@ -296,12 +305,17 @@ export default function History() {
     useState<CrashHistoryType>('myBets');
 
   // For crash game, use special hook with toggle
-  const crashHistoryQuery = useCrashHistory(crashHistoryType, { limit: 10 });
+  const crashHistoryQuery = useCrashHistory(crashHistoryType, {
+    limit: HISTORY_CONFIG.LIMIT,
+  });
 
   // For other games, use regular hook
   const regularHistoryQuery = useHistoryTable(
     gameType === 'crash' ? 'mines' : (gameType as HistoryGameType),
-    { limit: 10, enabled: gameType !== null && gameType !== 'crash' }
+    {
+      limit: HISTORY_CONFIG.LIMIT,
+      enabled: gameType !== null && gameType !== 'crash',
+    }
   );
 
   const query = gameType === 'crash' ? crashHistoryQuery : regularHistoryQuery;
@@ -329,9 +343,9 @@ export default function History() {
   }
 
   return (
-    <div className="mb-12 rounded-xl p-6 shadow-lg">
+    <div className="p-6 pb-0">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">History</h2>
+        <p className="text-[32px] font-black text-white">Game history</p>
 
         {gameType === 'crash' && (
           <div className="flex gap-2 rounded-lg bg-[#374151] p-1">
