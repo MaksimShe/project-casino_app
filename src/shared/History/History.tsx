@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   useReactTable,
@@ -301,11 +301,9 @@ function UniversalTable({
 export default function History() {
   const pathname = usePathname();
   const gameType = getGameTypeFromPath(pathname);
-  const [crashHistoryType, setCrashHistoryType] =
-    useState<CrashHistoryType>('myBets');
 
-  // For crash game, use special hook with toggle
-  const crashHistoryQuery = useCrashHistory(crashHistoryType, {
+  // For crash game, always show "myBets"
+  const crashHistoryQuery = useCrashHistory('myBets', {
     limit: HISTORY_CONFIG.LIMIT,
   });
 
@@ -346,31 +344,6 @@ export default function History() {
     <div className="p-6 pb-0">
       <div className="mb-4 flex items-center justify-between">
         <p className="text-[32px] font-black text-white">Game history</p>
-
-        {gameType === 'crash' && (
-          <div className="flex gap-2 rounded-lg bg-[#374151] p-1">
-            <button
-              onClick={() => setCrashHistoryType('myBets')}
-              className={`rounded px-4 py-2 text-sm transition-colors ${
-                crashHistoryType === 'myBets'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              My Bets
-            </button>
-            <button
-              onClick={() => setCrashHistoryType('allGames')}
-              className={`rounded px-4 py-2 text-sm transition-colors ${
-                crashHistoryType === 'allGames'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              All Games
-            </button>
-          </div>
-        )}
       </div>
 
       {isLoading && (
@@ -387,7 +360,7 @@ export default function History() {
         <UniversalTable
           data={historyData}
           gameType={gameType}
-          crashHistoryType={crashHistoryType}
+          crashHistoryType="myBets"
         />
       )}
     </div>

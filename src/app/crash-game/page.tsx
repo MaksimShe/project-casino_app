@@ -18,6 +18,7 @@ import { GameType } from '@/components/Dashboard/GameSelector/constants';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatNumber } from '@/utils/format';
+import { useCrashHistory } from '@/hooks/useHistoryTable';
 
 export default function CrashGamePage() {
   const queryClient = useQueryClient();
@@ -26,6 +27,12 @@ export default function CrashGamePage() {
   const [countdown, setCountdown] = useState<number>(0);
   const [isConnected, setIsConnected] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  // Fetch all games history for display
+  const { data: allGamesData, refetch: refetchAllGames } = useCrashHistory(
+    'allGames',
+    { limit: 10 }
+  );
 
   // Use ref for addLog to avoid closure issues
   const addLogRef = useRef<(message: string) => void>(() => {});
@@ -393,67 +400,112 @@ export default function CrashGamePage() {
     : `Cashout $${potentialWin.toFixed(2)}`;
   const isButtonDisabled = isGameActive ? !canCashout : !canPlaceBet;
 
+  // Refresh all history (all games + user bets)
+  const handleRefreshHistory = useCallback(async () => {
+    await refetchAllGames();
+    await queryClient.invalidateQueries({ queryKey: ['history', 'crash'] });
+  }, [refetchAllGames, queryClient]);
+
   return (
     <div className="flex min-h-screen flex-col gap-4 p-4">
       {/* Top: Game Window + Config Panel */}
       <div className="flex gap-4">
-        {/* Multiplier Display */}
-        <div className="relative flex h-[400px] w-[400px] flex-col items-center justify-center rounded-xl bg-[#1a1625] lg:h-[500px]">
-          {/* Background Grid */}
-          <div className="absolute inset-0 overflow-hidden rounded-xl">
-            <svg className="h-full w-full opacity-20">
-              <defs>
-                <pattern
-                  id="grid"
-                  width="40"
-                  height="40"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 40 0 L 0 0 0 40"
-                    fill="none"
-                    stroke="#4a4560"
-                    strokeWidth="1"
-                  />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
-          </div>
+        {/* Left Column: Multiplier Display + Last Games */}
+        <div className="flex flex-col gap-3">
+          {/* Multiplier Display */}
+          <div className="relative flex h-[400px] w-[500px] flex-col items-center justify-center rounded-xl bg-[#1a1625] lg:h-[500px]">
+            {/* Background Grid */}
+            <div className="absolute inset-0 overflow-hidden rounded-xl">
+              <svg className="h-full w-full opacity-20">
+                <defs>
+                  <pattern
+                    id="grid"
+                    width="40"
+                    height="40"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 40 0 L 0 0 0 40"
+                      fill="none"
+                      stroke="#4a4560"
+                      strokeWidth="1"
+                    />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+              </svg>
+            </div>
 
-          {/* Connection Status */}
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <span className="text-xs text-gray-500">
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </span>
-            <span
-              className={`inline-block h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
-            />
-          </div>
-
-          {/* Status Text */}
-          <div className="absolute top-4 text-center">
-            <span className="text-lg text-gray-400">{getStatusText()}</span>
-          </div>
-
-          {/* Main Multiplier */}
-          <div className="z-10 flex flex-col items-center">
-            <span
-              className={`text-7xl font-bold transition-colors lg:text-9xl ${getMultiplierColor()}`}
-            >
-              {multiplier.toFixed(2)}x
-            </span>
-            {gameState === 'crashed' && crashPoint && (
-              <span className="mt-2 text-xl text-red-400">
-                Crashed at {crashPoint.toFixed(2)}x
+            {/* Connection Status */}
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <span className="text-xs text-gray-500">
+                {isConnected ? 'Connected' : 'Disconnected'}
               </span>
-            )}
+              <span
+                className={`inline-block h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+              />
+            </div>
+
+            {/* Status Text */}
+            <div className="absolute top-4 text-center">
+              <span className="text-lg text-gray-400">{getStatusText()}</span>
+            </div>
+            {/* Main Multiplier */}
+            <div className="z-10 flex flex-col items-center">
+              <span
+                className={`text-7xl font-bold transition-colors lg:text-9xl ${getMultiplierColor()}`}
+              >
+                {multiplier}x
+              </span>
+              {gameState === 'crashed' && crashPoint && (
+                <span className="mt-2 text-xl text-red-400">
+                  Crashed at {crashPoint}x
+                </span>
+              )}
+            </div>
+            {/* Game ID & State */}
+            <div className="absolute bottom-4 text-center text-xs text-gray-500">
+              {gameId && <div>Game #{gameId.slice(-8)}</div>}
+              <div>State: {gameState}</div>
+            </div>
           </div>
 
-          {/* Game ID & State */}
-          <div className="absolute bottom-4 text-center text-xs text-gray-500">
-            {gameId && <div>Game #{gameId.slice(-8)}</div>}
-            <div>State: {gameState}</div>
+          {/* Last 10 Games Crash Points */}
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">Last 10 Games</span>
+              <button
+                onClick={handleRefreshHistory}
+                className="rounded bg-purple-600 px-3 py-1 text-xs text-white transition-colors hover:bg-purple-700"
+              >
+                Refresh History
+              </button>
+            </div>
+            <div className="flex flex-wrap justify-center gap-1">
+              {allGamesData &&
+                'games' in allGamesData &&
+                allGamesData.games.slice(0, 10).map((game, index) => {
+                  const crashPoint = game.crashPoint;
+                  let colorClass: string;
+                  if (crashPoint < 2) {
+                    colorClass = 'bg-gray-900/50 text-gray-300';
+                  } else if (crashPoint < 10) {
+                    colorClass = 'bg-yellow-900/50 text-yellow-300';
+                  } else if (crashPoint < 100) {
+                    colorClass = 'bg-blue-900/50 text-blue-300';
+                  } else {
+                    colorClass = 'bg-purple-900/50 text-purple-300';
+                  }
+                  return (
+                    <span
+                      key={index}
+                      className={`rounded px-2 py-1 text-xs font-semibold ${colorClass}`}
+                    >
+                      {crashPoint.toFixed(2)}x
+                    </span>
+                  );
+                })}
+            </div>
           </div>
         </div>
 
