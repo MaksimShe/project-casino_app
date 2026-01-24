@@ -263,11 +263,11 @@ function UniversalTable({
   return (
     <div className="h-64 overflow-auto rounded-t-lg">
       <table className="w-full rounded-t-2xl border-x-2 border-[#ADB5BD33] text-sm shadow-none">
-        <thead className="sticky top-0 z-10">
+        <thead className="sticky top-0 z-10 rounded-t-2xl border-x-2 border-[#ADB5BD33] bg-[#ADB5BD33]">
           {table.getHeaderGroups().map(headerGroup => (
             <tr
               key={headerGroup.id}
-              className="bg-[#ADB5BD33] text-left text-gray-300 backdrop-blur-sm"
+              className="text-left text-gray-300 backdrop-blur-sm"
             >
               {headerGroup.headers.map(header => (
                 <th key={header.id} className="px-4 py-3 font-bold">
@@ -282,7 +282,7 @@ function UniversalTable({
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="">
           {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (

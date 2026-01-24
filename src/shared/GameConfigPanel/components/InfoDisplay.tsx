@@ -12,7 +12,7 @@ interface InfoDisplayProps {
 export const InfoDisplay: FC<InfoDisplayProps> = ({ items }) => {
   if (!items.length) return null;
   const hasActualInfo = !items.some(
-    item => item.value === 1 || item.value === '$1.00'
+    item => item.value === '$1.00' || item.value === '1.00x'
   );
 
   return (
