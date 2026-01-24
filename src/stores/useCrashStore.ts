@@ -33,6 +33,14 @@ interface CrashStore {
   isPlacingBet: boolean;
   isCashingOut: boolean;
 
+  // Modal state
+  showWinModal: boolean;
+  showLoseModal: boolean;
+  modalWinAmount: number | null;
+  modalMultiplier: number | null;
+  modalBetAmount: number | null;
+  modalCrashPoint: number | null;
+
   // Actions
   setGameState: (state: CrashGameState) => void;
   setMultiplier: (multiplier: number) => void;
@@ -58,6 +66,9 @@ interface CrashStore {
   setGameStartTime: (time: number | null) => void;
   addMultiplierDataPoint: (point: MultiplierDataPoint) => void;
   clearMultiplierHistory: () => void;
+  showWinModalWithData: (winAmount: number, multiplier: number) => void;
+  showLoseModalWithData: (betAmount: number, crashPoint: number) => void;
+  hideModals: () => void;
 }
 
 const TIME_WINDOW = 30000; // 30 seconds
@@ -81,6 +92,12 @@ export const useCrashStore = create<CrashStore>(set => ({
   players: [],
   isPlacingBet: false,
   isCashingOut: false,
+  showWinModal: false,
+  showLoseModal: false,
+  modalWinAmount: null,
+  modalMultiplier: null,
+  modalBetAmount: null,
+  modalCrashPoint: null,
 
   // Actions
   setGameState: state => set({ gameState: state }),
@@ -135,4 +152,27 @@ export const useCrashStore = create<CrashStore>(set => ({
     }),
   clearMultiplierHistory: () =>
     set({ multiplierHistory: [], gameStartTime: null }),
+  showWinModalWithData: (winAmount, multiplier) =>
+    set({
+      showWinModal: true,
+      showLoseModal: false,
+      modalWinAmount: winAmount,
+      modalMultiplier: multiplier,
+    }),
+  showLoseModalWithData: (betAmount, crashPoint) =>
+    set({
+      showWinModal: false,
+      showLoseModal: true,
+      modalBetAmount: betAmount,
+      modalCrashPoint: crashPoint,
+    }),
+  hideModals: () =>
+    set({
+      showWinModal: false,
+      showLoseModal: false,
+      modalWinAmount: null,
+      modalMultiplier: null,
+      modalBetAmount: null,
+      modalCrashPoint: null,
+    }),
 }));

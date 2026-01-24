@@ -1,4 +1,7 @@
+import { memo } from 'react';
 import { CRASH_POINT_COLOR_THRESHOLDS, UI_CONFIG } from './constants';
+import updateIcon from '@/../public/logo/update.svg';
+import Image from 'next/image';
 
 interface Game {
   crashPoint: number;
@@ -9,21 +12,24 @@ interface GlobalGameHistoryProps {
   onRefresh: () => void;
 }
 
-export default function GlobalGameHistory({
-  games,
-  onRefresh,
-}: GlobalGameHistoryProps) {
+function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex w-full flex-col gap-2 px-6">
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-400">
-          Last {UI_CONFIG.HISTORY_DISPLAY_COUNT} Games
+          Last global {UI_CONFIG.HISTORY_DISPLAY_COUNT} Games
         </span>
         <button
           onClick={onRefresh}
-          className="rounded bg-purple-600 px-3 py-1 text-xs text-white transition-colors hover:bg-purple-700"
+          className="transition-colors hover:scale-110 active:scale-85"
         >
-          Refresh History
+          <Image
+            src={updateIcon}
+            alt="update"
+            width={24}
+            height={24}
+            className="drop-shadow-[0_2px_2px_rgba(255,255,255,0.6)]"
+          />
         </button>
       </div>
       <div className="flex flex-wrap justify-center gap-1">
@@ -52,3 +58,5 @@ export default function GlobalGameHistory({
     </div>
   );
 }
+
+export default memo(GlobalGameHistory);

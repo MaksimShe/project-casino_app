@@ -26,7 +26,6 @@ import {
   ANIMATION_DURATION,
   SHAKE_THRESHOLDS,
   WEBSOCKET_CONFIG,
-  UI_CONFIG,
   GAME_CONSTANTS,
 } from '@/components/CrashGame/constants';
 
@@ -34,7 +33,6 @@ export default function CrashGamePage() {
   const queryClient = useQueryClient();
   const socketRef = useRef<Socket | null>(null);
   const subscribedGameIdRef = useRef<string | null>(null);
-  const [countdown, setCountdown] = useState<number>(0);
   const [isConnected, setIsConnected] = useState(false);
 
   // Animation state
@@ -50,6 +48,8 @@ export default function CrashGamePage() {
   // Track previous shake intensity to avoid unnecessary updates
   const prevShakeIntensityRef = useRef<'light' | 'medium' | 'heavy'>('light');
 
+  // Track if user just cashed out to prevent showing lose modal on crash
+  const justCashedOutRef = useRef(false);
   // Preload explosion GIF
   useEffect(() => {
     const img = new window.Image();
@@ -64,20 +64,19 @@ export default function CrashGamePage() {
 
   // Use ref for handleCashout to call from socket handlers
   const handleCashoutRef = useRef<() => void>(() => {});
+  // Use ref for handleRefreshHistory to call from socket handlers
+  const handleRefreshHistoryRef = useRef<() => void>(() => {});
 
   const {
-    gameId,
     gameState,
     multiplier,
     crashPoint,
-    startsAt,
     myBet,
     betAmount,
     autoCashout,
     isAutoCashoutEnabled,
     isPlacingBet,
     isCashingOut,
-    multiplierHistory,
     setMyBet,
     setBetAmount,
     setAutoCashout,
@@ -85,29 +84,9 @@ export default function CrashGamePage() {
     updatePlayerCashout,
     setIsPlacingBet,
     setIsCashingOut,
+    showWinModalWithData,
+    hideModals,
   } = useCrashStore();
-
-  // Countdown timer effect
-  useEffect(() => {
-    if (gameState !== 'waiting' || !startsAt) {
-      setCountdown(0);
-      return;
-    }
-
-    const updateCountdown = () => {
-      const now = Date.now();
-      const remaining = Math.max(0, Math.ceil((startsAt - now) / 1000));
-      setCountdown(remaining);
-    };
-
-    updateCountdown();
-    const interval = setInterval(
-      updateCountdown,
-      UI_CONFIG.COUNTDOWN_UPDATE_INTERVAL
-    );
-
-    return () => clearInterval(interval);
-  }, [gameState, startsAt]);
 
   // Refresh all history (all games + user bets)
   const handleRefreshHistory = useCallback(async () => {
@@ -163,9 +142,16 @@ export default function CrashGamePage() {
       return;
     }
 
+    // Mark that user clicked cashout to prevent lose modal
+    justCashedOutRef.current = true;
+
     setIsCashingOut(true);
     try {
       const result = await crashService.cashout({ betId: state.myBet.betId });
+
+      // Show win modal
+      showWinModalWithData(result.winAmount, result.multiplier);
+      setTimeout(() => hideModals(), 2000);
 
       updatePlayerCashout(
         state.myBet.betId,
@@ -183,14 +169,28 @@ export default function CrashGamePage() {
         void queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       } else {
         console.error('Failed to cashout:', error);
+        // Reset flag if cashout failed
+        justCashedOutRef.current = false;
       }
     } finally {
       setIsCashingOut(false);
     }
-  }, [setIsCashingOut, setMyBet, updatePlayerCashout, queryClient]);
+  }, [
+    setIsCashingOut,
+    setMyBet,
+    updatePlayerCashout,
+    queryClient,
+    showWinModalWithData,
+    hideModals,
+  ]);
 
   // Keep ref updated with latest handleCashout
   handleCashoutRef.current = handleCashout;
+
+  // Keep ref updated with latest handleRefreshHistory
+  handleRefreshHistoryRef.current = () => {
+    void handleRefreshHistory();
+  };
 
   // Animation Effect 0: Reset on waiting state (new game)
   useEffect(() => {
@@ -302,7 +302,8 @@ export default function CrashGamePage() {
         store.setGameState(game.state);
         store.setServerSeedHash(game.serverSeedHash);
 
-        if (game.multiplier !== undefined) {
+        // Only set multiplier if game is running, otherwise keep it at 1.0
+        if (game.multiplier !== undefined && game.state === 'running') {
           store.setMultiplier(game.multiplier);
         }
         if (game.myBet) {
@@ -378,11 +379,24 @@ export default function CrashGamePage() {
 
     socket.on('game:crash', (data: GameCrashPayload) => {
       const s = useCrashStore.getState();
+
+      // Only show lose modal if user had a bet AND didn't just cash out
+      if (s.myBet && !justCashedOutRef.current) {
+        s.showLoseModalWithData(s.myBet.amount, data.crashPoint);
+        setTimeout(() => s.hideModals(), 2000);
+      }
+
+      // Reset the cashout flag for next round
+      justCashedOutRef.current = false;
+
       s.setGameState('crashed');
       s.setCrashPoint(data.crashPoint);
-      s.setMultiplier(data.crashPoint);
+      s.setMultiplier(1.0);
       s.setServerSeed(data.serverSeed);
       s.setMyBet(null);
+
+      // Refresh both global history and user's bet history
+      handleRefreshHistoryRef.current();
 
       // After crash, fetch new game and subscribe
       setTimeout(() => {
@@ -410,6 +424,13 @@ export default function CrashGamePage() {
 
       // Check if this is OUR bet being cashed out (server-side auto-cashout)
       if (store.myBet?.betId === data.betId) {
+        // Mark that we just cashed out to prevent lose modal
+        justCashedOutRef.current = true;
+
+        // Show win modal
+        store.showWinModalWithData(data.winAmount, data.multiplier);
+        setTimeout(() => store.hideModals(), 2000);
+
         store.setMyBet(null);
         store.setIsCashingOut(false);
         void queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
@@ -518,51 +539,49 @@ export default function CrashGamePage() {
     [multiplier, potentialWin]
   );
 
+  // Memoize games array to prevent GlobalGameHistory re-renders
+  const globalGames = useMemo(
+    () => (allGamesData && 'games' in allGamesData ? allGamesData.games : []),
+    [allGamesData]
+  );
+
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 pt-4">
       {/* Top: Game Window + Config Panel */}
       <div className="flex gap-4">
         {/* Left Column: Multiplier Display + Last Games */}
-        <div className="flex flex-col gap-3">
+        <div className="flex w-full gap-3 px-6 max-lg:flex-col max-lg:items-center">
           {/* Game Display */}
           <GameDisplay
             rocketPosition={rocketPosition}
             animationPhase={animationPhase}
             shakeIntensity={shakeIntensity}
             isRocketCrashed={isRocketCrashed}
-            isConnected={isConnected}
             gameState={gameState}
-            countdown={countdown}
-            multiplier={multiplier}
             crashPoint={crashPoint}
-            gameId={gameId}
-            multiplierHistory={multiplierHistory}
           />
-
-          {/* Global Game History */}
-          <GlobalGameHistory
-            games={
-              allGamesData && 'games' in allGamesData ? allGamesData.games : []
-            }
-            onRefresh={handleRefreshHistory}
-          />
+          {/* Bet Controls */}
+          <div className="flex flex-col items-center gap-3">
+            <GameConfigPanel
+              game={GameType.CRASH}
+              betAmount={betAmount}
+              onBetChange={setBetAmount}
+              isGameActive={isGameActive}
+              optionValues={optionValues}
+              onOptionChange={handleOptionChange}
+              optionToggles={optionToggles}
+              onOptionToggleChange={handleOptionToggleChange}
+              primaryButton={primaryButton}
+              secondaryButton={secondaryButton}
+              buttonDisabled={isButtonDisabled}
+              infoValues={infoValues}
+            />
+            <GlobalGameHistory
+              games={globalGames}
+              onRefresh={handleRefreshHistory}
+            />
+          </div>
         </div>
-
-        {/* Bet Controls */}
-        <GameConfigPanel
-          game={GameType.CRASH}
-          betAmount={betAmount}
-          onBetChange={setBetAmount}
-          isGameActive={isGameActive}
-          optionValues={optionValues}
-          onOptionChange={handleOptionChange}
-          optionToggles={optionToggles}
-          onOptionToggleChange={handleOptionToggleChange}
-          primaryButton={primaryButton}
-          secondaryButton={secondaryButton}
-          buttonDisabled={isButtonDisabled}
-          infoValues={infoValues}
-        />
       </div>
     </div>
   );

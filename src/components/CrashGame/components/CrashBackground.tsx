@@ -5,9 +5,8 @@ import { PlanetsCanvas } from '@/components/CrashGame/components/PlanetsCanvas';
 
 export const CrashBackground = () => {
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0 overflow-hidden rounded-xl">
       <Image src={crashBg} alt="cosmos" fill className="object-cover" />
-
       <StarsCanvas />
       <PlanetsCanvas />
     </div>

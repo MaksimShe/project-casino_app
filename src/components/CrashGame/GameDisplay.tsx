@@ -2,15 +2,17 @@ import { formatNumber } from '@/utils/format';
 import RocketAnimation from './components/RocketAnimation';
 import CrashChart from './components/CrashChart';
 import { CrashBackground } from '@/components/CrashGame/components/CrashBackground';
+import { MultiplierDisplay } from '@/components/CrashGame/components/MultiplierDisplay';
+import { WinModal } from '@/components/CrashGame/components/modals/WinModal';
+import { LoseModal } from '@/components/CrashGame/components/modals/LoseModal';
+import { useCrashStore } from '@/stores/useCrashStore';
 
 interface GameDisplayProps {
   rocketPosition: { x: number; y: number };
   animationPhase: 'idle' | 'launching' | 'flying' | 'crashed' | 'respawning';
   shakeIntensity: 'light' | 'medium' | 'heavy';
   isRocketCrashed: boolean;
-  isConnected: boolean;
   gameState: 'waiting' | 'running' | 'crashed';
-  countdown: number;
   crashPoint: number | null;
 }
 
@@ -19,35 +21,38 @@ export default function GameDisplay({
   animationPhase,
   shakeIntensity,
   isRocketCrashed,
-  isConnected,
   gameState,
-  countdown,
   crashPoint,
 }: GameDisplayProps) {
-  const getStatusText = () => {
-    if (!isConnected) {
-      return 'Connecting...';
-    }
-    if (gameState === 'waiting') {
-      return countdown > 0
-        ? `Starting in ${countdown}s`
-        : 'Waiting for bets...';
-    }
-    if (gameState === 'crashed') {
-      return 'Crashed!';
-    }
-    return '';
-  };
+  const {
+    showWinModal,
+    showLoseModal,
+    modalWinAmount,
+    modalMultiplier,
+    modalBetAmount,
+    modalCrashPoint,
+  } = useCrashStore();
 
   return (
-    <div className="h-[550px] w-[700px]">
-      <div className="relative mb-16 ml-20 flex h-[400px] w-[600px] rounded-xl bg-[#1a1625] lg:h-[500px]">
+    <div className="h-[550px] w-full max-lg:h-[350px] sm:pl-16">
+      <div className="relative mb-16 flex h-[500px] flex-1 rounded-xl bg-[#1a1625] shadow-[0_0_20px_rgba(227,61,148,0.6)] max-lg:h-[300px]">
         {/* Crash Chart */}
-        <div className="absolute bottom-0 -left-24 z-20 h-full w-full">
-          <CrashChart />
-        </div>
+        <CrashChart />
+
         {/* Static Background */}
         <CrashBackground />
+
+        {/* Modals */}
+        {showWinModal && modalWinAmount && modalMultiplier && (
+          <WinModal winAmount={modalWinAmount} multiplier={modalMultiplier} />
+        )}
+        {showLoseModal && modalBetAmount && modalCrashPoint && (
+          <LoseModal betAmount={modalBetAmount} crashPoint={modalCrashPoint} />
+        )}
+
+        <div className="absolute top-3/12 right-1/2 translate-x-1/2">
+          <MultiplierDisplay />
+        </div>
 
         {/* Rocket */}
         <RocketAnimation
@@ -57,21 +62,6 @@ export default function GameDisplay({
           isRocketCrashed={isRocketCrashed}
         />
 
-        {/* Connection Status */}
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-          <span className="text-xs text-gray-500">
-            {isConnected ? 'Connected' : 'Disconnected'}
-          </span>
-          <span
-            className={`inline-block h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
-          />
-        </div>
-
-        {/* Status Text */}
-        <div className="absolute top-4 z-20 w-full text-center">
-          <span className="text-lg text-gray-400">{getStatusText()}</span>
-        </div>
-
         {/* Crashed Message */}
         {gameState === 'crashed' && crashPoint && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50">
@@ -80,14 +70,6 @@ export default function GameDisplay({
             </span>
           </div>
         )}
-
-        {/* Game ID & State */}
-        {/*<div className="absolute bottom-4 z-20 w-full text-center text-xs text-gray-500">*/}
-        {/*  {gameId && (*/}
-        {/*    <div>Game #{gameId.slice(-UI_CONFIG.GAME_ID_DISPLAY_LENGTH)}</div>*/}
-        {/*  )}*/}
-        {/*  <div>State: {gameState}</div>*/}
-        {/*</div>*/}
       </div>
     </div>
   );
