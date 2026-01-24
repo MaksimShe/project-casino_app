@@ -20,6 +20,36 @@ export interface GameConfig {
   additionalInfos: string[];
 }
 
+// UI Layout Constants
+export const PANEL_LAYOUT = {
+  MAX_WIDTH: 'max-w-sm',
+  PADDING_X: 8,
+  PADDING_Y: 6,
+  GAP: 8,
+  INPUTS_SPACING: 4,
+} as const;
+
+// Default Values
+export const PANEL_DEFAULTS = {
+  INITIAL_BET_AMOUNT: 10,
+  MIN_BET: 1,
+  MIN_BALANCE: 1,
+} as const;
+
+// Colors
+export const PANEL_COLORS = {
+  BACKGROUND: '#423E6980',
+  TEXT_PRIMARY: 'white',
+  TEXT_TITLE: 'white',
+} as const;
+
+// Text Styles
+export const PANEL_TEXT = {
+  TITLE_SIZE: 'text-3xl',
+  TITLE_WEIGHT: 'font-semibold',
+  TITLE_ALIGN: 'text-center',
+} as const;
+
 export const gamesConfig: Partial<Record<GameType, GameConfig>> = {
   [GameType.CRASH]: {
     title: 'Crash',

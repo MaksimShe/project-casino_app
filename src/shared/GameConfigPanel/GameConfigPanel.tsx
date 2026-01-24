@@ -4,6 +4,10 @@ import React, { useState, useCallback } from 'react';
 import {
   gamesConfig,
   type GameConfig,
+  PANEL_LAYOUT,
+  PANEL_DEFAULTS,
+  PANEL_COLORS,
+  PANEL_TEXT,
 } from '@/shared/GameConfigPanel/constants';
 import { type GameType } from '@/components/Dashboard/GameSelector/constants';
 import {
@@ -52,7 +56,9 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   balance,
 }: Props) {
   const config: GameConfig | undefined = gamesConfig[game];
-  const [internalBetAmount, setInternalBetAmount] = useState(10);
+  const [internalBetAmount, setInternalBetAmount] = useState<number>(
+    PANEL_DEFAULTS.INITIAL_BET_AMOUNT
+  );
   const [internalOptionValues, setInternalOptionValues] = useState<
     Record<string, string>
   >({});
@@ -103,8 +109,14 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   }));
 
   return (
-    <div className="flex h-fit w-full max-w-sm flex-col gap-8 rounded-xl bg-[#423E6980] px-8 py-6">
-      <p className="text-center text-3xl font-semibold text-white">
+    <div
+      className={`flex h-fit w-full ${PANEL_LAYOUT.MAX_WIDTH} flex-col gap-8 rounded-xl px-8 py-6`}
+      style={{ backgroundColor: PANEL_COLORS.BACKGROUND }}
+    >
+      <p
+        className={`${PANEL_TEXT.TITLE_ALIGN} ${PANEL_TEXT.TITLE_SIZE} ${PANEL_TEXT.TITLE_WEIGHT}`}
+        style={{ color: PANEL_COLORS.TEXT_TITLE }}
+      >
         {config.title} Configuration
       </p>
 
@@ -154,8 +166,9 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
         onToggle={onActionToggle}
         disabled={
           buttonDisabled ||
-          betAmount < 1 ||
-          (balance !== undefined && (balance < 1 || betAmount > balance))
+          betAmount < PANEL_DEFAULTS.MIN_BET ||
+          (balance !== undefined &&
+            (balance < PANEL_DEFAULTS.MIN_BALANCE || betAmount > balance))
         }
       />
       <InfoDisplay items={infoItems} />
