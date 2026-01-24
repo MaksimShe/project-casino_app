@@ -31,11 +31,11 @@ export default function CrashChart({
 
   // Generate sliding time markers - fixed 1-second steps
   const timeMarkers = useMemo(() => {
-    const markers: string[] = [];
+    const markers: { value: string; key: string }[] = [];
     for (let i = 0; i <= MAX_TIME; i++) {
       //488 - max time what can be
-      markers.push(String(i) + 's');
-      markers.push('|');
+      markers.push({ value: String(i) + 's', key: String(i) });
+      markers.push({ value: '|', key: String(i + 0.5) });
     }
     return markers;
   }, [elapsedSeconds]);
@@ -155,11 +155,11 @@ export default function CrashChart({
         >
           {timeMarkers.map(time => (
             <div
-              key={time}
+              key={time.key}
               className="font-mono text-base whitespace-nowrap"
               style={{ minWidth: `${timeSpacing}px`, textAlign: 'center' }}
             >
-              {time}
+              {time.value}
             </div>
           ))}
         </motion.div>
