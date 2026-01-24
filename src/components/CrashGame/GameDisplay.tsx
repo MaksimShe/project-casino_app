@@ -1,7 +1,6 @@
 import { formatNumber } from '@/utils/format';
 import RocketAnimation from './components/RocketAnimation';
 import CrashChart from './components/CrashChart';
-import type { MultiplierDataPoint } from '@/types/crash';
 import { CrashBackground } from '@/components/CrashGame/components/CrashBackground';
 
 interface GameDisplayProps {
@@ -12,10 +11,7 @@ interface GameDisplayProps {
   isConnected: boolean;
   gameState: 'waiting' | 'running' | 'crashed';
   countdown: number;
-  multiplier: number;
   crashPoint: number | null;
-  gameId: string | null;
-  multiplierHistory: MultiplierDataPoint[];
 }
 
 export default function GameDisplay({
@@ -26,10 +22,7 @@ export default function GameDisplay({
   isConnected,
   gameState,
   countdown,
-  multiplier,
   crashPoint,
-  //gameId,
-  //multiplierHistory,
 }: GameDisplayProps) {
   const getStatusText = () => {
     if (!isConnected) {
@@ -51,7 +44,7 @@ export default function GameDisplay({
       <div className="relative mb-16 ml-20 flex h-[400px] w-[600px] rounded-xl bg-[#1a1625] lg:h-[500px]">
         {/* Crash Chart */}
         <div className="absolute bottom-0 -left-24 z-20 h-full w-full">
-          <CrashChart currentMultiplier={multiplier} gameState={gameState} />
+          <CrashChart />
         </div>
         {/* Static Background */}
         <CrashBackground />

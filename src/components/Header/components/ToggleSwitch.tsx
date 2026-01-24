@@ -34,7 +34,7 @@ export const ToggleSwitch = ({
         height={40}
         width={40}
         onClick={handleClick}
-        className={`cursor-pointer drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] ${
+        className={`h-10 cursor-pointer drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] transition-all duration-200 hover:scale-110 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] ${
           isAnimating ? 'scale-90 opacity-0' : 'scale-100 opacity-100'
         }`}
       />

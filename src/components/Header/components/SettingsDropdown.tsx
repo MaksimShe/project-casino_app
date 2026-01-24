@@ -5,7 +5,7 @@ import Image from 'next/image';
 import settingIcon from '@/../public/logo/setting.svg';
 import soundOnIcon from '@/../public/logo/sound-on.svg';
 import soundOffIcon from '@/../public/logo/sound-off.svg';
-import notificationOnIcon from '@/../public/logo/notification-on.svg';
+import notificationOnIcon from '@/../public/logo/notification-on-new.svg';
 import notificationOffIcon from '@/../public/logo/notification-off.svg';
 import darkModeIcon from '@/../public/logo/dark-mode.svg';
 import dayModeIcon from '@/../public/logo/day-mode.svg';
