@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import type { CrashGameState, CrashBet, PlayerBet } from '@/types/crash';
+import type {
+  CrashGameState,
+  CrashBet,
+  PlayerBet,
+  MultiplierDataPoint,
+} from '@/types/crash';
 
 interface CrashStore {
   // Game state
@@ -10,6 +15,10 @@ interface CrashStore {
   serverSeedHash: string | null;
   serverSeed: string | null;
   startsAt: number | null;
+
+  // Multiplier history for chart
+  multiplierHistory: MultiplierDataPoint[];
+  gameStartTime: number | null;
 
   // User bet state
   myBet: CrashBet | null;
@@ -46,7 +55,13 @@ interface CrashStore {
   setIsPlacingBet: (loading: boolean) => void;
   setIsCashingOut: (loading: boolean) => void;
   resetRound: () => void;
+  setGameStartTime: (time: number | null) => void;
+  addMultiplierDataPoint: (point: MultiplierDataPoint) => void;
+  clearMultiplierHistory: () => void;
 }
+
+const TIME_WINDOW = 30000; // 30 seconds
+const MAX_DATA_POINTS = 60; // Limit to 60 points for performance
 
 export const useCrashStore = create<CrashStore>(set => ({
   // Initial state
@@ -57,6 +72,8 @@ export const useCrashStore = create<CrashStore>(set => ({
   serverSeedHash: null,
   serverSeed: null,
   startsAt: null,
+  multiplierHistory: [],
+  gameStartTime: null,
   myBet: null,
   betAmount: 1,
   autoCashout: 2,
@@ -97,4 +114,25 @@ export const useCrashStore = create<CrashStore>(set => ({
       players: [],
       myBet: null,
     }),
+  setGameStartTime: time => set({ gameStartTime: time }),
+  addMultiplierDataPoint: point =>
+    set(state => {
+      const newHistory = [...state.multiplierHistory, point];
+
+      // Trim old data points beyond time window
+      const currentTime = point.time;
+      const filtered = newHistory.filter(
+        p => currentTime - p.time <= TIME_WINDOW
+      );
+
+      // Limit to max data points for performance
+      const limited =
+        filtered.length > MAX_DATA_POINTS
+          ? filtered.slice(-MAX_DATA_POINTS)
+          : filtered;
+
+      return { multiplierHistory: limited };
+    }),
+  clearMultiplierHistory: () =>
+    set({ multiplierHistory: [], gameStartTime: null }),
 }));

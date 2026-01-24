@@ -93,3 +93,8 @@ export interface PlayerBet {
 export interface SubscribeGamePayload {
   gameId: string;
 }
+
+export interface MultiplierDataPoint {
+  time: number; // milliseconds elapsed since game start
+  multiplier: number; // current multiplier value
+}

@@ -34,7 +34,7 @@ interface Props {
   balance?: number;
 }
 
-export default function GameConfigPanel({
+const GameConfigPanel = React.memo(function GameConfigPanel({
   game,
   isGameActive,
   onBetChange,
@@ -161,4 +161,6 @@ export default function GameConfigPanel({
       <InfoDisplay items={infoItems} />
     </div>
   );
-}
+});
+
+export default GameConfigPanel;
