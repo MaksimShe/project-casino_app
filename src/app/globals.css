@@ -23,6 +23,58 @@
   --main-font-size: 16px;
   --secondary-font-size: 14px;
   --small-font-size: 12px;
+
+  /* Crash Game Colors */
+  --crash-game-bg: #1a1625;
+  --crash-game-shadow: rgba(227, 61, 148, 0.6);
+  --crash-multiplier-color: rgb(168 85 247);
+
+  /* Modal Colors */
+  --modal-win-bg: rgba(21, 128, 61, 0.6);
+  --modal-win-border: rgb(34 197 94);
+  --modal-win-text: rgb(74 222 128);
+  --modal-lose-bg: rgba(185, 28, 28, 0.1);
+  --modal-lose-border: rgb(239 68 68);
+  --modal-lose-text: rgb(248 113 113);
+
+  /* Game History Colors */
+  --history-gray-bg: rgba(17, 24, 39, 0.5);
+  --history-gray-text: rgb(209 213 219);
+  --history-yellow-bg: rgba(113, 63, 18, 0.5);
+  --history-yellow-text: rgb(253 224 71);
+  --history-blue-bg: rgba(30, 58, 138, 0.5);
+  --history-blue-text: rgb(147 197 253);
+  --history-purple-bg: rgba(88, 28, 135, 0.5);
+  --history-purple-text: rgb(216 180 254);
+
+  /* Game Config Panel Colors */
+  --panel-bg: rgba(66, 62, 105, 0.5);
+  --panel-input-bg: rgba(124, 124, 232, 0.33);
+
+  /* Action Button Colors */
+  --btn-primary-start: #ba0034;
+  --btn-primary-end: #ff185f;
+  --btn-primary-shadow: #ff185f;
+  --btn-secondary-start: #ffcd71;
+  --btn-secondary-end: #e59603;
+  --btn-secondary-shadow: #e59603;
+
+  /* Quick Button Colors */
+  --quick-btn-active: #6a5ca8;
+  --quick-btn-default: #302c55;
+  --quick-btn-hover: #301c55;
+  --quick-btn-pressed: #220c30;
+
+  /* Toggle Colors */
+  --toggle-enabled: rgb(34 197 94);
+  --toggle-disabled: rgb(107 114 128);
+
+  /* Panel Layout */
+  --panel-max-width: 28rem;
+
+  /* Panel Text */
+  --panel-title-size: 1.875rem;
+  --panel-title-weight: 600;
 }
 
 @theme inline {

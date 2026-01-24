@@ -230,12 +230,18 @@ export default function CrashGamePage() {
       animationPhase !== 'crashed' &&
       animationPhase !== 'respawning'
     ) {
-      setAnimationPhase('crashed');
-      setIsRocketCrashed(true);
-      const timer = setTimeout(() => {
+      // Only show crash animation if user didn't cash out (use same logic as lose modal)
+      if (!justCashedOutRef.current) {
+        setAnimationPhase('crashed');
+        setIsRocketCrashed(true);
+        const timer = setTimeout(() => {
+          setAnimationPhase('respawning');
+        }, ANIMATION_DURATION.CRASH_EXPLOSION);
+        return () => clearTimeout(timer);
+      } else {
+        // If user cashed out, skip crash animation and go straight to respawn
         setAnimationPhase('respawning');
-      }, ANIMATION_DURATION.CRASH_EXPLOSION);
-      return () => clearTimeout(timer);
+      }
     }
   }, [gameState, animationPhase]);
 

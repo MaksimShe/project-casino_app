@@ -22,7 +22,8 @@ class CrashService {
 
   private async fetchApi<T>(
     endpoint: string,
-    options?: RequestInit
+    options?: RequestInit,
+    skipRefresh = false
   ): Promise<T> {
     const accessToken = authService.getAccessToken();
     if (!accessToken) {
@@ -50,6 +51,26 @@ class CrashService {
           response.status
         );
       }
+    }
+
+    // Handle 401 - try to refresh token and retry
+    if (response.status === 401 && !skipRefresh) {
+      const refreshed = await authService.refreshTokens();
+      if (refreshed) {
+        // Retry the request with new token
+        const newAccessToken = authService.getAccessToken();
+        const newOptions = {
+          ...options,
+          headers: {
+            ...options?.headers,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${newAccessToken}`,
+          },
+        };
+        return this.fetchApi<T>(endpoint, newOptions, true);
+      }
+      // If refresh failed, throw the error so it can be handled upstream
+      throw new AuthApiError('Session expired. Please login again.', 401);
     }
 
     if (!response.ok) {

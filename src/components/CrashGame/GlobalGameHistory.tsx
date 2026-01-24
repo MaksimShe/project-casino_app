@@ -37,13 +37,17 @@ function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
           const crashPoint = game.crashPoint;
           let colorClass: string;
           if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.YELLOW) {
-            colorClass = 'bg-gray-900/50 text-gray-300';
+            colorClass =
+              'bg-[var(--history-gray-bg)] text-[var(--history-gray-text)]';
           } else if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.BLUE) {
-            colorClass = 'bg-yellow-900/50 text-yellow-300';
+            colorClass =
+              'bg-[var(--history-yellow-bg)] text-[var(--history-yellow-text)]';
           } else if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.PURPLE) {
-            colorClass = 'bg-blue-900/50 text-blue-300';
+            colorClass =
+              'bg-[var(--history-blue-bg)] text-[var(--history-blue-text)]';
           } else {
-            colorClass = 'bg-purple-900/50 text-purple-300';
+            colorClass =
+              'bg-[var(--history-purple-bg)] text-[var(--history-purple-text)]';
           }
           return (
             <span

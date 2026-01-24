@@ -4,10 +4,7 @@ import React, { useState, useCallback } from 'react';
 import {
   gamesConfig,
   type GameConfig,
-  PANEL_LAYOUT,
   PANEL_DEFAULTS,
-  PANEL_COLORS,
-  PANEL_TEXT,
 } from '@/shared/GameConfigPanel/constants';
 import { type GameType } from '@/components/Dashboard/GameSelector/constants';
 import {
@@ -109,14 +106,8 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   }));
 
   return (
-    <div
-      className={`flex h-fit w-full ${PANEL_LAYOUT.MAX_WIDTH} flex-col gap-8 rounded-xl px-8 py-6`}
-      style={{ backgroundColor: PANEL_COLORS.BACKGROUND }}
-    >
-      <p
-        className={`${PANEL_TEXT.TITLE_ALIGN} ${PANEL_TEXT.TITLE_SIZE} ${PANEL_TEXT.TITLE_WEIGHT}`}
-        style={{ color: PANEL_COLORS.TEXT_TITLE }}
-      >
+    <div className="flex h-fit w-full max-w-[var(--panel-max-width)] flex-col gap-8 rounded-xl bg-[var(--panel-bg)] px-8 py-6">
+      <p className="text-center font-[var(--panel-title-weight)] text-[var(--panel-title-size)]">
         {config.title} Configuration
       </p>
 

@@ -48,7 +48,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   return (
     <div>
       <label className="mb-1 block text-sm opacity-80">{label}</label>
-      <div className="flex items-center gap-2 rounded-lg bg-[#7C7CE854] px-2.5 py-0.5">
+      <div className="flex items-center gap-2 rounded-lg bg-[var(--panel-input-bg)] px-2.5 py-0.5">
         <input
           type="number"
           value={value}
@@ -75,7 +75,9 @@ export const OptionInput: FC<OptionInputProps> = ({
           <button
             onClick={handleToggle}
             className={`h-5 w-10 rounded-full transition-colors ${
-              toggleEnabled ? 'bg-green-500' : 'bg-gray-500'
+              toggleEnabled
+                ? 'bg-[var(--toggle-enabled)]'
+                : 'bg-[var(--toggle-disabled)]'
             }`}
           >
             <div

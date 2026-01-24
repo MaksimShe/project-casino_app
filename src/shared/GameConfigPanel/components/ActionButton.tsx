@@ -72,9 +72,9 @@ export const ActionButton: FC<ActionButtonProps> = ({
   };
 
   const defaultPrimaryClass =
-    'bg-gradient-to-t from-[#BA0034] to-[#FF185F] hover:shadow-[0_0_10px_#FF185F]';
+    'bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] hover:shadow-[0_0_10px_var(--btn-primary-shadow)]';
   const defaultSecondaryClass =
-    'bg-gradient-to-b from-[#FFCD71] to-[#E59603] hover:shadow-[0_0_10px_#E59603]';
+    'bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] hover:shadow-[0_0_10px_var(--btn-secondary-shadow)]';
 
   const buttonClass =
     currentState.className ||

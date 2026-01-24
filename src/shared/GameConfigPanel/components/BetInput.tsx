@@ -58,7 +58,7 @@ export const BetInput: FC<BetInputProps> = ({
   return (
     <div>
       <label className="mb-1 block text-sm opacity-80">{label}</label>
-      <div className="flex items-center gap-2 rounded-lg bg-[#7C7CE854] px-2.5 py-0.5">
+      <div className="flex items-center gap-2 rounded-lg bg-[var(--panel-input-bg)] px-2.5 py-0.5">
         <Image src={coinImg} alt="$" height={24} width={24} />
         <input
           type="number"

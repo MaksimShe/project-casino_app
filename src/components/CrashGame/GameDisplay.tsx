@@ -6,11 +6,6 @@ import { MultiplierDisplay } from '@/components/CrashGame/components/MultiplierD
 import { WinModal } from '@/components/CrashGame/components/modals/WinModal';
 import { LoseModal } from '@/components/CrashGame/components/modals/LoseModal';
 import { useCrashStore } from '@/stores/useCrashStore';
-import {
-  GAME_DISPLAY_COLORS,
-  GAME_DISPLAY_POSITIONING,
-  GAME_DISPLAY_TEXT,
-} from './GameDisplay.constants';
 
 interface GameDisplayProps {
   rocketPosition: { x: number; y: number };
@@ -40,13 +35,7 @@ export default function GameDisplay({
 
   return (
     <div className="h-[550px] w-full max-lg:h-[350px] sm:pl-16">
-      <div
-        className="relative mb-16 flex h-[500px] flex-1 rounded-xl max-lg:h-[300px]"
-        style={{
-          backgroundColor: GAME_DISPLAY_COLORS.BACKGROUND,
-          boxShadow: `0 0 20px ${GAME_DISPLAY_COLORS.SHADOW_GLOW}`,
-        }}
-      >
+      <div className="relative mb-16 flex h-[500px] flex-1 rounded-xl bg-[var(--crash-game-bg)] shadow-[0_0_20px_var(--crash-game-shadow)] max-lg:h-[300px]">
         {/* Crash Chart */}
         <CrashChart />
 
@@ -61,9 +50,7 @@ export default function GameDisplay({
           <LoseModal betAmount={modalBetAmount} crashPoint={modalCrashPoint} />
         )}
 
-        <div
-          className={`absolute ${GAME_DISPLAY_POSITIONING.MULTIPLIER.TOP} ${GAME_DISPLAY_POSITIONING.MULTIPLIER.RIGHT} ${GAME_DISPLAY_POSITIONING.MULTIPLIER.TRANSFORM}`}
-        >
+        <div className="absolute top-3/12 right-1/2 translate-x-1/2">
           <MultiplierDisplay />
         </div>
 
@@ -78,9 +65,7 @@ export default function GameDisplay({
         {/* Crashed Message */}
         {gameState === 'crashed' && crashPoint && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50">
-            <span
-              className={`${GAME_DISPLAY_TEXT.CRASHED_MESSAGE_SIZE} ${GAME_DISPLAY_TEXT.CRASHED_MESSAGE_WEIGHT} ${GAME_DISPLAY_COLORS.CRASHED_TEXT}`}
-            >
+            <span className="crash-message text-4xl font-bold text-red-400">
               Crashed at {formatNumber(crashPoint)}x
             </span>
           </div>
