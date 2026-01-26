@@ -3,9 +3,8 @@ export const PLINKO_PHYSICS = {
   GRAVITY: 0.5,
   BOUNCE_DAMPING: 0.57,
   FRICTION: 0.95,
-  PEG_RADIUS: 6,
+  PEG_RADIUS: 8,
   BALL_RADIUS: 8,
-  SPAWNER_PEG_RADIUS: 10,
   SPAWNER_GAP: 60,
   COUNTER_START_PEGS: 3,
 } as const;
@@ -15,20 +14,20 @@ export const PLINKO_CONFIG = {
   RISK_LEVELS: ['low', 'medium', 'high'] as const,
   LINES: [8, 10, 12, 14, 16] as const,
   BALL_OPTIONS: [1, 2, 5, 10] as const,
-  MIN_BET: 0.1,
-  MAX_BET: 100,
+  MIN_BET: 1,
+  MAX_BET: 1000,
 } as const;
 
 // Board dimensions and spacing
 export const PLINKO_BOARD = {
-  WIDTH: 800,
+  WIDTH: 830,
   BASE_HEIGHT: 400,
-  ROW_SPACING: 30,
-  COL_SPACING: 35,
+  ROW_SPACING: 40,
+  COL_SPACING: 43,
   SLOT_WIDTH: 40,
   SLOT_HEIGHT: 20,
   PADDING_TOP: 20,
-  PADDING_BOTTOM: 60,
+  PADDING_BOTTOM: 80,
 } as const;
 
 // Animation settings

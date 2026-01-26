@@ -25,7 +25,7 @@ export function PlinkoBoard() {
 
   // Calculate board height based on lines
   const boardHeight = useMemo(() => {
-    const { BASE_HEIGHT, ROW_SPACING, PADDING_TOP, PADDING_BOTTOM } =
+    const { ROW_SPACING, PADDING_TOP, PADDING_BOTTOM } =
       PLINKO_BOARD;
     return PADDING_TOP + lines * ROW_SPACING + PADDING_BOTTOM;
   }, [lines]);

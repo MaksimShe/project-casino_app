@@ -7,8 +7,7 @@ import { PLINKO_ANIMATION } from '../constants';
  * Auto-clears highlights after duration
  */
 export function usePlinkoHighlights() {
-  const { highlightedPegs, highlightedSlots, clearPegHighlights, clearSlotHighlights } =
-    usePlinkoStore();
+  const { highlightedPegs, highlightedSlots } = usePlinkoStore();
 
   const pegTimeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
   const slotTimeoutsRef = useRef<Map<number, NodeJS.Timeout>>(new Map());

@@ -23,7 +23,6 @@ export function usePlinkoBallAnimation({
   onComplete,
 }: UsePlinkoBallAnimationProps) {
   const {
-    activeBalls,
     addBall,
     updateBall,
     removeBall,
@@ -55,7 +54,7 @@ export function usePlinkoBallAnimation({
       const centerX = WIDTH / 2;
 
       const ball: PlinkoBall = {
-        id: `ball-${drop.dropId}-${index}`,
+        id: `ball-${drop.dropId}-${index}-${Date.now()}`,
         x: centerX,
         y: PADDING_TOP,
         vx: 0,
@@ -82,12 +81,6 @@ export function usePlinkoBallAnimation({
         return;
       }
 
-      // Calculate delta time
-      const deltaTime = lastFrameTimeRef.current
-        ? timestamp - lastFrameTimeRef.current
-        : 0;
-      lastFrameTimeRef.current = timestamp;
-
       // Spawn balls sequentially with delay
       const { BALL_SPAWN_DELAY } = PLINKO_ANIMATION;
       if (spawnedCountRef.current < dropResults.length) {
@@ -103,9 +96,7 @@ export function usePlinkoBallAnimation({
       const currentBalls = usePlinkoStore.getState().activeBalls;
 
       // Update all active balls
-      const updatedBalls = currentBalls.map(ball =>
-        updateBallPhysics(ball, deltaTime)
-      );
+      const updatedBalls = currentBalls.map(ball => updateBallPhysics(ball));
 
       // Update balls in store and track completed ones
       updatedBalls.forEach(ball => {
@@ -146,6 +137,7 @@ export function usePlinkoBallAnimation({
       }
 
       // Continue animation
+      // eslint-disable-next-line react-hooks/immutability
       animationFrameRef.current = requestAnimationFrame(animate);
     },
     [

@@ -85,10 +85,6 @@ export const gamesConfig: Partial<Record<GameType, GameConfig>> = {
         title: 'Rows',
         smallButtons: ['8', '10', '12', '14', '16'],
       },
-      {
-        title: 'Balls',
-        smallButtons: ['1', '2', '5', '10'],
-      },
     ],
     buttons: ['Drop'],
     additionalInfos: ['Total Bet:', 'Potential Win:'],

@@ -1,6 +1,5 @@
 import { useRef, useCallback } from 'react';
 import type { PlinkoBall, PlinkoPeg } from '@/types/plinko';
-import { PLINKO_PHYSICS, PLINKO_ANIMATION } from '../constants';
 import { calculatePathCoordinates } from '../helpers';
 import { findClosestPeg } from '../helpers/checkPegCollision';
 
@@ -19,9 +18,6 @@ export function usePlinkoPhysics({
   pegs,
   onPegCollision,
 }: UsePlinkoPhysicsProps) {
-  const { GRAVITY, BOUNCE_DAMPING, FRICTION, BALL_RADIUS } = PLINKO_PHYSICS;
-  const { FRAME_DURATION } = PLINKO_ANIMATION;
-
   const lastCollisionTime = useRef<Map<string, number>>(new Map());
   const collisionCooldown = 100; // ms between collision detections for same ball
 
@@ -29,7 +25,7 @@ export function usePlinkoPhysics({
    * Update ball position following backend path
    */
   const updateBall = useCallback(
-    (ball: PlinkoBall, deltaTime: number): PlinkoBall => {
+    (ball: PlinkoBall): PlinkoBall => {
       if (ball.isComplete) return ball;
 
       // Get path coordinates

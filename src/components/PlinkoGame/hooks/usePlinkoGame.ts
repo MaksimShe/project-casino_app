@@ -13,7 +13,6 @@ export function usePlinkoGame() {
   const {
     risk,
     lines,
-    ballsCount,
     betAmount,
     isDropping,
     isAnimating,
@@ -44,10 +43,6 @@ export function usePlinkoGame() {
    * Handle drop (place bet and start game)
    */
   const handleDrop = useCallback(async () => {
-    if (isDropping || isAnimating) {
-      return;
-    }
-
     // Reset previous animation state
     resetAnimationState();
 
@@ -57,7 +52,7 @@ export function usePlinkoGame() {
       // Call drop API
       const response = await plinkoService.drop({
         amount: betAmount,
-        balls: ballsCount,
+        balls: 1,
         risk,
         lines,
       });
@@ -114,7 +109,6 @@ export function usePlinkoGame() {
     isDropping,
     isAnimating,
     betAmount,
-    ballsCount,
     risk,
     lines,
     setIsDropping,

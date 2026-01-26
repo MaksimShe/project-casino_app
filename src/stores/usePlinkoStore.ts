@@ -5,7 +5,6 @@ interface PlinkoStore {
   // Game config
   risk: 'low' | 'medium' | 'high';
   lines: 8 | 10 | 12 | 14 | 16;
-  ballsCount: 1 | 2 | 5 | 10;
   betAmount: number;
 
   // Animation state
@@ -27,7 +26,6 @@ interface PlinkoStore {
   // Actions - Config
   setRisk: (risk: 'low' | 'medium' | 'high') => void;
   setLines: (lines: 8 | 10 | 12 | 14 | 16) => void;
-  setBallsCount: (count: 1 | 2 | 5 | 10) => void;
   setBetAmount: (amount: number) => void;
 
   // Actions - Animation
@@ -56,11 +54,10 @@ interface PlinkoStore {
   resetAnimationState: () => void;
 }
 
-export const usePlinkoStore = create<PlinkoStore>((set, get) => ({
+export const usePlinkoStore = create<PlinkoStore>(set => ({
   // Initial state
-  risk: 'medium',
-  lines: 16,
-  ballsCount: 1,
+  risk: 'low',
+  lines: 8,
   betAmount: 1,
   activeBalls: [],
   isAnimating: false,
@@ -74,7 +71,6 @@ export const usePlinkoStore = create<PlinkoStore>((set, get) => ({
   // Config actions
   setRisk: risk => set({ risk }),
   setLines: lines => set({ lines }),
-  setBallsCount: ballsCount => set({ ballsCount }),
   setBetAmount: betAmount => set({ betAmount }),
 
   // Animation actions

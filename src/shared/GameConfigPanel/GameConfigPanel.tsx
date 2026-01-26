@@ -48,7 +48,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   onOptionChange,
   optionToggles,
   onOptionToggleChange,
-  buttonDisabled,
+  buttonDisabled = false,
   betAmount: controlledBetAmount,
   balance,
 }: Props) {

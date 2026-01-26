@@ -13,8 +13,8 @@ export function checkPegCollision(
   ballY: number,
   peg: PlinkoPeg
 ): boolean {
-  const { BALL_RADIUS, PEG_RADIUS, SPAWNER_PEG_RADIUS } = PLINKO_PHYSICS;
-  const pegRadius = peg.isSpawner ? SPAWNER_PEG_RADIUS : PEG_RADIUS;
+  const { BALL_RADIUS, PEG_RADIUS } = PLINKO_PHYSICS;
+  const pegRadius = PEG_RADIUS;
   const collisionDistance = BALL_RADIUS + pegRadius;
 
   const dx = ballX - peg.x;
@@ -24,13 +24,6 @@ export function checkPegCollision(
   return distance < collisionDistance;
 }
 
-/**
- * Find the closest peg to a ball position
- * @param ballX Ball x position
- * @param ballY Ball y position
- * @param pegs Array of pegs
- * @returns Closest peg or null
- */
 export function findClosestPeg(
   ballX: number,
   ballY: number,

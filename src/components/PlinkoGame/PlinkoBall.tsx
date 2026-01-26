@@ -10,9 +10,9 @@ export const PlinkoBall = memo<PlinkoBallProps>(({ ball }) => {
   return (
     <motion.div
       className="absolute h-4 w-4 rounded-full bg-gradient-to-br from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] shadow-lg"
-      style={{
-        left: '50%',
-        top: 0,
+      initial={{
+        x: ball.x - 8, //cuz ball start from x0 y0
+        y: ball.y - 8,
       }}
       animate={{
         x: ball.x - 8, // Offset by radius
