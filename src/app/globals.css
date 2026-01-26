@@ -23,13 +23,63 @@
   --main-font-size: 16px;
   --secondary-font-size: 14px;
   --small-font-size: 12px;
+
+  /* Crash Game Colors */
+  --crash-game-bg: #1a1625;
+  --crash-game-shadow: rgba(227, 61, 148, 0.6);
+  --crash-multiplier-color: rgb(168 85 247);
+
+  /* Modal Colors */
+  --modal-win-bg: rgba(21, 128, 61, 0.9);
+  --modal-win-border: rgb(34 197 94);
+  --modal-win-text: rgb(74 222 128);
+  --modal-lose-bg: rgba(185, 28, 28, 0.1);
+  --modal-lose-border: rgb(239 68 68);
+  --modal-lose-text: rgb(248 113 113);
+
+  /* Game History Colors */
+  --history-gray-bg: rgba(17, 24, 39, 0.5);
+  --history-gray-text: rgb(209 213 219);
+  --history-yellow-bg: rgba(113, 63, 18, 0.5);
+  --history-yellow-text: rgb(253 224 71);
+  --history-blue-bg: rgba(30, 58, 138, 0.5);
+  --history-blue-text: rgb(147 197 253);
+  --history-purple-bg: rgba(88, 28, 135, 0.5);
+  --history-purple-text: rgb(216 180 254);
+
+  /* Game Config Panel Colors */
+  --panel-bg: rgba(66, 62, 105, 0.5);
+  --panel-input-bg: rgba(124, 124, 232, 0.33);
+
+  /* Action Button Colors */
+  --btn-primary-start: #ba0034;
+  --btn-primary-end: #ff185f;
+  --btn-primary-shadow: #ff185f;
+  --btn-secondary-start: #ffcd71;
+  --btn-secondary-end: #e59603;
+  --btn-secondary-shadow: #e59603;
+
+  /* Quick Button Colors */
+  --quick-btn-active: #6a5ca8;
+  --quick-btn-default: #302c55;
+  --quick-btn-hover: #301c55;
+  --quick-btn-pressed: #220c30;
+
+  /* Toggle Colors */
+  --toggle-enabled: rgb(34 197 94);
+  --toggle-disabled: rgb(107 114 128);
+
+  /* Panel Layout */
+  --panel-max-width: 28rem;
+
+  /* Panel Text */
+  --panel-title-size: 1.875rem;
+  --panel-title-weight: 600;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -98,12 +148,22 @@ h4 {
 
 span {
   font-family: 'Inter', sans-serif;
-  color: var(--main-text-color);
 }
 
 button {
   font-family: 'Satoshi', sans-serif;
   cursor: pointer;
+}
+
+/* Hide number input spinners */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 
 /* Chat slide animations */
@@ -183,4 +243,109 @@ button {
 
 .animate-slide-left {
   animation: slide-left 0.3s ease-out forwards;
+}
+
+/* Crash Game Rocket Shake Animations */
+@keyframes shake-light {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-1deg);
+  }
+  25% {
+    transform: translate(-1px, 1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(1px, -1px) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-1px, 1px) rotate(1deg);
+  }
+}
+
+@keyframes shake-medium {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-1deg);
+  }
+  25% {
+    transform: translate(4px, -4px) rotate(3deg);
+  }
+  50% {
+    transform: translate(-6px, 3px) rotate(-2deg);
+  }
+  75% {
+    transform: translate(3px, -1px) rotate(2deg);
+  }
+}
+
+@keyframes shake-heavy {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(10px, -8px) rotate(6deg);
+  }
+  50% {
+    transform: translate(-8px, 6px) rotate(-4deg);
+  }
+  75% {
+    transform: translate(6px, -4px) rotate(2deg);
+  }
+}
+
+@keyframes crash-explosion {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02) rotate(1deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1) rotate(-1deg);
+    opacity: 0.9;
+  }
+}
+
+.animate-shake-light {
+  animation: shake-light 0.25s ease-in-out infinite;
+}
+
+.animate-shake-medium {
+  animation: shake-medium 0.2s ease-in-out infinite;
+}
+
+.animate-shake-heavy {
+  animation: shake-heavy 0.15s ease-in-out infinite;
+}
+
+.animate-crash-explosion {
+  animation: crash-explosion 0.3s ease-out;
+}
+
+/* Multiplier Chart Styles */
+.chart-axis-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  user-select: none;
+}
+
+.chart-tick-line {
+  stroke-linecap: round;
+}
+
+.chart-grid-line {
+  stroke-dasharray: 4 4;
+}
+
+.multiplier-curve {
+  filter: drop-shadow(0 0 8px currentColor);
+  transition: stroke 0.3s ease-in-out;
+}
+
+/* Sliding markers animation */
+.sliding-markers {
+  transition: transform 0.1s linear;
 }

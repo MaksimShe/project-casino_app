@@ -3,7 +3,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTRATION: '/registration',
   CRASHGAME: '/crash-game',
-  CASEGAME: '/case-game',
+  CASEGAME: '/cases-game',
   MINESGAME: '/mines-game',
   PLINKOGAME: '/plinko-game',
 } as const;

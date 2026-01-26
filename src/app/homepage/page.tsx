@@ -2,24 +2,17 @@
 
 import { useState } from 'react';
 import { Leaderboard } from '@/components/Dashboard/LeaderBoard/Leaderboard';
-import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { GameSelector } from '@/components/Dashboard/GameSelector/GameSelector';
 import { LiveChat } from '@/components/Dashboard/LiveChat/LiveChat';
-import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import chatIcon from '@/../public/logo/chat.svg';
 import Image from 'next/image';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 export default function MainPage() {
-  const { isAuthenticated, isLoading } = useRequireAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useLockBodyScroll(isChatOpen);
-
-  if (isLoading || !isAuthenticated) {
-    return <FullScreenLoader message="Welcome to Blaze Casino" />;
-  }
 
   const handleCloseChat = () => {
     setIsClosing(true);
@@ -53,10 +46,9 @@ export default function MainPage() {
 
       {isChatOpen && (
         <div
-          className={`fixed inset-0 z-50 hidden items-end justify-center max-lg:flex ${
+          className={`fixed inset-0 z-50 hidden items-end justify-center max-lg:flex bg-black/50${
             isClosing ? 'animate-fade-out' : 'animate-fade-in'
           }`}
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
           <div
             className={`relative h-[90%] w-full ${
