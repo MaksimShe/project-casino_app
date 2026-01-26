@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 type AnimationCallback = (
   ctx: CanvasRenderingContext2D,
@@ -11,12 +11,28 @@ interface UseCanvasAnimationProps {
   animate: AnimationCallback;
 }
 
+const updateCanvasSize = (canvas: HTMLCanvasElement) => {
+  const parent = canvas.parentElement;
+  if (!parent) return;
+
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight;
+};
+
 export const useCanvasAnimation = ({
   onResize,
   animate,
 }: UseCanvasAnimationProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameIdRef = useRef<number>(0);
+
+  const handleResize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    updateCanvasSize(canvas);
+    onResize?.(canvas);
+  }, [onResize]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,21 +41,8 @@ export const useCanvasAnimation = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const updateCanvasSize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-
-      canvas.width = parent.offsetWidth;
-      canvas.height = parent.offsetHeight;
-    };
-
-    const handleResize = () => {
-      updateCanvasSize();
-      onResize?.(canvas);
-    };
-
     // Initial setup: set canvas size and initialize controllers
-    updateCanvasSize();
+    updateCanvasSize(canvas);
     onResize?.(canvas);
 
     window.addEventListener('resize', handleResize);
@@ -57,7 +60,7 @@ export const useCanvasAnimation = ({
       }
       window.removeEventListener('resize', handleResize);
     };
-  }, [animate, onResize]);
+  }, [animate, onResize, handleResize]);
 
   return canvasRef;
 };

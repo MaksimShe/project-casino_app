@@ -9,6 +9,26 @@ interface RocketAnimationProps {
   isRocketCrashed: boolean;
 }
 
+const SHAKE_ANIMATION_CLASSES = {
+  light: 'animate-shake-light',
+  medium: 'animate-shake-medium',
+  heavy: 'animate-shake-heavy',
+} as const;
+
+const getShakeAnimationClass = (
+  animationPhase: RocketAnimationProps['animationPhase'],
+  shakeIntensity: RocketAnimationProps['shakeIntensity']
+): string => {
+  if (animationPhase !== 'flying') return '';
+  return SHAKE_ANIMATION_CLASSES[shakeIntensity];
+};
+
+const getCrashAnimationClass = (
+  animationPhase: RocketAnimationProps['animationPhase']
+): string => {
+  return animationPhase === 'crashed' ? 'animate-crash-explosion' : '';
+};
+
 const RocketAnimation = memo(
   ({
     rocketPosition,
@@ -30,15 +50,7 @@ const RocketAnimation = memo(
         }}
       >
         <div
-          className={`relative z-10 ${
-            animationPhase === 'flying'
-              ? shakeIntensity === 'heavy'
-                ? 'animate-shake-heavy'
-                : shakeIntensity === 'medium'
-                  ? 'animate-shake-medium'
-                  : 'animate-shake-light'
-              : ''
-          } ${animationPhase === 'crashed' ? 'animate-crash-explosion' : ''}`}
+          className={`relative z-10 ${getShakeAnimationClass(animationPhase, shakeIntensity)} ${getCrashAnimationClass(animationPhase)}`}
         >
           {!isRocketCrashed ? (
             <Image

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   gamesConfig,
   type GameConfig,
@@ -62,15 +62,12 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   const betAmount = controlledBetAmount ?? internalBetAmount;
   const optionValues = controlledOptionValues ?? internalOptionValues;
 
-  const handleBetChange = useCallback(
-    (value: number) => {
-      if (controlledBetAmount === undefined) {
-        setInternalBetAmount(value);
-      }
-      onBetChange?.(value);
-    },
-    [onBetChange, controlledBetAmount]
-  );
+  const handleBetChange = (value: number) => {
+    if (controlledBetAmount === undefined) {
+      setInternalBetAmount(value);
+    }
+    onBetChange?.(value);
+  };
 
   const handleOptionChange = useCallback(
     (name: string, value: string) => {
@@ -88,6 +85,16 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
     },
     [onOptionToggleChange]
   );
+
+  const isButtonDisabled = useMemo(() => {
+    if (buttonDisabled) return true;
+    if (betAmount < PANEL_DEFAULTS.MIN_BET) return true;
+    if (balance !== undefined) {
+      if (balance < PANEL_DEFAULTS.MIN_BALANCE) return true;
+      if (betAmount > balance) return true;
+    }
+    return false;
+  }, [buttonDisabled, betAmount, balance]);
 
   if (!config) return null;
 
@@ -138,6 +145,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
               onToggleChange={enabled =>
                 handleOptionToggleChange(input.name, enabled)
               }
+              disabled={isGameActive}
             />
           );
         })}
@@ -155,12 +163,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
         secondaryState={secondaryButton || defaultSecondary}
         isSecondary={isGameActive}
         onToggle={onActionToggle}
-        disabled={
-          buttonDisabled ||
-          betAmount < PANEL_DEFAULTS.MIN_BET ||
-          (balance !== undefined &&
-            (balance < PANEL_DEFAULTS.MIN_BALANCE || betAmount > balance))
-        }
+        disabled={isButtonDisabled}
       />
       <InfoDisplay items={infoItems} />
     </div>

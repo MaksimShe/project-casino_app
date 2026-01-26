@@ -20,10 +20,8 @@ export const ToggleSwitch = ({
 
   const handleClick = () => {
     setIsAnimating(true);
-    setTimeout(() => {
-      onToggle();
-      setTimeout(() => setIsAnimating(false), 150);
-    }, 150);
+    onToggle();
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   return (

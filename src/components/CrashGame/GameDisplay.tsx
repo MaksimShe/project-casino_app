@@ -1,4 +1,3 @@
-import { formatNumber } from '@/utils/format';
 import RocketAnimation from './components/RocketAnimation';
 import CrashChart from './components/CrashChart';
 import { CrashBackground } from '@/components/CrashGame/components/CrashBackground';
@@ -7,13 +6,19 @@ import { WinModal } from '@/components/CrashGame/components/modals/WinModal';
 import { LoseModal } from '@/components/CrashGame/components/modals/LoseModal';
 import { useCrashStore } from '@/stores/useCrashStore';
 
+export const GAME_STATES = {
+  WAITING: 'waiting',
+  RUNNING: 'running',
+  CRASHED: 'crashed',
+} as const;
+
+export type GameState = (typeof GAME_STATES)[keyof typeof GAME_STATES];
+
 interface GameDisplayProps {
   rocketPosition: { x: number; y: number };
   animationPhase: 'idle' | 'launching' | 'flying' | 'crashed' | 'respawning';
   shakeIntensity: 'light' | 'medium' | 'heavy';
   isRocketCrashed: boolean;
-  gameState: 'waiting' | 'running' | 'crashed';
-  crashPoint: number | null;
 }
 
 export default function GameDisplay({
@@ -21,8 +26,6 @@ export default function GameDisplay({
   animationPhase,
   shakeIntensity,
   isRocketCrashed,
-  gameState,
-  crashPoint,
 }: GameDisplayProps) {
   const {
     showWinModal,
@@ -61,15 +64,6 @@ export default function GameDisplay({
           shakeIntensity={shakeIntensity}
           isRocketCrashed={isRocketCrashed}
         />
-
-        {/* Crashed Message */}
-        {gameState === 'crashed' && crashPoint && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50">
-            <span className="crash-message text-4xl font-bold text-red-400">
-              Crashed at {formatNumber(crashPoint)}x
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

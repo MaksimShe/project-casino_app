@@ -12,6 +12,7 @@ interface OptionInputProps {
   toggleEnabled?: boolean;
   onToggleChange?: (enabled: boolean) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const OptionInput: FC<OptionInputProps> = ({
@@ -23,6 +24,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   toggleEnabled: controlledToggle,
   onToggleChange,
   placeholder = 'e.g 2.00',
+  disabled = false,
 }) => {
   const [internalToggle, setInternalToggle] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(
@@ -45,6 +47,26 @@ export const OptionInput: FC<OptionInputProps> = ({
     onChange(option);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // Allow empty string for user to clear the input
+    if (newValue === '') {
+      onChange(newValue);
+      return;
+    }
+
+    const numValue = parseFloat(newValue);
+
+    // Only update if value is >= 1 or if it's still being typed (like "0.")
+    if (!isNaN(numValue) && numValue >= 1) {
+      onChange(newValue);
+    } else if (newValue.endsWith('.') || newValue.endsWith('.0')) {
+      // Allow typing decimal point
+      onChange(newValue);
+    }
+  };
+
   return (
     <div>
       <label className="mb-1 block text-sm opacity-80">{label}</label>
@@ -52,10 +74,11 @@ export const OptionInput: FC<OptionInputProps> = ({
         <input
           type="number"
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={handleInputChange}
           className="w-10 flex-1 rounded-md bg-transparent px-3 py-2 text-sm font-medium text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={placeholder}
-          disabled={hasToggle && !toggleEnabled}
+          disabled={disabled || (hasToggle && !toggleEnabled)}
+          min="1"
         />
 
         {options.length > 0 && (
@@ -74,7 +97,8 @@ export const OptionInput: FC<OptionInputProps> = ({
         {hasToggle && (
           <button
             onClick={handleToggle}
-            className={`h-5 w-10 rounded-full transition-colors ${
+            disabled={disabled}
+            className={`h-5 w-10 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
               toggleEnabled
                 ? 'bg-[var(--toggle-enabled)]'
                 : 'bg-[var(--toggle-disabled)]'

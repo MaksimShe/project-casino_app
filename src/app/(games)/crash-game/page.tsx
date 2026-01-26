@@ -28,6 +28,7 @@ import {
   WEBSOCKET_CONFIG,
   GAME_CONSTANTS,
 } from '@/components/CrashGame/constants';
+import { GAME_STATES } from '@/components/CrashGame/GameDisplay';
 
 export default function CrashGamePage() {
   const queryClient = useQueryClient();
@@ -70,7 +71,6 @@ export default function CrashGamePage() {
   const {
     gameState,
     multiplier,
-    crashPoint,
     myBet,
     betAmount,
     autoCashout,
@@ -97,7 +97,11 @@ export default function CrashGamePage() {
   const handlePlaceBet = useCallback(async () => {
     // Read fresh state from store to avoid stale closure issues
     const state = useCrashStore.getState();
-    if (state.gameState !== 'waiting' || state.isPlacingBet || state.myBet) {
+    if (
+      state.gameState !== GAME_STATES.WAITING ||
+      state.isPlacingBet ||
+      state.myBet
+    ) {
       return;
     }
 
@@ -105,11 +109,9 @@ export default function CrashGamePage() {
 
     setIsPlacingBet(true);
     try {
+      // Only send bet amount to server, autocashout is client-side only
       const response = await crashService.placeBet({
         amount: betAmount,
-        autoCashout: isAutoCashoutEnabled
-          ? (autoCashout ?? undefined)
-          : undefined,
       });
 
       // Update game ID and re-subscribe (like working vanilla JS code)
@@ -121,6 +123,7 @@ export default function CrashGamePage() {
         socketRef.current.emit('subscribe:game', { gameId: response.gameId });
       }
 
+      // Store bet with client-side autocashout value
       setMyBet({
         betId: response.betId,
         amount: response.amount,
@@ -138,7 +141,11 @@ export default function CrashGamePage() {
 
   const handleCashout = useCallback(async () => {
     const state = useCrashStore.getState();
-    if (state.gameState !== 'running' || !state.myBet || state.isCashingOut) {
+    if (
+      state.gameState !== GAME_STATES.RUNNING ||
+      !state.myBet ||
+      state.isCashingOut
+    ) {
       return;
     }
 
@@ -194,7 +201,7 @@ export default function CrashGamePage() {
 
   // Animation Effect 0: Reset on waiting state (new game)
   useEffect(() => {
-    if (gameState === 'waiting') {
+    if (gameState === GAME_STATES.WAITING) {
       setAnimationPhase('idle');
       setIsRocketCrashed(false);
       setRocketPosition({ ...ROCKET_POSITION.START });
@@ -205,7 +212,7 @@ export default function CrashGamePage() {
 
   // Animation Effect 1: Launch Animation
   useEffect(() => {
-    if (gameState === 'running' && animationPhase === 'idle') {
+    if (gameState === GAME_STATES.RUNNING && animationPhase === 'idle') {
       setAnimationPhase('launching');
     }
   }, [gameState, animationPhase]);
@@ -226,7 +233,7 @@ export default function CrashGamePage() {
   // Animation Effect 2: Crash Animation
   useEffect(() => {
     if (
-      gameState === 'crashed' &&
+      gameState === GAME_STATES.CRASHED &&
       animationPhase !== 'crashed' &&
       animationPhase !== 'respawning'
     ) {
@@ -309,7 +316,10 @@ export default function CrashGamePage() {
         store.setServerSeedHash(game.serverSeedHash);
 
         // Only set multiplier if game is running, otherwise keep it at 1.0
-        if (game.multiplier !== undefined && game.state === 'running') {
+        if (
+          game.multiplier !== undefined &&
+          game.state === GAME_STATES.RUNNING
+        ) {
           store.setMultiplier(game.multiplier);
         }
         if (game.myBet) {
@@ -338,7 +348,7 @@ export default function CrashGamePage() {
       s.setGameId(data.gameId);
       s.setServerSeedHash(data.serverSeedHash);
       s.setStartsAt(data.startsAt);
-      s.setGameState('waiting');
+      s.setGameState(GAME_STATES.WAITING);
       s.clearMultiplierHistory();
       subscribedGameIdRef.current = data.gameId;
       socket.emit('subscribe:game', { gameId: data.gameId });
@@ -349,7 +359,7 @@ export default function CrashGamePage() {
       if (data.gameId) {
         s.setGameId(data.gameId);
       }
-      s.setGameState('running');
+      s.setGameState(GAME_STATES.RUNNING);
       s.setMultiplier(GAME_CONSTANTS.INITIAL_MULTIPLIER);
       s.setStartsAt(null);
       s.setGameStartTime(Date.now());
@@ -358,8 +368,8 @@ export default function CrashGamePage() {
     socket.on('game:tick', (data: GameTickPayload) => {
       const store = useCrashStore.getState();
       // Ensure gameState is 'running' when receiving ticks (like vanilla JS)
-      if (store.gameState !== 'running') {
-        store.setGameState('running');
+      if (store.gameState !== GAME_STATES.RUNNING) {
+        store.setGameState(GAME_STATES.RUNNING);
       }
       store.setMultiplier(data.multiplier);
 
@@ -395,7 +405,7 @@ export default function CrashGamePage() {
       // Reset the cashout flag for next round
       justCashedOutRef.current = false;
 
-      s.setGameState('crashed');
+      s.setGameState(GAME_STATES.CRASHED);
       s.setCrashPoint(data.crashPoint);
       s.setMultiplier(1.0);
       s.setServerSeed(data.serverSeed);
@@ -426,21 +436,8 @@ export default function CrashGamePage() {
 
     socket.on('bet:cashout', (data: BetCashoutPayload) => {
       const store = useCrashStore.getState();
+      // Update player list to show cashout (for all players including us)
       store.updatePlayerCashout(data.betId, data.multiplier, data.winAmount);
-
-      // Check if this is OUR bet being cashed out (server-side auto-cashout)
-      if (store.myBet?.betId === data.betId) {
-        // Mark that we just cashed out to prevent lose modal
-        justCashedOutRef.current = true;
-
-        // Show win modal
-        store.showWinModalWithData(data.winAmount, data.multiplier);
-        setTimeout(() => store.hideModals(), 2000);
-
-        store.setMyBet(null);
-        store.setIsCashingOut(false);
-        void queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      }
     });
 
     socket.on('game:players', (data: PlayerBet[]) => {
@@ -462,8 +459,9 @@ export default function CrashGamePage() {
   }, [queryClient]);
 
   const canPlaceBet =
-    gameState === 'waiting' && !myBet && !isPlacingBet && isConnected;
-  const canCashout = gameState === 'running' && myBet && !isCashingOut;
+    gameState === GAME_STATES.WAITING && !myBet && !isPlacingBet && isConnected;
+  const canCashout =
+    gameState === GAME_STATES.RUNNING && myBet && !isCashingOut;
 
   // Memoize calculated values to prevent unnecessary rerenders
   const potentialWin = useMemo(
@@ -475,7 +473,7 @@ export default function CrashGamePage() {
   const isGameActive = useMemo(
     () =>
       !!myBet &&
-      (gameState === 'running' ||
+      (gameState === GAME_STATES.RUNNING ||
         multiplier > GAME_CONSTANTS.MULTIPLIER_ACTIVE_THRESHOLD),
     [myBet, gameState, multiplier]
   );
@@ -563,8 +561,6 @@ export default function CrashGamePage() {
             animationPhase={animationPhase}
             shakeIntensity={shakeIntensity}
             isRocketCrashed={isRocketCrashed}
-            gameState={gameState}
-            crashPoint={crashPoint}
           />
           {/* Bet Controls */}
           <div className="flex flex-col items-center gap-3">

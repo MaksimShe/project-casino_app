@@ -3,8 +3,9 @@
 import { Header } from '@/components/Header/Header';
 import History from '@/shared/History/History';
 import { ProtectedLayout } from '@/components/layouts/ProtectedLayout';
+import { GoHomepage } from '@/shared/GoHomepage/GoHomepage';
 
-export default function CaseGameLayout({
+export default function GamesLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -12,6 +13,7 @@ export default function CaseGameLayout({
   return (
     <ProtectedLayout>
       <Header />
+      <GoHomepage />
       {children}
       <History />
     </ProtectedLayout>

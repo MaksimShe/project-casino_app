@@ -1,4 +1,6 @@
-export type CrashGameState = 'waiting' | 'running' | 'crashed';
+import type { GameState } from '@/components/CrashGame/GameDisplay';
+
+export type CrashGameState = GameState;
 
 export interface CrashBet {
   betId: string;

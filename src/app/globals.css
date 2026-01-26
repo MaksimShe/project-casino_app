@@ -30,7 +30,7 @@
   --crash-multiplier-color: rgb(168 85 247);
 
   /* Modal Colors */
-  --modal-win-bg: rgba(21, 128, 61, 0.6);
+  --modal-win-bg: rgba(21, 128, 61, 0.9);
   --modal-win-border: rgb(34 197 94);
   --modal-win-text: rgb(74 222 128);
   --modal-lose-bg: rgba(185, 28, 28, 0.1);

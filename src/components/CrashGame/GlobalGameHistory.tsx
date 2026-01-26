@@ -1,7 +1,9 @@
 import { memo } from 'react';
-import { CRASH_POINT_COLOR_THRESHOLDS, UI_CONFIG } from './constants';
+import { UI_CONFIG } from './constants';
+import { getCrashPointColorClass } from './helpers';
 import updateIcon from '@/../public/logo/update.svg';
 import Image from 'next/image';
+import { formatNumber } from '@/utils/format';
 
 interface Game {
   crashPoint: number;
@@ -35,26 +37,14 @@ function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
       <div className="flex flex-wrap justify-center gap-1">
         {games.slice(0, UI_CONFIG.HISTORY_DISPLAY_COUNT).map((game, index) => {
           const crashPoint = game.crashPoint;
-          let colorClass: string;
-          if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.YELLOW) {
-            colorClass =
-              'bg-[var(--history-gray-bg)] text-[var(--history-gray-text)]';
-          } else if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.BLUE) {
-            colorClass =
-              'bg-[var(--history-yellow-bg)] text-[var(--history-yellow-text)]';
-          } else if (crashPoint < CRASH_POINT_COLOR_THRESHOLDS.PURPLE) {
-            colorClass =
-              'bg-[var(--history-blue-bg)] text-[var(--history-blue-text)]';
-          } else {
-            colorClass =
-              'bg-[var(--history-purple-bg)] text-[var(--history-purple-text)]';
-          }
+          const colorClass = getCrashPointColorClass(crashPoint);
+
           return (
             <span
               key={index}
               className={`rounded px-2 py-1 text-xs font-semibold ${colorClass}`}
             >
-              {crashPoint.toFixed(2)}x
+              {formatNumber(crashPoint)}x
             </span>
           );
         })}
