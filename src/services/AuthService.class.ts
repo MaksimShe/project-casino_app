@@ -11,7 +11,7 @@ import {
 
 export class AuthApiError extends Error {
   statusCode: number;
-  status: number;
+  status: number | undefined;
 
   constructor(message: string, statusCode: number) {
     super(message);
