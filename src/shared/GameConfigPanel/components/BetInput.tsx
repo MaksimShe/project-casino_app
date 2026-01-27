@@ -20,7 +20,7 @@ export const BetInput: FC<BetInputProps> = ({
   label,
   value,
   onChange,
-  maxValue = 1000,
+  maxValue = 10000,
   placeholder = '10.00',
   balance,
   disabled = false,

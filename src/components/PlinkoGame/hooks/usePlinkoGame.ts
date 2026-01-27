@@ -1,9 +1,12 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { usePlinkoStore } from '@/stores/usePlinkoStore';
 import { plinkoService } from '@/services/PlinkoService.class';
 import { AuthApiError } from '@/services/AuthService.class';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
+import { HISTORY_QUERY_KEY } from '@/hooks/useHistoryTable';
+import { showErrorNotification } from '@/utils/notifications';
+import type { CurrentUserResponse } from '@/types/auth';
 
 /**
  * Main hook for coordinating Plinko game logic
@@ -14,16 +17,20 @@ export function usePlinkoGame() {
     risk,
     lines,
     betAmount,
-    isDropping,
-    isAnimating,
-    setIsDropping,
+    isActiveGame,
     setLastDropResults,
     setTotalWin,
+    setLastDropBet,
+    setDropSessionId,
+    addToSessionStats,
     setMultipliers,
-    resetAnimationState,
   } = usePlinkoStore();
 
   const queryClient = useQueryClient();
+
+  // Track pending win amount to add after animation completes
+  const pendingWinRef = useRef<number | null>(null);
+  const wasActiveGameRef = useRef(false);
 
   /**
    * Fetch multipliers for current configuration
@@ -34,8 +41,6 @@ export function usePlinkoGame() {
       setMultipliers(response.multipliers);
     } catch (error) {
       console.error('Failed to fetch multipliers:', error);
-      // Use fallback multipliers from helper
-      // setMultipliers(generateMultipliers(risk, lines));
     }
   }, [risk, lines, setMultipliers]);
 
@@ -43,12 +48,16 @@ export function usePlinkoGame() {
    * Handle drop (place bet and start game)
    */
   const handleDrop = useCallback(async () => {
-    // Reset previous animation state
-    resetAnimationState();
-
-    setIsDropping(true);
-
     try {
+      // Immediately subtract bet amount from balance (optimistic update)
+      queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          balance: oldData.balance - betAmount,
+        };
+      });
+
       // Call drop API
       const response = await plinkoService.drop({
         amount: betAmount,
@@ -57,64 +66,61 @@ export function usePlinkoGame() {
         lines,
       });
 
+      // Create unique session ID for this drop
+      const sessionId = `${Date.now()}-${Math.random()}`;
+
       // Update results
       setLastDropResults(response.drops);
       setTotalWin(response.totalWin);
+      setLastDropBet(response.totalBet);
+      setDropSessionId(sessionId);
 
-      // Invalidate user balance query to refetch
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      // Add to session stats
+      addToSessionStats(response.totalBet, response.totalWin);
 
-      // Show success message
-      const profit = response.totalWin - response.totalBet;
-      if (profit > 0) {
-        toast.success(`Won $${response.totalWin.toFixed(2)}!`, {
-          description: `Profit: +$${profit.toFixed(2)}`,
-        });
-      } else if (profit < 0) {
-        toast.error(`Lost $${Math.abs(profit).toFixed(2)}`, {
-          description: `Total bet: $${response.totalBet.toFixed(2)}`,
-        });
-      } else {
-        toast.info('Break even!');
-      }
+      // Store pending win to add after animation completes
+      pendingWinRef.current = response.totalWin;
     } catch (error) {
       console.error('Drop failed:', error);
 
+      // Restore balance on error (revert optimistic update)
+      queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          balance: oldData.balance + betAmount,
+        };
+      });
+
       if (error instanceof AuthApiError) {
         if (error.status === 400) {
-          toast.error('Insufficient balance', {
-            description: 'Please add more funds to your account',
-          });
+          showErrorNotification(
+            'Insufficient balance',
+            'Please add more funds to your account'
+          );
         } else if (error.status === 401) {
-          toast.error('Session expired', {
-            description: 'Please login again',
-          });
+          showErrorNotification('Session expired', 'Please login again');
         } else {
-          toast.error('Drop failed', {
-            description: error.message,
-          });
+          showErrorNotification('Drop failed', error.message);
         }
       } else {
-        toast.error('Network error', {
-          description: 'Please check your connection and try again',
-        });
+        showErrorNotification(
+          'Network error',
+          'Please check your connection and try again'
+        );
       }
-
       // Reset state on error
       setLastDropResults(null);
-    } finally {
-      setIsDropping(false);
     }
   }, [
-    isDropping,
-    isAnimating,
     betAmount,
     risk,
     lines,
-    setIsDropping,
     setLastDropResults,
     setTotalWin,
-    resetAnimationState,
+    setLastDropBet,
+    setDropSessionId,
+    addToSessionStats,
     queryClient,
   ]);
 
@@ -124,6 +130,42 @@ export function usePlinkoGame() {
   useEffect(() => {
     fetchMultipliers();
   }, [fetchMultipliers]);
+
+  /**
+   * Watch for animation completion (isActiveGame: true -> false)
+   * When animation completes, add pending win to balance and update history
+   */
+  useEffect(() => {
+    // Detect transition from active (true) to inactive (false)
+    if (
+      wasActiveGameRef.current &&
+      !isActiveGame &&
+      pendingWinRef.current !== null
+    ) {
+      // Animation completed, add win to balance
+      queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          balance: oldData.balance + pendingWinRef.current!,
+        };
+      });
+
+      // Sync with server after animation
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+
+      // Update game history
+      queryClient.invalidateQueries({
+        queryKey: [...HISTORY_QUERY_KEY, 'plinko'],
+      });
+
+      // Clear pending win
+      pendingWinRef.current = null;
+    }
+
+    // Update ref for next iteration
+    wasActiveGameRef.current = isActiveGame;
+  }, [isActiveGame, queryClient]);
 
   return {
     handleDrop,

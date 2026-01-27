@@ -16,6 +16,7 @@ import {
   CRASH_BETS_COLUMN_ORDER,
   TABLE_STYLES,
   HISTORY_CONFIG,
+  PLINKO_COLUMN_ORDER,
 } from '../constants';
 
 interface UniversalTableProps {
@@ -51,6 +52,11 @@ export function UniversalTable({
       sortedKeys = [
         ...CRASH_BETS_COLUMN_ORDER.filter(key => allKeys.includes(key)),
         ...allKeys.filter(key => !CRASH_BETS_COLUMN_ORDER.includes(key as any)),
+      ];
+    } else if (gameType === 'plinko') {
+      sortedKeys = [
+        ...PLINKO_COLUMN_ORDER.filter(key => allKeys.includes(key)),
+        ...allKeys.filter(key => !PLINKO_COLUMN_ORDER.includes(key as any)),
       ];
     }
 

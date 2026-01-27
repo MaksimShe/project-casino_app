@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { PlinkoBall, PlinkoDrop } from '@/types/plinko';
+import { PLINKO_ANIMATION } from '@/components/PlinkoGame/constants';
 
 interface PlinkoStore {
   // Game config
@@ -12,16 +13,25 @@ interface PlinkoStore {
   isAnimating: boolean;
   isDropping: boolean;
 
+  // Game session state
+  isActiveGame: boolean; // True when balls are dropping/animating
+
   // Results
   lastDropResults: PlinkoDrop[] | null;
   totalWin: number;
+  lastDropBet: number; // Store the bet amount for the last drop
+  dropSessionId: string | null; // Unique ID for each drop to track notifications
+
+  // Session stats (accumulates during active game)
+  sessionTotalBet: number;
+  sessionTotalWin: number;
 
   // Multipliers for current configuration
   multipliers: number[];
 
-  // Highlights (for visual feedback)
-  highlightedPegs: Set<string>;
-  highlightedSlots: Set<number>;
+  // Collision events with timestamps (for visual feedback)
+  pegCollisions: Map<string, number>;
+  slotCollisions: Map<number, number>;
 
   // Actions - Config
   setRisk: (risk: 'low' | 'medium' | 'high') => void;
@@ -35,19 +45,24 @@ interface PlinkoStore {
   setIsAnimating: (isAnimating: boolean) => void;
   setIsDropping: (isDropping: boolean) => void;
 
+  // Actions - Game session
+  setIsActiveGame: (isActive: boolean) => void;
+  addToSessionStats: (bet: number, win: number) => void;
+  resetSessionStats: () => void;
+
   // Actions - Results
   setLastDropResults: (results: PlinkoDrop[] | null) => void;
   setTotalWin: (amount: number) => void;
+  setLastDropBet: (amount: number) => void;
+  setDropSessionId: (id: string | null) => void;
 
   // Actions - Multipliers
   setMultipliers: (multipliers: number[]) => void;
 
-  // Actions - Highlights
-  highlightPeg: (pegId: string) => void;
-  highlightSlot: (slotIndex: number) => void;
-  clearPegHighlights: () => void;
-  clearSlotHighlights: () => void;
-  clearHighlights: () => void;
+  // Actions - Collisions
+  registerPegCollision: (pegId: string) => void;
+  registerSlotCollision: (slotIndex: number) => void;
+  cleanupOldCollisions: () => void;
 
   // Actions - Reset
   resetGame: () => void;
@@ -62,11 +77,16 @@ export const usePlinkoStore = create<PlinkoStore>(set => ({
   activeBalls: [],
   isAnimating: false,
   isDropping: false,
+  isActiveGame: false,
   lastDropResults: null,
   totalWin: 0,
+  lastDropBet: 0,
+  dropSessionId: null,
+  sessionTotalBet: 0,
+  sessionTotalWin: 0,
   multipliers: [],
-  highlightedPegs: new Set(),
-  highlightedSlots: new Set(),
+  pegCollisions: new Map(),
+  slotCollisions: new Map(),
 
   // Config actions
   setRisk: risk => set({ risk }),
@@ -94,49 +114,107 @@ export const usePlinkoStore = create<PlinkoStore>(set => ({
   setIsAnimating: isAnimating => set({ isAnimating }),
   setIsDropping: isDropping => set({ isDropping }),
 
+  // Game session actions
+  setIsActiveGame: isActiveGame => set({ isActiveGame }),
+  addToSessionStats: (bet, win) =>
+    set(state => ({
+      sessionTotalBet: state.sessionTotalBet + bet,
+      sessionTotalWin: state.sessionTotalWin + win,
+    })),
+  resetSessionStats: () => set({ sessionTotalBet: 0, sessionTotalWin: 0 }),
+
   // Results actions
   setLastDropResults: results => set({ lastDropResults: results }),
   setTotalWin: totalWin => set({ totalWin }),
+  setLastDropBet: lastDropBet => set({ lastDropBet }),
+  setDropSessionId: dropSessionId => set({ dropSessionId }),
 
   // Multipliers actions
   setMultipliers: multipliers => set({ multipliers }),
 
-  // Highlights actions
-  highlightPeg: pegId =>
+  // Collision actions
+  registerPegCollision: pegId =>
     set(state => {
-      const newSet = new Set(state.highlightedPegs);
-      newSet.add(pegId);
-      return { highlightedPegs: newSet };
+      const newMap = new Map(state.pegCollisions);
+      newMap.set(pegId, Date.now());
+      return { pegCollisions: newMap };
     }),
 
-  highlightSlot: slotIndex =>
+  registerSlotCollision: slotIndex =>
     set(state => {
-      const newSet = new Set(state.highlightedSlots);
-      newSet.add(slotIndex);
-      return { highlightedSlots: newSet };
+      const newMap = new Map(state.slotCollisions);
+      newMap.set(slotIndex, Date.now());
+      return { slotCollisions: newMap };
     }),
 
-  clearPegHighlights: () => set({ highlightedPegs: new Set() }),
-  clearSlotHighlights: () => set({ highlightedSlots: new Set() }),
-  clearHighlights: () =>
-    set({ highlightedPegs: new Set(), highlightedSlots: new Set() }),
+  cleanupOldCollisions: () =>
+    set(state => {
+      const now = Date.now();
+      const maxAge = PLINKO_ANIMATION.COLLISION_MAX_AGE;
+
+      // Check if any peg collisions need to be removed
+      const pegIdsToRemove: string[] = [];
+      for (const [pegId, timestamp] of state.pegCollisions) {
+        if (now - timestamp > maxAge) {
+          pegIdsToRemove.push(pegId);
+        }
+      }
+
+      // Check if any slot collisions need to be removed
+      const slotIndexesToRemove: number[] = [];
+      for (const [slotIndex, timestamp] of state.slotCollisions) {
+        if (now - timestamp > maxAge) {
+          slotIndexesToRemove.push(slotIndex);
+        }
+      }
+
+      // Only create new Maps if there are changes
+      if (pegIdsToRemove.length === 0 && slotIndexesToRemove.length === 0) {
+        return state; // No changes, return current state
+      }
+
+      const newPegCollisions =
+        pegIdsToRemove.length > 0
+          ? new Map(state.pegCollisions)
+          : state.pegCollisions;
+      const newSlotCollisions =
+        slotIndexesToRemove.length > 0
+          ? new Map(state.slotCollisions)
+          : state.slotCollisions;
+
+      // Remove old collisions
+      pegIdsToRemove.forEach(pegId => newPegCollisions.delete(pegId));
+      slotIndexesToRemove.forEach(slotIndex =>
+        newSlotCollisions.delete(slotIndex)
+      );
+
+      return {
+        pegCollisions: newPegCollisions,
+        slotCollisions: newSlotCollisions,
+      };
+    }),
 
   // Reset actions
   resetGame: () =>
     set({
       activeBalls: [],
       isAnimating: false,
+      isActiveGame: false,
       lastDropResults: null,
       totalWin: 0,
-      highlightedPegs: new Set(),
-      highlightedSlots: new Set(),
+      lastDropBet: 0,
+      dropSessionId: null,
+      sessionTotalBet: 0,
+      sessionTotalWin: 0,
+      pegCollisions: new Map(),
+      slotCollisions: new Map(),
     }),
 
   resetAnimationState: () =>
     set({
       activeBalls: [],
       isAnimating: false,
-      highlightedPegs: new Set(),
-      highlightedSlots: new Set(),
+      pegCollisions: new Map(),
+      slotCollisions: new Map(),
     }),
 }));

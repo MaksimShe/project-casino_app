@@ -33,6 +33,7 @@ interface Props {
   buttonDisabled?: boolean;
   betAmount?: number;
   balance?: number;
+  maxBetCanBe?: number;
 }
 
 const GameConfigPanel = React.memo(function GameConfigPanel({
@@ -51,6 +52,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   buttonDisabled = false,
   betAmount: controlledBetAmount,
   balance,
+  maxBetCanBe = CONFIG_PANEL.MAX_BET,
 }: Props) {
   const config: GameConfig | undefined = gamesConfig[game];
   const [internalBetAmount, setInternalBetAmount] = useState<number>(
@@ -106,11 +108,11 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   const defaultSecondary: ButtonState | undefined = hasSecondButton
     ? { label: config.buttons[1] }
     : undefined;
-
-  const infoItems = config.additionalInfos.map(label => ({
-    label,
-    value: infoValues[label],
-  }));
+  const infoItems =
+    config.additionalInfos?.map(label => ({
+      label,
+      value: infoValues[label],
+    })) ?? [];
 
   return (
     <div className="flex h-fit w-full max-w-[var(--panel-max-width)] flex-col gap-8 rounded-xl bg-[var(--panel-bg)] px-8 py-6">
@@ -127,7 +129,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
                 label={input.name}
                 value={betAmount}
                 onChange={handleBetChange}
-                maxValue={CONFIG_PANEL.MAX_BET}
+                maxValue={maxBetCanBe}
                 balance={balance}
               />
             );
@@ -155,6 +157,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
         <GameSettings
           settings={config.gameSettings}
           onSettingChange={onSettingChange}
+          disabled={isGameActive}
         />
       )}
 

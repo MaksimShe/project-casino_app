@@ -17,7 +17,7 @@ export interface GameConfig {
   inputs: InputConfig[];
   gameSettings?: GameSettingConfig[];
   buttons: string[];
-  additionalInfos: string[];
+  additionalInfos?: string[];
 }
 
 // Default Values
@@ -87,6 +87,5 @@ export const gamesConfig: Partial<Record<GameType, GameConfig>> = {
       },
     ],
     buttons: ['Drop'],
-    additionalInfos: ['Total Bet:', 'Potential Win:'],
   },
 };

@@ -1,18 +1,23 @@
-import { getPegPosition } from './getPosition';
-import { PLINKO_BOARD } from '../constants';
+import { getPegPosition, getSlotPosition } from './getPosition';
+import { PLINKO_BOARD, PLINKO_BOARD_MOBILE } from '../constants';
 
 /**
  * Convert backend path array (0s and 1s) to visual coordinates
  * @param path Array of 0s (left) and 1s (right)
  * @param lines Number of lines in the board
+ * @param finalSlotIndex The final slot index where the ball lands (optional)
+ * @param isMobile Whether to use mobile dimensions
  * @returns Array of {x, y} coordinates for ball to follow
  */
 export function calculatePathCoordinates(
   path: number[],
-  lines: number
+  lines: number,
+  finalSlotIndex?: number,
+  isMobile = false
 ): Array<{ x: number; y: number }> {
   const coordinates: Array<{ x: number; y: number }> = [];
-  const { WIDTH, PADDING_TOP } = PLINKO_BOARD;
+  const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
+  const { WIDTH, PADDING_TOP, ROW_SPACING, PADDING_BOTTOM } = BOARD;
   const centerX = WIDTH / 2;
 
   // Starting position (center top)
@@ -27,17 +32,25 @@ export function calculatePathCoordinates(
 
     // Update column based on direction
     // Each row has one more peg than the last
-    if (direction === 0) {
-      // Go left - keep same column index
-      currentCol = currentCol;
-    } else {
+    if (direction !== 0) {
       // Go right - increment column index
       currentCol = currentCol + 1;
     }
 
     // Get the peg position for this row and column
-    const pegPos = getPegPosition(row, currentCol);
+    const pegPos = getPegPosition(row, currentCol, isMobile);
     coordinates.push(pegPos);
+  }
+
+  // Add final slot position if provided
+  if (finalSlotIndex !== undefined) {
+    const totalSlots = lines + 1;
+    const slotPos = getSlotPosition(finalSlotIndex, totalSlots, isMobile);
+
+    // Calculate slot Y position (bottom of the board minus some padding)
+    const slotY = PADDING_TOP + lines * ROW_SPACING + PADDING_BOTTOM - 20;
+
+    coordinates.push({ x: slotPos.x, y: slotY });
   }
 
   return coordinates;

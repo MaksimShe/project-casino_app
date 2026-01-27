@@ -1,13 +1,19 @@
-import { PLINKO_BOARD } from '../constants';
+import { PLINKO_BOARD, PLINKO_BOARD_MOBILE } from '../constants';
 
 /**
  * Calculate peg position for a specific row and column
  * @param row Row number (0-indexed)
  * @param col Column number (0-indexed)
+ * @param isMobile Whether to use mobile dimensions
  * @returns {x, y} coordinates
  */
-export function getPegPosition(row: number, col: number): { x: number; y: number } {
-  const { WIDTH, ROW_SPACING, COL_SPACING, PADDING_TOP } = PLINKO_BOARD;
+export function getPegPosition(
+  row: number,
+  col: number,
+  isMobile = false
+): { x: number; y: number } {
+  const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
+  const { WIDTH, ROW_SPACING, COL_SPACING, PADDING_TOP } = BOARD;
   const centerX = WIDTH / 2;
 
   const pegsInRow = row + 3;
@@ -23,13 +29,16 @@ export function getPegPosition(row: number, col: number): { x: number; y: number
  * Calculate slot position at the bottom of the board
  * @param slotIndex Slot index (0-indexed)
  * @param totalSlots Total number of slots
+ * @param isMobile Whether to use mobile dimensions
  * @returns {x, y} coordinates
  */
 export function getSlotPosition(
   slotIndex: number,
-  totalSlots: number
+  totalSlots: number,
+  isMobile = false
 ): { x: number; y: number } {
-  const { WIDTH, SLOT_WIDTH } = PLINKO_BOARD;
+  const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
+  const { WIDTH, SLOT_WIDTH } = BOARD;
   const centerX = WIDTH / 2;
   const totalWidth = totalSlots * SLOT_WIDTH;
   const startX = centerX - totalWidth / 2;

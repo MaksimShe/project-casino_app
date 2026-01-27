@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState, useEffect } from 'react';
+import { type FC, useState, useEffect, useRef } from 'react';
 import dollarIcon from '@/../public/leaderboard_icons/dollar-icon.svg';
 import walletIcon from '@/../public/leaderboard_icons/wallet.svg';
 import Image from 'next/image';
@@ -9,6 +9,7 @@ export interface ButtonState {
   label: string;
   className?: string;
   onClick?: () => void;
+  clickCooldown?: number;
 }
 
 interface ActionButtonProps {
@@ -28,6 +29,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
 }) => {
   const [internalIsSecondary, setInternalIsSecondary] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const clickCooldownRef = useRef(false);
 
   const hasSecondary = !!secondaryState;
   const isControlled = controlledIsSecondary !== undefined;
@@ -51,21 +53,25 @@ export const ActionButton: FC<ActionButtonProps> = ({
   const currentState = isSecondary ? secondaryState! : primaryState;
 
   const handleClick = () => {
-    if (disabled) return;
+    if (disabled || clickCooldownRef.current) return;
 
     currentState.onClick?.();
 
+    if (primaryState.clickCooldown && primaryState.clickCooldown > 0) {
+      clickCooldownRef.current = true;
+
+      setTimeout(() => {
+        clickCooldownRef.current = false;
+      }, primaryState.clickCooldown);
+    }
+
     if (!hasSecondary) return;
-
     setIsAnimating(true);
-
     setTimeout(() => {
       const newIsSecondary = !isSecondary;
-
       if (!isControlled) {
         setInternalIsSecondary(newIsSecondary);
       }
-
       onToggle?.(newIsSecondary);
       setIsAnimating(false);
     }, 150);

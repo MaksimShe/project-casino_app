@@ -1,7 +1,11 @@
 import { useEffect, useRef, useCallback } from 'react';
 import type { PlinkoBall, PlinkoDrop } from '@/types/plinko';
 import { usePlinkoStore } from '@/stores/usePlinkoStore';
-import { PLINKO_ANIMATION, PLINKO_BOARD } from '../constants';
+import {
+  PLINKO_ANIMATION,
+  PLINKO_BOARD,
+  PLINKO_BOARD_MOBILE,
+} from '../constants';
 import { usePlinkoPhysics } from './usePlinkoPhysics';
 import type { PlinkoPeg } from '@/types/plinko';
 
@@ -9,7 +13,8 @@ interface UsePlinkoBallAnimationProps {
   dropResults: PlinkoDrop[] | null;
   pegs: PlinkoPeg[];
   lines: number;
-  onComplete?: () => void;
+  dropSessionId: string | null;
+  isMobile?: boolean;
 }
 
 /**
@@ -20,15 +25,16 @@ export function usePlinkoBallAnimation({
   dropResults,
   pegs,
   lines,
-  onComplete,
+  dropSessionId,
+  isMobile = false,
 }: UsePlinkoBallAnimationProps) {
   const {
     addBall,
     updateBall,
     removeBall,
-    setIsAnimating,
-    highlightPeg,
-    highlightSlot,
+    registerPegCollision,
+    registerSlotCollision,
+    setIsActiveGame,
   } = usePlinkoStore();
 
   const animationFrameRef = useRef<number | null>(null);
@@ -42,7 +48,8 @@ export function usePlinkoBallAnimation({
   const { updateBall: updateBallPhysics } = usePlinkoPhysics({
     lines,
     pegs,
-    onPegCollision: highlightPeg,
+    onPegCollision: registerPegCollision,
+    isMobile,
   });
 
   /**
@@ -50,7 +57,8 @@ export function usePlinkoBallAnimation({
    */
   const spawnBall = useCallback(
     (drop: PlinkoDrop, index: number) => {
-      const { WIDTH, PADDING_TOP } = PLINKO_BOARD;
+      const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
+      const { WIDTH, PADDING_TOP } = BOARD;
       const centerX = WIDTH / 2;
 
       const ball: PlinkoBall = {
@@ -68,7 +76,7 @@ export function usePlinkoBallAnimation({
 
       addBall(ball);
     },
-    [addBall]
+    [addBall, isMobile]
   );
 
   /**
@@ -77,7 +85,6 @@ export function usePlinkoBallAnimation({
   const animate = useCallback(
     (timestamp: number) => {
       if (!dropResults || dropResults.length === 0) {
-        setIsAnimating(false);
         return;
       }
 
@@ -104,9 +111,9 @@ export function usePlinkoBallAnimation({
           // Mark as completed
           completedBallsRef.current.add(ball.id);
 
-          // Highlight final slot
+          // Register slot collision
           if (ball.finalSlot !== null) {
-            highlightSlot(ball.finalSlot);
+            registerSlotCollision(ball.finalSlot);
           }
 
           // Remove ball after short delay
@@ -118,24 +125,6 @@ export function usePlinkoBallAnimation({
         }
       });
 
-      // Check if all balls are spawned and completed
-      const allBallsSpawned = spawnedCountRef.current >= dropResults.length;
-      const allBallsCompleted =
-        completedBallsRef.current.size >= dropResults.length;
-
-      if (allBallsSpawned && allBallsCompleted) {
-        // Wait a bit for balls to be removed, then end animation
-        if (!completionTimerRef.current) {
-          completionTimerRef.current = setTimeout(() => {
-            setIsAnimating(false);
-            if (onComplete) {
-              onComplete();
-            }
-          }, 1000);
-        }
-        return;
-      }
-
       // Continue animation
       // eslint-disable-next-line react-hooks/immutability
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -146,9 +135,7 @@ export function usePlinkoBallAnimation({
       updateBallPhysics,
       updateBall,
       removeBall,
-      highlightSlot,
-      setIsAnimating,
-      onComplete,
+      registerSlotCollision,
     ]
   );
 
@@ -156,8 +143,8 @@ export function usePlinkoBallAnimation({
    * Start animation when drop results are available
    */
   useEffect(() => {
-    if (dropResults && dropResults.length > 0) {
-      // Reset counters and refs
+    if (dropResults && dropResults.length > 0 && dropSessionId) {
+      // Reset counters and refs for new drop session
       spawnedCountRef.current = 0;
       lastSpawnTimeRef.current = 0;
       lastFrameTimeRef.current = 0;
@@ -168,7 +155,6 @@ export function usePlinkoBallAnimation({
       }
 
       // Start animation
-      setIsAnimating(true);
       animationFrameRef.current = requestAnimationFrame(animate);
     }
 
@@ -180,7 +166,30 @@ export function usePlinkoBallAnimation({
         clearTimeout(completionTimerRef.current);
       }
     };
-  }, [dropResults, animate, setIsAnimating]);
+  }, [dropResults, dropSessionId, animate]);
+
+  /**
+   * Track active game state based on active balls
+   */
+  useEffect(() => {
+    const { activeBalls } = usePlinkoStore.getState();
+    const hasActiveBalls = activeBalls.length > 0;
+
+    // Update isActiveGame based on whether there are active balls
+    setIsActiveGame(hasActiveBalls);
+  }, [setIsActiveGame]);
+
+  // Monitor activeBalls changes
+  useEffect(() => {
+    const unsubscribe = usePlinkoStore.subscribe(state => {
+      const hasActiveBalls = state.activeBalls.length > 0;
+      if (state.isActiveGame !== hasActiveBalls) {
+        setIsActiveGame(hasActiveBalls);
+      }
+    });
+
+    return unsubscribe;
+  }, [setIsActiveGame]);
 
   return null;
 }

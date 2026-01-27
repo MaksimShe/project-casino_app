@@ -45,20 +45,3 @@ export const GAME_CONSTANTS = {
   INITIAL_MULTIPLIER: 1.0,
   MULTIPLIER_ACTIVE_THRESHOLD: 1.0, // Show cashout when multiplier > this
 } as const;
-
-// Chart Configuration
-export const CHART_CONFIG = {
-  WIDTH: 500,
-  HEIGHT: 400,
-  PADDING: { top: 40, right: 40, bottom: 50, left: 60 },
-  TIME_WINDOW: 30000, // 30 seconds
-  Y_SCALE_THRESHOLDS: [2, 5, 10, 20, 50, 100, 200, 500],
-  X_TICK_INTERVAL: 5, // seconds
-  Y_TICK_COUNT: 5,
-  CURVE_COLOR_LOW: '#8b5cf6',
-  CURVE_COLOR_MID: '#f59e0b',
-  CURVE_COLOR_HIGH: '#ef4444',
-  GRID_COLOR: 'rgba(255, 255, 255, 0.1)',
-  AXIS_COLOR: 'rgba(255, 255, 255, 0.3)',
-  LABEL_COLOR: '#adb5bd',
-} as const;

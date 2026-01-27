@@ -7,6 +7,7 @@ interface UsePlinkoPhysicsProps {
   lines: number;
   pegs: PlinkoPeg[];
   onPegCollision?: (pegId: string) => void;
+  isMobile?: boolean;
 }
 
 /**
@@ -17,6 +18,7 @@ export function usePlinkoPhysics({
   lines,
   pegs,
   onPegCollision,
+  isMobile = false,
 }: UsePlinkoPhysicsProps) {
   const lastCollisionTime = useRef<Map<string, number>>(new Map());
   const collisionCooldown = 100; // ms between collision detections for same ball
@@ -28,8 +30,13 @@ export function usePlinkoPhysics({
     (ball: PlinkoBall): PlinkoBall => {
       if (ball.isComplete) return ball;
 
-      // Get path coordinates
-      const pathCoords = calculatePathCoordinates(ball.path, lines);
+      // Get path coordinates including final slot position
+      const pathCoords = calculatePathCoordinates(
+        ball.path,
+        lines,
+        ball.finalSlot ?? undefined,
+        isMobile
+      );
 
       // Check if we've reached the end of the path
       if (ball.currentPathIndex >= pathCoords.length - 1) {
@@ -61,14 +68,18 @@ export function usePlinkoPhysics({
         };
 
         // Check for peg collision at this position for visual highlight
-        const now = Date.now();
-        const lastTime = lastCollisionTime.current.get(ball.id) || 0;
+        // Only check for peg collisions, not when reaching the final slot
+        const isAtFinalSlot = targetIndex === pathCoords.length - 1;
+        if (!isAtFinalSlot) {
+          const now = Date.now();
+          const lastTime = lastCollisionTime.current.get(ball.id) || 0;
 
-        if (now - lastTime > collisionCooldown) {
-          const collidedPeg = findClosestPeg(ball.x, ball.y, pegs);
-          if (collidedPeg && onPegCollision) {
-            onPegCollision(collidedPeg.id);
-            lastCollisionTime.current.set(ball.id, now);
+          if (now - lastTime > collisionCooldown) {
+            const collidedPeg = findClosestPeg(ball.x, ball.y, pegs, isMobile);
+            if (collidedPeg && onPegCollision) {
+              onPegCollision(collidedPeg.id);
+              lastCollisionTime.current.set(ball.id, now);
+            }
           }
         }
 
@@ -88,7 +99,7 @@ export function usePlinkoPhysics({
         vy,
       };
     },
-    [lines, pegs, onPegCollision, collisionCooldown]
+    [lines, pegs, onPegCollision, collisionCooldown, isMobile]
   );
 
   return { updateBall };
