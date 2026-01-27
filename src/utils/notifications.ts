@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { useGameStore } from '@/stores/useGameStore';
+import { useGameStore, AudioSound } from '@/stores/useGameStore';
 
 /**
  * Shows a balance notification (win/loss) if notifications are enabled
@@ -10,12 +10,15 @@ export function showBalanceNotification(
   difference: number,
   options?: { description?: string }
 ) {
-  const { isNotificationsOn } = useGameStore.getState();
+  const { isNotificationsOn, playAudio } = useGameStore.getState();
 
   // Don't show balance notifications if disabled
   if (!isNotificationsOn) {
     return;
   }
+
+  // Play notify sound
+  playAudio(AudioSound.NOTIFY);
 
   if (difference > 0) {
     toast.success(`Won $${difference.toFixed(2)}!`, {

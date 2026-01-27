@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { PlinkoBall, PlinkoDrop } from '@/types/plinko';
 import { PLINKO_ANIMATION } from '@/components/PlinkoGame/constants';
+import { useGameStore, AudioSound } from './useGameStore';
 
 interface PlinkoStore {
   // Game config
@@ -137,6 +138,10 @@ export const usePlinkoStore = create<PlinkoStore>(set => ({
     set(state => {
       const newMap = new Map(state.pegCollisions);
       newMap.set(pegId, Date.now());
+
+      // Play beep sound on collision
+      useGameStore.getState().playAudio(AudioSound.BEEP);
+
       return { pegCollisions: newMap };
     }),
 

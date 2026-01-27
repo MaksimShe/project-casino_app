@@ -17,7 +17,6 @@ export function usePlinkoHighlights() {
     intervalRef.current = setInterval(() => {
       cleanupOldCollisions();
     }, PLINKO_ANIMATION.COLLISION_CLEANUP_INTERVAL);
-
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
