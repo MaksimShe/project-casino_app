@@ -16,6 +16,15 @@ export const PLINKO_PHYSICS_MOBILE = {
   SPAWNER_GAP: 30,
 } as const;
 
+// Risk level constants
+export const RISK_LEVEL = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+} as const;
+
+export type RiskLevel = (typeof RISK_LEVEL)[keyof typeof RISK_LEVEL];
+
 // Game configuration options
 export const PLINKO_CONFIG = {
   RISK_LEVELS: ['low', 'medium', 'high'] as const,
