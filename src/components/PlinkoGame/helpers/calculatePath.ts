@@ -1,5 +1,9 @@
 import { getPegPosition, getSlotPosition } from './getPosition';
-import { PLINKO_BOARD, PLINKO_BOARD_MOBILE } from '../constants';
+import {
+  PLINKO_BOARD,
+  PLINKO_BOARD_MOBILE,
+  PLINKO_BOARD_STRUCTURE,
+} from '../constants';
 
 /**
  * Convert backend path array (0s and 1s) to visual coordinates
@@ -24,7 +28,7 @@ export function calculatePathCoordinates(
   coordinates.push({ x: centerX, y: PADDING_TOP });
 
   // Track current column position
-  let currentCol = 1; // Start at middle of first row (3 pegs, index 1)
+  let currentCol = PLINKO_BOARD_STRUCTURE.START_COLUMN_INDEX;
 
   // Generate coordinates for each step in path
   for (let row = 0; row < path.length && row < lines; row++) {
@@ -48,7 +52,11 @@ export function calculatePathCoordinates(
     const slotPos = getSlotPosition(finalSlotIndex, totalSlots, isMobile);
 
     // Calculate slot Y position (bottom of the board minus some padding)
-    const slotY = PADDING_TOP + lines * ROW_SPACING + PADDING_BOTTOM - 20;
+    const slotY =
+      PADDING_TOP +
+      lines * ROW_SPACING +
+      PADDING_BOTTOM -
+      PLINKO_BOARD_STRUCTURE.SLOT_Y_OFFSET;
 
     coordinates.push({ x: slotPos.x, y: slotY });
   }
@@ -63,7 +71,7 @@ export function calculatePathCoordinates(
  * @returns Slot index
  */
 export function getSlotIndexFromPath(path: number[]): number {
-  let currentCol = 1; // Start at middle of first row
+  let currentCol = PLINKO_BOARD_STRUCTURE.START_COLUMN_INDEX;
 
   for (const direction of path) {
     if (direction === 1) {

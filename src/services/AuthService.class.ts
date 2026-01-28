@@ -237,6 +237,24 @@ class AuthService {
       },
     });
   }
+
+  public async getAllUsers(): Promise<
+    Array<{ username: string; gamesPlayed: number; balance: number }>
+  > {
+    const accessToken = this.getAccessToken();
+    if (!accessToken) {
+      throw new AuthApiError('No access token found', 401);
+    }
+
+    return this.fetchApi<
+      Array<{ username: string; gamesPlayed: number; balance: number }>
+    >('/users', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
 }
 
 export const authService = AuthService.getInstance();

@@ -1,4 +1,8 @@
-import { PLINKO_BOARD, PLINKO_BOARD_MOBILE } from '../constants';
+import {
+  PLINKO_BOARD,
+  PLINKO_BOARD_MOBILE,
+  PLINKO_BOARD_STRUCTURE,
+} from '../constants';
 
 /**
  * Calculate peg position for a specific row and column
@@ -16,8 +20,9 @@ export function getPegPosition(
   const { WIDTH, ROW_SPACING, COL_SPACING, PADDING_TOP } = BOARD;
   const centerX = WIDTH / 2;
 
-  const pegsInRow = row + 3;
-  const rowY = PADDING_TOP + (row + 1) * ROW_SPACING;
+  const pegsInRow = row + PLINKO_BOARD_STRUCTURE.INITIAL_PEGS_COUNT;
+  const rowY =
+    PADDING_TOP + (row + PLINKO_BOARD_STRUCTURE.ROW_OFFSET) * ROW_SPACING;
   const totalWidth = (pegsInRow - 1) * COL_SPACING;
   const startX = centerX - totalWidth / 2;
   const pegX = startX + col * COL_SPACING;

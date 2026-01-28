@@ -114,7 +114,6 @@ export function useHistoryTable<T extends HistoryGameType>(
     },
     enabled: typeof window !== 'undefined' && enabled,
     retry: false,
-    staleTime: 30 * 1000, // 30 seconds
   });
 }
 
@@ -199,6 +198,5 @@ export function useCrashHistory(
     },
     enabled: typeof window !== 'undefined' && enabled,
     retry: false,
-    staleTime: 30 * 1000,
   });
 }

@@ -74,6 +74,10 @@ export interface PlinkoBall {
   finalMultiplier: number | null;
   path: number[]; // Path from backend
   currentPathIndex: number;
+  speed: number; // Current speed in pixels per frame
+  pauseUntil: number; // Timestamp when ball should resume movement after collision
+  jumpOffsetX: number; // Horizontal jump offset from peg collision
+  jumpOffsetY: number; // Vertical jump offset from peg collision
 }
 
 export interface PlinkoPeg {

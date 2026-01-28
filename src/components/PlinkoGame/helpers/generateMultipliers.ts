@@ -27,25 +27,40 @@ export function generateMultipliers(
 
     if (risk === 'high') {
       // High risk: extreme values at edges
-      multiplier = distanceFromCenter === half ? 110 :
-                   distanceFromCenter === half - 1 ? 41 :
-                   distanceFromCenter === half - 2 ? 10 :
-                   distanceFromCenter === half - 3 ? 5 :
-                   distanceFromCenter === half - 4 ? 3 :
-                   1;
+      multiplier =
+        distanceFromCenter === half
+          ? 110
+          : distanceFromCenter === half - 1
+            ? 41
+            : distanceFromCenter === half - 2
+              ? 10
+              : distanceFromCenter === half - 3
+                ? 5
+                : distanceFromCenter === half - 4
+                  ? 3
+                  : 1;
     } else if (risk === 'medium') {
       // Medium risk: moderate distribution
-      multiplier = distanceFromCenter === half ? 16 :
-                   distanceFromCenter === half - 1 ? 9 :
-                   distanceFromCenter === half - 2 ? 3 :
-                   distanceFromCenter === half - 3 ? 1.5 :
-                   1;
+      multiplier =
+        distanceFromCenter === half
+          ? 16
+          : distanceFromCenter === half - 1
+            ? 9
+            : distanceFromCenter === half - 2
+              ? 3
+              : distanceFromCenter === half - 3
+                ? 1.5
+                : 1;
     } else {
       // Low risk: conservative values
-      multiplier = distanceFromCenter === half ? 5.6 :
-                   distanceFromCenter === half - 1 ? 2.1 :
-                   distanceFromCenter === half - 2 ? 1.5 :
-                   1.1;
+      multiplier =
+        distanceFromCenter === half
+          ? 5.6
+          : distanceFromCenter === half - 1
+            ? 2.1
+            : distanceFromCenter === half - 2
+              ? 1.5
+              : 1.1;
     }
 
     multipliers.push(multiplier);

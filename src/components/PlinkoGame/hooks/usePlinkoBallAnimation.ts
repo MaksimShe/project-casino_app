@@ -1,13 +1,13 @@
-import { useEffect, useRef, useCallback } from 'react';
-import type { PlinkoBall, PlinkoDrop } from '@/types/plinko';
+import { useCallback, useEffect, useRef } from 'react';
+import type { PlinkoBall, PlinkoDrop, PlinkoPeg } from '@/types/plinko';
 import { usePlinkoStore } from '@/stores/usePlinkoStore';
 import {
   PLINKO_ANIMATION,
   PLINKO_BOARD,
   PLINKO_BOARD_MOBILE,
+  PLINKO_PHYSICS_TUNING,
 } from '../constants';
 import { usePlinkoPhysics } from './usePlinkoPhysics';
-import type { PlinkoPeg } from '@/types/plinko';
 
 interface UsePlinkoBallAnimationProps {
   dropResults: PlinkoDrop[] | null;
@@ -72,6 +72,10 @@ export function usePlinkoBallAnimation({
         finalMultiplier: drop.multiplier,
         path: drop.path,
         currentPathIndex: 0,
+        speed: PLINKO_PHYSICS_TUNING.INITIAL_BALL_SPEED,
+        pauseUntil: 0,
+        jumpOffsetX: 0,
+        jumpOffsetY: 0,
       };
 
       addBall(ball);
@@ -119,7 +123,7 @@ export function usePlinkoBallAnimation({
           // Remove ball after short delay
           setTimeout(() => {
             removeBall(ball.id);
-          }, 500);
+          }, PLINKO_ANIMATION.BALL_REMOVAL_DELAY);
         } else if (!ball.isComplete) {
           updateBall(ball.id, ball);
         }
@@ -181,14 +185,12 @@ export function usePlinkoBallAnimation({
 
   // Monitor activeBalls changes
   useEffect(() => {
-    const unsubscribe = usePlinkoStore.subscribe(state => {
+    return usePlinkoStore.subscribe(state => {
       const hasActiveBalls = state.activeBalls.length > 0;
       if (state.isActiveGame !== hasActiveBalls) {
         setIsActiveGame(hasActiveBalls);
       }
     });
-
-    return unsubscribe;
   }, [setIsActiveGame]);
 
   return null;

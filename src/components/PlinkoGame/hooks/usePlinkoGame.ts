@@ -7,6 +7,7 @@ import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import { HISTORY_QUERY_KEY } from '@/hooks/useHistoryTable';
 import { showErrorNotification } from '@/utils/notifications';
 import type { CurrentUserResponse } from '@/types/auth';
+import { PLINKO_ANIMATION } from '../constants';
 
 /**
  * Main hook for coordinating Plinko game logic
@@ -31,6 +32,7 @@ export function usePlinkoGame() {
   // Track pending win amount to add after animation completes
   const pendingWinRef = useRef<number | null>(null);
   const wasActiveGameRef = useRef(false);
+  const historyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * Fetch multipliers for current configuration
@@ -154,10 +156,18 @@ export function usePlinkoGame() {
       // Sync with server after animation
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
-      // Update game history
-      queryClient.invalidateQueries({
-        queryKey: [...HISTORY_QUERY_KEY, 'plinko'],
-      });
+      // Clear any existing history timeout
+      if (historyTimeoutRef.current) {
+        clearTimeout(historyTimeoutRef.current);
+      }
+
+      // Update game history after delay
+      historyTimeoutRef.current = setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: [...HISTORY_QUERY_KEY, 'plinko'],
+        });
+        historyTimeoutRef.current = null;
+      }, PLINKO_ANIMATION.HISTORY_UPDATE_DELAY);
 
       // Clear pending win
       pendingWinRef.current = null;
@@ -165,6 +175,13 @@ export function usePlinkoGame() {
 
     // Update ref for next iteration
     wasActiveGameRef.current = isActiveGame;
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (historyTimeoutRef.current) {
+        clearTimeout(historyTimeoutRef.current);
+      }
+    };
   }, [isActiveGame, queryClient]);
 
   return {

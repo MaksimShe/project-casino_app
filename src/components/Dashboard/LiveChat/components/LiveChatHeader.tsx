@@ -1,13 +1,11 @@
 interface LiveChatHeaderProps {
   onlineCount?: number;
   friendsCount?: number;
-  playingCount?: number;
 }
 
 export const LiveChatHeader = ({
   onlineCount = 0,
   friendsCount = 0,
-  playingCount = 0,
 }: LiveChatHeaderProps) => {
   return (
     <div className="w-full text-white">
@@ -22,11 +20,11 @@ export const LiveChatHeader = ({
         </p>
       </div>
       <div className="mt-1.5 flex items-center justify-between border-t pt-1.5">
-        <p className="text-center">{onlineCount} online</p>
+        <p className="text-center">{onlineCount + 1} online</p>{' '}
+        {/*cuz it do not count us*/}
         <p className="bg-gradient-to-b from-[#FFCD71] to-[#E59603] bg-clip-text text-center text-transparent">
-          {friendsCount} friends
+          {friendsCount} users
         </p>
-        <p className="text-center">{playingCount} playing</p>
       </div>
     </div>
   );
