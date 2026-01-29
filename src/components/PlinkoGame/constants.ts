@@ -74,23 +74,25 @@ export const PLINKO_ANIMATION = {
 // Physics tuning for ball movement and collisions
 export const PLINKO_PHYSICS_TUNING = {
   // Jump/Bounce effects
-  JUMP_DECAY_RATE: 0.92,
+  JUMP_DECAY_RATE: 0.86,
   JUMP_OFFSET_THRESHOLD: 0.1,
   BOUNCE_STRENGTH_DESKTOP: 12,
-  BOUNCE_STRENGTH_MOBILE: 8,
+  BOUNCE_STRENGTH_MOBILE: 14,
   BOUNCE_UPWARD_BIAS: 0.8,
-  COLLISION_PAUSE_MS: 50,
-  COLLISION_SPEED_BOOST: 1.18,
-  MAX_SPEED: 8,
+  COLLISION_PAUSE_MS: 45,
+  COLLISION_SPEED_BOOST: 1.15,
+  MAX_SPEED: 10,
 
-  // Movement physics
+  // Movement physics with gravity and curves
   PATH_POINT_THRESHOLD: 5,
-  SPEED_DAMPING: 0.98,
-  MIN_SPEED: 2,
-  INITIAL_BALL_SPEED: 5.5,
+  SPEED_DAMPING: 0.99,
+  MIN_SPEED: 2.6,
+  INITIAL_BALL_SPEED: 3.9,
+  GRAVITY_STRENGTH: 0.77,
+  ARC_VELOCITY_MULTIPLIER: 0.7,
 
   // Collision detection
-  COLLISION_COOLDOWN_MS: 100,
+  COLLISION_COOLDOWN_MS: 90,
 } as const;
 
 // Board structure constants

@@ -3,6 +3,8 @@ import {
   PLINKO_BOARD,
   PLINKO_BOARD_MOBILE,
   PLINKO_BOARD_STRUCTURE,
+  PLINKO_PHYSICS,
+  PLINKO_PHYSICS_MOBILE,
 } from '../constants';
 
 /**
@@ -21,7 +23,9 @@ export function calculatePathCoordinates(
 ): Array<{ x: number; y: number }> {
   const coordinates: Array<{ x: number; y: number }> = [];
   const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
+  const PHYSICS = isMobile ? PLINKO_PHYSICS_MOBILE : PLINKO_PHYSICS;
   const { WIDTH, PADDING_TOP, ROW_SPACING, PADDING_BOTTOM } = BOARD;
+  const { PEG_RADIUS } = PHYSICS;
   const centerX = WIDTH / 2;
 
   // Starting position (center top)
@@ -41,9 +45,14 @@ export function calculatePathCoordinates(
       currentCol = currentCol + 1;
     }
 
-    // Get the peg position for this row and column
+    // Get the EXACT peg center position
     const pegPos = getPegPosition(row, currentCol, isMobile);
-    coordinates.push(pegPos);
+
+    // Target the CENTER TOP of the peg (exact horizontal center, top surface vertically)
+    coordinates.push({
+      x: pegPos.x, // EXACT center horizontally - no offset
+      y: pegPos.y - PEG_RADIUS, // Top of peg vertically
+    });
   }
 
   // Add final slot position if provided

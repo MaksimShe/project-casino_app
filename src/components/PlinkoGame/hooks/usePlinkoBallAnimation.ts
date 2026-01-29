@@ -8,6 +8,7 @@ import {
   PLINKO_PHYSICS_TUNING,
 } from '../constants';
 import { usePlinkoPhysics } from './usePlinkoPhysics';
+import { calculatePathCoordinates } from '../helpers/calculatePath';
 
 interface UsePlinkoBallAnimationProps {
   dropResults: PlinkoDrop[] | null;
@@ -59,11 +60,22 @@ export function usePlinkoBallAnimation({
     (drop: PlinkoDrop, index: number) => {
       const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
       const { WIDTH, PADDING_TOP } = BOARD;
-      const centerX = WIDTH / 2;
+
+      // Calculate path to get first peg position
+      const pathCoords = calculatePathCoordinates(
+        drop.path,
+        lines,
+        undefined,
+        isMobile
+      );
+
+      // Spawn ball above the FIRST peg it will hit (not center)
+      const firstPegPos = pathCoords[1]; // Index 0 is start, index 1 is first peg
+      const spawnX = firstPegPos ? firstPegPos.x : WIDTH / 2;
 
       const ball: PlinkoBall = {
         id: `ball-${drop.dropId}-${index}-${Date.now()}`,
-        x: centerX,
+        x: spawnX,
         y: PADDING_TOP,
         vx: 0,
         vy: 0,
@@ -80,7 +92,7 @@ export function usePlinkoBallAnimation({
 
       addBall(ball);
     },
-    [addBall, isMobile]
+    [addBall, isMobile, lines]
   );
 
   /**
@@ -148,7 +160,6 @@ export function usePlinkoBallAnimation({
    */
   useEffect(() => {
     if (dropResults && dropResults.length > 0 && dropSessionId) {
-      // Reset counters and refs for new drop session
       spawnedCountRef.current = 0;
       lastSpawnTimeRef.current = 0;
       lastFrameTimeRef.current = 0;
@@ -158,7 +169,6 @@ export function usePlinkoBallAnimation({
         completionTimerRef.current = null;
       }
 
-      // Start animation
       animationFrameRef.current = requestAnimationFrame(animate);
     }
 
@@ -179,7 +189,6 @@ export function usePlinkoBallAnimation({
     const { activeBalls } = usePlinkoStore.getState();
     const hasActiveBalls = activeBalls.length > 0;
 
-    // Update isActiveGame based on whether there are active balls
     setIsActiveGame(hasActiveBalls);
   }, [setIsActiveGame]);
 

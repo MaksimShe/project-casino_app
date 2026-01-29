@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import type { PlinkoBall, PlinkoPeg } from '@/types/plinko';
 import { calculatePathCoordinates } from '../helpers';
 import { findClosestPeg } from '../helpers/checkPegCollision';
@@ -25,7 +25,7 @@ export function usePlinkoPhysics({
   const collisionCooldown = PLINKO_PHYSICS_TUNING.COLLISION_COOLDOWN_MS;
 
   /**
-   * Update ball position following backend path
+   * Update ball position following backend path with realistic curved motion
    */
   const updateBall = useCallback(
     (ball: PlinkoBall): PlinkoBall => {
@@ -82,8 +82,14 @@ export function usePlinkoPhysics({
       const dy = target.y - ball.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // If close enough to target, move to next point in path
-      if (distance < PLINKO_PHYSICS_TUNING.PATH_POINT_THRESHOLD) {
+      // Check if ball passed or is close to target (important with gravity!)
+      // Check both distance and if ball has moved past target vertically
+      const hasPassedTarget = ball.y >= target.y - 5;
+      const isCloseToTarget =
+        distance < PLINKO_PHYSICS_TUNING.PATH_POINT_THRESHOLD * 2;
+
+      // If close enough OR passed the target, move to next point in path
+      if (isCloseToTarget || hasPassedTarget) {
         const newBall = {
           ...ball,
           x: target.x,
@@ -109,34 +115,49 @@ export function usePlinkoPhysics({
           const lastTime = lastCollisionTime.current.get(ball.id) || 0;
 
           if (now - lastTime > collisionCooldown) {
-            const collidedPeg = findClosestPeg(ball.x, ball.y, pegs, isMobile);
+            // Find closest peg to ball's current position
+            // This ensures we detect collision at the actual peg center
+            const collidedPeg = findClosestPeg(
+              newBall.x,
+              newBall.y,
+              pegs,
+              isMobile
+            );
             if (collidedPeg && onPegCollision) {
               onPegCollision(collidedPeg.id);
               lastCollisionTime.current.set(ball.id, now);
 
-              // Calculate jump direction (away from peg + upward)
-              const pegDx = ball.x - collidedPeg.x;
-              const pegDy = ball.y - collidedPeg.y;
-              const pegDist = Math.sqrt(pegDx * pegDx + pegDy * pegDy);
-
-              // Normalize and create bounce offset
               const bounceStrength = isMobile
                 ? PLINKO_PHYSICS_TUNING.BOUNCE_STRENGTH_MOBILE
                 : PLINKO_PHYSICS_TUNING.BOUNCE_STRENGTH_DESKTOP;
-              const jumpX =
-                pegDist > 0 ? (pegDx / pegDist) * bounceStrength : 0;
+
+              const jumpX = 0;
               const jumpY =
                 -bounceStrength * PLINKO_PHYSICS_TUNING.BOUNCE_UPWARD_BIAS;
 
-              // Pause, boost speed, and add jump effect
+              const nextTargetIndex = Math.min(
+                targetIndex + 1,
+                pathCoords.length - 1
+              );
+              const nextTarget = pathCoords[nextTargetIndex];
+              const horizontalDistance = nextTarget.x - newBall.x;
+
+              const initialUpwardVelocity = -6;
+              const gravity = PLINKO_PHYSICS_TUNING.GRAVITY_STRENGTH;
+
+              const timeToComplete = Math.abs(
+                (2 * initialUpwardVelocity) / gravity
+              );
+
+              const arcVelocityX = horizontalDistance / timeToComplete;
+
               return {
                 ...newBall,
                 pauseUntil:
                   Date.now() + PLINKO_PHYSICS_TUNING.COLLISION_PAUSE_MS,
-                speed: Math.min(
-                  ball.speed * PLINKO_PHYSICS_TUNING.COLLISION_SPEED_BOOST,
-                  PLINKO_PHYSICS_TUNING.MAX_SPEED
-                ),
+                speed: PLINKO_PHYSICS_TUNING.INITIAL_BALL_SPEED * 1.2,
+                vx: arcVelocityX,
+                vy: initialUpwardVelocity,
                 jumpOffsetX: jumpX,
                 jumpOffsetY: jumpY,
               };
@@ -147,20 +168,27 @@ export function usePlinkoPhysics({
         return newBall;
       }
 
-      // Apply damping to speed (gradual slowdown from air resistance)
-      const dampedSpeed = ball.speed * PLINKO_PHYSICS_TUNING.SPEED_DAMPING;
+      let newVx = ball.vx;
+      let newVy = ball.vy;
 
-      // Smooth interpolation towards target with current speed
-      const vx = (dx / distance) * dampedSpeed;
-      const vy = (dy / distance) * dampedSpeed;
+      newVy += PLINKO_PHYSICS_TUNING.GRAVITY_STRENGTH;
+
+      newVx *= 0.995;
+      newVy *= 0.995;
+
+      const currentSpeed = Math.sqrt(newVx * newVx + newVy * newVy);
+      const adjustedSpeed = Math.max(
+        currentSpeed,
+        PLINKO_PHYSICS_TUNING.MIN_SPEED
+      );
 
       return {
         ...ball,
-        x: ball.x + vx,
-        y: ball.y + vy,
-        vx,
-        vy,
-        speed: Math.max(dampedSpeed, PLINKO_PHYSICS_TUNING.MIN_SPEED),
+        x: ball.x + newVx,
+        y: ball.y + newVy,
+        vx: newVx,
+        vy: newVy,
+        speed: adjustedSpeed,
         jumpOffsetX:
           Math.abs(decayedJumpOffsetX) >
           PLINKO_PHYSICS_TUNING.JUMP_OFFSET_THRESHOLD
