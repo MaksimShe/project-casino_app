@@ -44,6 +44,7 @@ export function usePlinkoBallAnimation({
   const lastSpawnTimeRef = useRef<number>(0);
   const completedBallsRef = useRef<Set<string>>(new Set());
   const completionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastProcessedSessionIdRef = useRef<string | null>(null);
 
   // Physics hook for updating ball positions
   const { updateBall: updateBallPhysics } = usePlinkoPhysics({
@@ -159,7 +160,20 @@ export function usePlinkoBallAnimation({
    * Start animation when drop results are available
    */
   useEffect(() => {
-    if (dropResults && dropResults.length > 0 && dropSessionId) {
+    // Only start animation if:
+    // 1. We have drop results
+    // 2. We have a valid session ID
+    // 3. This session hasn't been processed yet
+    if (
+      dropResults &&
+      dropResults.length > 0 &&
+      dropSessionId &&
+      dropSessionId !== lastProcessedSessionIdRef.current
+    ) {
+      // Mark this session as processed
+      lastProcessedSessionIdRef.current = dropSessionId;
+
+      // Reset animation state
       spawnedCountRef.current = 0;
       lastSpawnTimeRef.current = 0;
       lastFrameTimeRef.current = 0;
@@ -169,6 +183,7 @@ export function usePlinkoBallAnimation({
         completionTimerRef.current = null;
       }
 
+      // Start animation
       animationFrameRef.current = requestAnimationFrame(animate);
     }
 
