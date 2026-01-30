@@ -231,14 +231,16 @@ export default function CrashGamePage() {
   }, [animationPhase]);
 
   // Animation Effect 2: Crash Animation
+  // Sync with lose modal - only show boom if lose modal is shown
   useEffect(() => {
     if (
       gameState === GAME_STATES.CRASHED &&
       animationPhase !== 'crashed' &&
       animationPhase !== 'respawning'
     ) {
-      // Only show crash animation if user didn't cash out (use same logic as lose modal)
-      if (!justCashedOutRef.current) {
+      const state = useCrashStore.getState();
+      // Only show crash animation if user had a bet AND didn't cash out (same logic as lose modal)
+      if (state.showLoseModal) {
         setAnimationPhase('crashed');
         setIsRocketCrashed(true);
         const timer = setTimeout(() => {
@@ -246,7 +248,7 @@ export default function CrashGamePage() {
         }, ANIMATION_DURATION.CRASH_EXPLOSION);
         return () => clearTimeout(timer);
       } else {
-        // If user cashed out, skip crash animation and go straight to respawn
+        // If no lose modal (user cashed out or no bet), skip crash animation and go straight to respawn
         setAnimationPhase('respawning');
       }
     }

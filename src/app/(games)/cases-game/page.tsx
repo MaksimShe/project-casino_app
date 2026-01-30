@@ -1,7 +1,16 @@
-export default function CaseGame() {
+'use client';
+
+import { useCaseStore } from '@/stores/useCaseStore';
+import { CaseSelection, CaseOpening, WinModal } from '@/components/CaseGame';
+
+export default function CasesGamePage() {
+  const { viewState } = useCaseStore();
+
   return (
-    <div className="flex h-[100vh] items-center justify-center">
-      <h1>CaseGame</h1>
+    <div className="min-h-screen">
+      {viewState === 'selection' && <CaseSelection />}
+      {viewState === 'opening' && <CaseOpening />}
+      <WinModal />
     </div>
   );
 }

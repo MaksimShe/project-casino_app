@@ -75,6 +75,27 @@
   /* Panel Text */
   --panel-title-size: 1.875rem;
   --panel-title-weight: 600;
+
+  /* Case Game Rarity Colors */
+  --rarity-common-bg: #6b7280;
+  --rarity-common-border: #9ca3af;
+  --rarity-common-glow: rgba(107, 114, 128, 0.5);
+
+  --rarity-uncommon-bg: #10b981;
+  --rarity-uncommon-border: #34d399;
+  --rarity-uncommon-glow: rgba(16, 185, 129, 0.5);
+
+  --rarity-rare-bg: #3b82f6;
+  --rarity-rare-border: #60a5fa;
+  --rarity-rare-glow: rgba(59, 130, 246, 0.5);
+
+  --rarity-epic-bg: #8b5cf6;
+  --rarity-epic-border: #a78bfa;
+  --rarity-epic-glow: rgba(139, 92, 246, 0.5);
+
+  --rarity-legendary-bg: #f59e0b;
+  --rarity-legendary-border: #fbbf24;
+  --rarity-legendary-glow: rgba(245, 158, 11, 0.5);
 }
 
 @theme inline {
