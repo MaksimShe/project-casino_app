@@ -142,7 +142,7 @@ export const CaseDetails = memo(({ caseData }: CaseDetailsProps) => {
   const isOpening = openMutation.isPending || store.isOpening;
 
   return (
-    <div className="min-h-screen lg:px-12">
+    <div className="min-h-screen w-full lg:px-12">
       {/* Case Details */}
       <div className="px-8 py-12">
         {/* Case Main */}

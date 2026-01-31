@@ -28,21 +28,23 @@ export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
     >
       <div className="relative flex flex-col items-center justify-center gap-2 p-6">
         <Stars starsCount={index + 1} />
-        <h2 className="mt-2 p-0 text-xl font-bold text-white">
+        <p className="mt-2 p-0 text-xl font-bold text-white max-lg:text-center lg:text-3xl">
           {caseItem.name}
-        </h2>
+        </p>
         <div className="flex gap-1 rounded-full border px-3.5 py-1.5 font-bold text-white">
           {formatNumber(caseItem.price)}
           <Image src={coinImg} alt="coin" width={16} height={16} />
         </div>
-        <div className="mt-8 text-6xl transition-transform group-hover:scale-103">
+        <div className="mt-2 text-6xl transition-transform group-hover:scale-103 sm:mt-8">
           <Image src={caseImage} alt="case" height={180} width={260} />
         </div>
       </div>
 
       {/* Case Info */}
-      <div className="p-6 pb-16">
-        <p className="mb-2 text-white">{mockDescription(caseItem.name)}</p>
+      <div className="px-6 py-2 sm:py-6 sm:pb-16">
+        <p className="mb-2 text-white max-sm:text-xs">
+          {mockDescription(caseItem.name)}
+        </p>
       </div>
     </motion.div>
   );

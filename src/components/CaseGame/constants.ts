@@ -24,8 +24,8 @@ export const CASE_VISUAL = {
   CASE_Y_POSITION: '30%', // upper-middle
 
   // Scrolling strip
-  ITEM_SLOT_WIDTH: 140, // px
-  ITEM_SLOT_HEIGHT: 160, // px
+  ITEM_SLOT_WIDTH: 160, // px
+  ITEM_SLOT_HEIGHT: 192, // px
   ITEM_SLOT_GAP: 20, // px
   STRIP_Y_OFFSET: -180, // px above case
 

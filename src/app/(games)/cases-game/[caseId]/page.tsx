@@ -71,7 +71,7 @@ export default function CaseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen justify-center">
       {viewState === 'selection' && caseData && (
         <CaseDetails caseData={caseData} />
       )}

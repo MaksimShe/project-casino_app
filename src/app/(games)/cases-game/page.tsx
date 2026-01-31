@@ -24,7 +24,7 @@ export default function CasesGamePage() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="mx-auto max-w-7xl">
         {/* Cases Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 p-4 lg:grid-cols-3 lg:gap-6 lg:p-6 xl:grid-cols-4">
           {cases.map((caseItem, index) => (
             <CaseCard key={caseItem.id} caseItem={caseItem} index={index} />
           ))}
