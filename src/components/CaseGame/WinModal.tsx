@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCaseStore } from '@/stores/useCaseStore';
@@ -12,6 +12,16 @@ export const WinModal = memo(() => {
     useCaseStore();
   const queryClient = useQueryClient();
   const { showWinNotification } = useCaseNotification();
+
+  // Lock scroll when modal is open
+  useEffect(() => {
+    if (viewState === 'result' && openingResult) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [viewState, openingResult]);
 
   const handleSell = useCallback(() => {
     if (!openingResult) return;
@@ -70,27 +80,30 @@ export const WinModal = memo(() => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
         <div className="flex flex-col items-center gap-8 px-4">
-          <WinningItemDisplay result={openingResult} />
+          <WinningItemDisplay
+            result={openingResult}
+            caseName={selectedCase?.name}
+          />
 
           {/* Action buttons */}
           <div className="flex gap-4">
             <button
               onClick={handleSell}
-              className="rounded-lg bg-gray-700 px-8 py-3 font-bold text-white transition-all hover:bg-gray-600"
+              className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-white shadow-white"
             >
-              Sell
+              Sell this
             </button>
             <button
               onClick={handleSellAndAgain}
-              className="rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-bold text-white transition-all hover:from-purple-500 hover:to-pink-500"
+              className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-white"
             >
-              Sell + Again
+              Sell + Try again
             </button>
           </div>
         </div>

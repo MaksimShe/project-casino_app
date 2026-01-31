@@ -2,16 +2,17 @@
 export interface CaseItem {
   id: string;
   name: string;
-  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary';
+  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Gold';
   value: number;
   chance: number;
+  imageUrl: string; // Backend sends imageUrl not image
 }
 
 export interface Case {
   id: string;
   name: string;
   price: number;
-  image: string; // Unused initially
+  image: string;
   items: CaseItem[];
 }
 
@@ -32,7 +33,8 @@ export interface OpenCaseResponse {
     id: string;
     name: string;
     rarity: string;
-    image: string; // emoji from backend
+    image?: string; // For compatibility - some responses might use image
+    imageUrl?: string; // Backend sends imageUrl
     value: number;
   };
   serverSeed: string;
@@ -46,7 +48,7 @@ export interface OpenCaseResponse {
 
 // UI State Types
 export interface OpeningResult {
-  item: CaseItem & { image: string }; // emoji
+  item: CaseItem;
   profit: number;
   newBalance: number;
   proofData: {
@@ -60,7 +62,7 @@ export interface OpeningResult {
 export interface AnimationItem {
   id: string;
   name: string;
-  emoji: string;
+  imageUrl: string;
   rarity: string;
   value: number;
   isWinning?: boolean;

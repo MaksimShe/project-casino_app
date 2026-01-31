@@ -21,11 +21,12 @@ export const generateAnimationItems = (
 
   for (let i = 0; i < CASE_VISUAL.TOTAL_ITEMS_COUNT; i++) {
     if (i === CASE_VISUAL.WINNING_ITEM_INDEX) {
-      // Insert winning item
+      // Insert winning item - handle both image and imageUrl for compatibility
+      const itemImage = wonItem.imageUrl || wonItem.image || '❓';
       items.push({
         id: wonItem.id,
         name: wonItem.name,
-        emoji: wonItem.image,
+        imageUrl: itemImage,
         rarity: wonItem.rarity,
         value: wonItem.value,
         isWinning: true,
@@ -36,7 +37,7 @@ export const generateAnimationItems = (
       items.push({
         id: `${randomItem.id}-${i}`,
         name: randomItem.name,
-        emoji: '❓',
+        imageUrl: randomItem.imageUrl,
         rarity: randomItem.rarity,
         value: randomItem.value,
       });

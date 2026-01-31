@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { CASE_ANIMATION, CASE_VISUAL } from '../constants';
+import caseImg from '@/../public/cases-game/case-img.png';
+import Image from 'next/image';
 
 interface CaseDisplayProps {
   caseName: string;
@@ -24,7 +26,7 @@ export const CaseDisplay = memo<CaseDisplayProps>(({ caseName }) => {
       }}
     >
       <div className="flex h-32 w-32 items-center justify-center rounded-lg border-4 border-purple-500 bg-purple-900/40">
-        <div className="text-6xl">📦</div>
+        <Image src={caseImg} alt="case" width={350} height={200} />
       </div>
       <p className="mt-2 text-lg font-bold text-white">{caseName}</p>
     </motion.div>

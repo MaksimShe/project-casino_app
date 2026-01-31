@@ -50,10 +50,16 @@ export const useCaseGame = () => {
         item: {
           id: data.item.id,
           name: data.item.name,
-          rarity: data.item.rarity,
+          rarity: data.item.rarity as
+            | 'Common'
+            | 'Uncommon'
+            | 'Rare'
+            | 'Epic'
+            | 'Legendary'
+            | 'Gold',
           value: data.item.value,
           chance: 0,
-          image: data.item.image,
+          imageUrl: data.item.imageUrl || data.item.image || '❓',
         },
         profit: data.itemValue - data.casePrice,
         newBalance: data.newBalance,
@@ -72,10 +78,25 @@ export const useCaseGame = () => {
       // Add to session stats
       store.addToSessionStats(data.casePrice, data.itemValue);
 
-      // Start animation
-      store.setViewState('opening');
-      store.setIsAnimating(true);
-      store.setIsOpening(false);
+      // Start animation or skip to result
+      if (store.skipAnimation) {
+        store.setViewState('result');
+        store.setIsAnimating(false);
+        store.setIsOpening(false);
+      } else {
+        store.setViewState('opening');
+        store.setIsAnimating(true);
+        store.setIsOpening(false);
+      }
+
+      // Update user balance
+      queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          balance: data.newBalance,
+        };
+      });
     },
     onError: error => {
       // Restore balance on error

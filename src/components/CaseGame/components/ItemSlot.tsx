@@ -28,7 +28,7 @@ export const ItemSlot = memo<ItemSlotProps>(({ item, isWinning }) => {
         height: `${CASE_VISUAL.ITEM_SLOT_HEIGHT}px`,
       }}
     >
-      <div className="mb-2 text-5xl">{item.emoji}</div>
+      <div className="mb-2 text-5xl">{item.imageUrl}</div>
       <p className="px-2 text-center text-xs font-semibold text-white">
         {item.name}
       </p>

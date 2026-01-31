@@ -35,12 +35,12 @@ export const CASE_VISUAL = {
   VISIBLE_ITEMS: 7, // visible at once
 
   // Winning item display
-  WINNING_ITEM_SCALE: 1.4,
-  WINNING_EMOJI_SIZE: '8rem', // text-8xl
+  WINNING_ITEM_SCALE: 1.2,
+  WINNING_EMOJI_SIZE: '16rem', // text-8xl
 } as const;
 
 // Config
 export const CASE_CONFIG = {
-  MIN_PRICE: 0.1,
+  MIN_PRICE: 1,
   MAX_PRICE: 10000,
 } as const;
