@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { AnimationControls } from 'framer-motion';
+import type { useAnimation } from 'framer-motion';
 import { useCaseStore } from '@/stores/useCaseStore';
 import { CASE_VISUAL, CASE_ANIMATION } from '../constants';
 
-export const useCaseAnimation = (controls: AnimationControls) => {
+export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
   const store = useCaseStore();
   const [isMobile, setIsMobile] = useState(false);
 
