@@ -17,7 +17,7 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
 
     return (
       <motion.div
-        className="relative flex w-[500px] items-center justify-center overflow-hidden rounded-2xl p-1"
+        className="relative flex w-[500px] items-center justify-center overflow-hidden rounded-2xl p-1 max-sm:w-full"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{
@@ -46,7 +46,7 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
             {result.item.name}
           </p>
           {/* Case name */}
-          <p className="mb-4 flex w-full gap-2">
+          <p className="flex w-full gap-2">
             <Image src={caseImg} alt="case" width={40} height={16} />
             {caseName || 'Unknown Case'}
           </p>

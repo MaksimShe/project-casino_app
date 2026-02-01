@@ -80,12 +80,12 @@ export const WinModal = memo(() => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs"
+        className="absolute inset-0 z-50 flex items-center justify-center bg-black/10 max-sm:items-start sm:backdrop-blur-xs"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="flex flex-col items-center gap-8 px-4">
+        <div className="flex flex-col items-center gap-8 px-4 max-sm:mt-28">
           <WinningItemDisplay
             result={openingResult}
             caseName={selectedCase?.name}
@@ -95,13 +95,13 @@ export const WinModal = memo(() => {
           <div className="flex gap-4">
             <button
               onClick={handleSell}
-              className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-white shadow-white"
+              className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-white shadow-white max-sm:w-40"
             >
               Sell this
             </button>
             <button
               onClick={handleSellAndAgain}
-              className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-white"
+              className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-white max-sm:w-40"
             >
               Sell + Try again
             </button>

@@ -1,28 +1,18 @@
 import { memo } from 'react';
-import cn from 'classnames';
 import { getRarityColor } from '../helpers/getRarityColor';
 import type { AnimationItem } from '@/types/case';
-import { CASE_VISUAL } from '../constants';
 
 interface ItemSlotProps {
   item: AnimationItem;
-  isWinning: boolean;
 }
 
-export const ItemSlot = memo<ItemSlotProps>(({ item, isWinning }) => {
+export const ItemSlot = memo<ItemSlotProps>(({ item }) => {
   const rarityColors = getRarityColor(item.rarity);
 
   return (
     <div
-      className={cn(
-        'relative flex flex-shrink-0 flex-col items-center justify-center overflow-hidden rounded-lg p-0.5 transition-all',
-        {
-          'scale-110': isWinning,
-        }
-      )}
+      className="relative flex h-48 w-40 flex-shrink-0 flex-col items-center justify-center overflow-hidden rounded-lg p-0.5 transition-all max-sm:h-32 max-sm:w-[100px]"
       style={{
-        width: `${CASE_VISUAL.ITEM_SLOT_WIDTH}px`,
-        height: `${CASE_VISUAL.ITEM_SLOT_HEIGHT}px`,
         background: `linear-gradient(to top, ${rarityColors.hex}, ${rarityColors.hex}20)`,
       }}
     >

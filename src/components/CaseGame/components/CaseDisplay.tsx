@@ -9,7 +9,7 @@ export const CaseDisplay = () => {
       className="absolute flex -translate-x-1/2 flex-col"
       style={{
         left: CASE_VISUAL.CASE_X_POSITION,
-        top: '45%',
+        top: '50%',
       }}
       initial={{ scale: 1 }}
       animate={{ scale: CASE_ANIMATION.CASE_SCALE_SIZE }}

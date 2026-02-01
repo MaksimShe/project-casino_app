@@ -142,24 +142,26 @@ export const CaseDetails = memo(({ caseData }: CaseDetailsProps) => {
   const isOpening = openMutation.isPending || store.isOpening;
 
   return (
-    <div className="min-h-screen w-full lg:px-12">
+    <div className="min-h-screen w-full lg:px-8">
       {/* Case Details */}
-      <div className="px-8 py-12">
+      <div className="pt-4 max-lg:px-6">
         {/* Case Main */}
-        <div className="flex">
-          <div className="mr-8 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-600/30 backdrop-blur-sm hover:scale-105">
-            <button
-              onClick={() => router.push(ROUTES.CASEGAME)}
-              className="flex h-full w-full items-center justify-center"
-            >
-              <Image src={arrowBackIcon} alt="back" width={16} height={16} />
-            </button>
-          </div>
-          <div className="mb-12 flex w-[545px] flex-col gap-6">
-            <h1 className="mb-4 text-5xl font-bold text-white">
-              {caseData.name}
-            </h1>
-            <Image src={caseImg} alt="case" width={450} height={200} />
+        <div className="flex justify-between max-lg:flex-col max-lg:justify-center">
+          <div className="flex max-sm:flex-col">
+            <div className="mr-8 mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-600/30 hover:scale-105 max-sm:w-full">
+              <button
+                onClick={() => router.push(ROUTES.CASEGAME)}
+                className="flex h-full w-full items-center justify-center"
+              >
+                <Image src={arrowBackIcon} alt="back" width={16} height={16} />
+              </button>
+            </div>
+            <div className="mb-12 flex w-full flex-col gap-6 max-lg:items-center">
+              <h1 className="mb-4 w-full text-5xl font-bold text-white max-sm:text-center">
+                {caseData.name}
+              </h1>
+              <Image src={caseImg} alt="case" width={450} height={200} />
+            </div>
           </div>
           {/* Open button and settings */}
           <div className="flex flex-col items-center justify-center gap-4">
@@ -167,7 +169,7 @@ export const CaseDetails = memo(({ caseData }: CaseDetailsProps) => {
               onClick={handleOpenCase}
               disabled={isOpening}
               className={cn(
-                'h-12 min-w-48 rounded-full px-12 font-bold text-white transition-all',
+                'h-12 w-7/12 min-w-64 rounded-full px-12 font-bold text-white transition-all',
                 'bg-gradient-to-t from-[#BA0034] to-[#FF185F]',
                 {
                   'cursor-not-allowed opacity-50': isOpening,
@@ -179,7 +181,7 @@ export const CaseDetails = memo(({ caseData }: CaseDetailsProps) => {
             </button>
 
             {/* Skip animation toggle */}
-            <div className="flex items-center gap-3">
+            <div className="mb-10 flex items-center gap-3">
               <span className="text-sm text-white/70">Skip Animation</span>
               <button
                 onClick={handleToggleSkipAnimation}

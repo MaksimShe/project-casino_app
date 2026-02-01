@@ -13,56 +13,30 @@ export const CaseOpening = memo(() => {
   const controls = useAnimation();
   const { handleAnimationComplete, handleSkip } = useCaseAnimation(controls);
 
-  const handleStop = () => {
-    controls.stop();
-  };
-
   if (!selectedCase) return null;
 
   return (
-    <div className="relative h-screen w-[788px] overflow-hidden">
-      {/* Skip Button */}
-      {isAnimating && (
-        <button
-          onClick={handleSkip}
-          className="absolute top-8 right-8 z-30 rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition-all hover:scale-105 hover:bg-purple-700 active:scale-95"
-        >
-          Skip Opening
-        </button>
-      )}
-
-      {/* TEMP: Stop Button for Development */}
-      {isAnimating && (
-        <button
-          onClick={handleStop}
-          className="absolute top-8 right-48 z-30 rounded-lg bg-yellow-600 px-6 py-3 font-semibold text-white transition-all hover:scale-105 hover:bg-yellow-700 active:scale-95"
-        >
-          STOP (DEV)
-        </button>
-      )}
-
+    <div className="relative h-screen w-[820px] overflow-hidden">
       {/* Case Display */}
       <CaseDisplay />
 
-      {/* Winning indicator line */}
-      <Image
-        src={winIndicatorImg}
-        alt="line"
-        height={CASE_VISUAL.ITEM_SLOT_HEIGHT + 24}
-        width={CASE_VISUAL.ITEM_SLOT_HEIGHT / 9.6}
-        className="absolute -top-[31px] left-1/2 z-20 translate-y-1/2"
-      />
-
       {/* Scrolling strip container */}
       <div
-        className="absolute flex items-center overflow-hidden rounded-3xl border border-amber-300 bg-black"
+        className="absolute mx-6 flex h-60 items-center overflow-hidden rounded-3xl border border-amber-300 bg-black max-sm:h-48"
         style={{
           left: 0,
           right: 0,
           top: `calc(${CASE_VISUAL.CASE_Y_POSITION} + ${CASE_VISUAL.STRIP_Y_OFFSET}px)`,
-          height: `${CASE_VISUAL.ITEM_SLOT_HEIGHT + 48}px`,
         }}
       >
+        {/* Winning indicator line */}
+        <Image
+          src={winIndicatorImg}
+          alt="line"
+          height={CASE_VISUAL.ITEM_SLOT_HEIGHT + 24}
+          width={CASE_VISUAL.ITEM_SLOT_HEIGHT / 9.6}
+          className="absolute left-1/2 z-20 -translate-x-1/2"
+        />
         <motion.div
           className="absolute flex justify-center"
           style={{
@@ -74,14 +48,18 @@ export const CaseOpening = memo(() => {
           onAnimationComplete={handleAnimationComplete}
         >
           {animationItems.map((item, index) => (
-            <ItemSlot
-              key={`${item.id}-${index}`}
-              item={item}
-              isWinning={index === CASE_VISUAL.WINNING_ITEM_INDEX}
-            />
+            <ItemSlot key={`${item.id}-${index}`} item={item} />
           ))}
         </motion.div>
       </div>
+      {isAnimating && (
+        <button
+          onClick={handleSkip}
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[39%]"
+        >
+          Skip opening
+        </button>
+      )}
     </div>
   );
 });

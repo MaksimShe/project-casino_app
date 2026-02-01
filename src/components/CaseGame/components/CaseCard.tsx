@@ -31,7 +31,7 @@ export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
         <p className="mt-2 p-0 text-xl font-bold text-white max-lg:text-center lg:text-3xl">
           {caseItem.name}
         </p>
-        <div className="flex gap-1 rounded-full border px-3.5 py-1.5 font-bold text-white">
+        <div className="flex gap-1 rounded-full border border-amber-300 px-3.5 py-1.5 font-bold text-white">
           {formatNumber(caseItem.price)}
           <Image src={coinImg} alt="coin" width={16} height={16} />
         </div>

@@ -23,7 +23,7 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-8">
+    <div className="grid grid-cols-3 gap-6 max-sm:gap-4 md:grid-cols-4 lg:grid-cols-8">
       {items.map(item => {
         const rarityColors = getRarityColor(item.rarity);
         const isFlipped = flippedItems.has(item.id);
