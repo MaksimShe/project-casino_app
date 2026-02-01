@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC } from 'react';
+import { type FC, useRef, useState, useEffect } from 'react';
 import { QuickButton } from './QuickButton';
 import { formatNumber } from '@/utils/format';
 import Image from 'next/image';
@@ -20,39 +20,105 @@ export const BetInput: FC<BetInputProps> = ({
   label,
   value,
   onChange,
-  maxValue = 1000,
+  maxValue = 10000,
   placeholder = '10.00',
   balance,
   disabled = false,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [displayValue, setDisplayValue] = useState(value.toString());
+
   const effectiveMax =
     balance !== undefined ? Math.min(maxValue, balance) : maxValue;
   const isDisabled = disabled || (balance !== undefined && balance < 1);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
+  // Sync display value when prop value changes externally
+  useEffect(() => {
+    setDisplayValue(value.toString());
+  }, [value]);
 
-    // Allow empty input for user to delete
+  const commitValue = (inputValue: string) => {
     if (inputValue === '' || inputValue === '0') {
-      onChange(0);
+      onChange(1);
+      setDisplayValue('1');
       return;
     }
 
-    const newValue = +formatNumber(parseFloat(inputValue)) || 0;
-    onChange(Math.min(newValue, effectiveMax));
+    const numValue = parseFloat(inputValue);
+    if (isNaN(numValue)) {
+      onChange(1);
+      setDisplayValue('1');
+      return;
+    }
+
+    const newValue = Math.min(
+      Math.max(1, +formatNumber(numValue)),
+      effectiveMax
+    );
+    onChange(newValue);
+    setDisplayValue(newValue.toString());
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+
+    // Block negative values
+    if (inputValue.startsWith('-')) {
+      return;
+    }
+
+    // Allow empty or partial numbers being typed
+    if (inputValue === '' || inputValue === '0') {
+      setDisplayValue(inputValue);
+      return;
+    }
+
+    const numValue = parseFloat(inputValue);
+
+    // Block values exceeding max while typing
+    if (!isNaN(numValue) && numValue > effectiveMax) {
+      return;
+    }
+
+    // Allow typing (including decimals)
+    setDisplayValue(inputValue);
   };
 
   const handleBlur = () => {
-    // Ensure minimum value of 1 when user leaves the input
-    if (value < 1) {
-      onChange(1);
+    commitValue(displayValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      commitValue(displayValue);
+      inputRef.current?.blur();
     }
   };
 
   const quickButtons = [
-    { label: '1/2', onClick: () => onChange(Math.max(1, value / 2)) },
-    { label: 'x2', onClick: () => onChange(Math.min(value * 2, effectiveMax)) },
-    { label: 'max', onClick: () => onChange(effectiveMax) },
+    {
+      label: '1/2',
+      onClick: () => {
+        const newValue = Math.max(1, value / 2);
+        onChange(newValue);
+        setDisplayValue(newValue.toString());
+      },
+    },
+    {
+      label: 'x2',
+      onClick: () => {
+        const newValue = Math.min(value * 2, effectiveMax);
+        onChange(newValue);
+        setDisplayValue(newValue.toString());
+      },
+    },
+    {
+      label: 'max',
+      onClick: () => {
+        onChange(effectiveMax);
+        setDisplayValue(effectiveMax.toString());
+      },
+    },
   ];
 
   return (
@@ -61,10 +127,12 @@ export const BetInput: FC<BetInputProps> = ({
       <div className="flex items-center gap-2 rounded-lg bg-[var(--panel-input-bg)] px-2.5 py-0.5">
         <Image src={coinImg} alt="$" height={24} width={24} />
         <input
+          ref={inputRef}
           type="number"
-          value={value || ''}
+          value={displayValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           className="flex-1 rounded-md bg-transparent px-1 py-2 text-sm font-medium text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={placeholder}
           min={0}

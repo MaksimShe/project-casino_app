@@ -11,6 +11,7 @@ import {
 
 export class AuthApiError extends Error {
   statusCode: number;
+  status: number | undefined;
 
   constructor(message: string, statusCode: number) {
     super(message);
@@ -230,6 +231,24 @@ class AuthService {
     }
 
     return this.fetchApi<LeaderboardResponse>(`/leaderboard?period=${period}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
+
+  public async getAllUsers(): Promise<
+    Array<{ username: string; gamesPlayed: number; balance: number }>
+  > {
+    const accessToken = this.getAccessToken();
+    if (!accessToken) {
+      throw new AuthApiError('No access token found', 401);
+    }
+
+    return this.fetchApi<
+      Array<{ username: string; gamesPlayed: number; balance: number }>
+    >('/users', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,

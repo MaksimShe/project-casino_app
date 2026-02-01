@@ -12,6 +12,10 @@ export const EXCLUDED_FIELDS = [
   'clientSeed',
   'serverSeed',
   'nonce',
+  'ballsCount',
+  'completed',
+  'updatedAt',
+  'completedAt',
 ] as const;
 
 // Field name patterns to exclude
@@ -71,6 +75,15 @@ export const CRASH_BETS_COLUMN_ORDER = [
   'crashPoint',
   'winAmount',
   'status',
+] as const;
+
+export const PLINKO_COLUMN_ORDER = [
+  'createdAt',
+  'betAmount',
+  'linesCount',
+  'riskLevel',
+  'avgMultiplier',
+  'totalWin',
 ] as const;
 
 // Table styling
