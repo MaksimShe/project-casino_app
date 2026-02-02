@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { useAnimation } from 'framer-motion';
 import { useCaseStore } from '@/stores/useCaseStore';
-import { CASE_VISUAL, CASE_ANIMATION } from '../constants';
+import { CASE_VISUAL, CASE_ANIMATION, CaseViewState } from '../constants';
 
 export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
   const store = useCaseStore();
@@ -27,7 +27,7 @@ export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
   const handleAnimationComplete = useCallback(() => {
     store.setIsAnimating(false);
     setTimeout(() => {
-      store.setViewState('result');
+      store.setViewState(CaseViewState.RESULT);
     }, CASE_ANIMATION.RESULT_DELAY);
   }, [store]);
 
@@ -41,7 +41,7 @@ export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
     });
 
     store.setIsAnimating(false);
-    store.setViewState('result');
+    store.setViewState(CaseViewState.RESULT);
   }, [controls, calculateFinalPosition, store]);
 
   // Start animation on mount

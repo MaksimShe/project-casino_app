@@ -13,7 +13,7 @@ interface WinningItemDisplayProps {
 
 export const WinningItemDisplay = memo<WinningItemDisplayProps>(
   ({ result, caseName }) => {
-    const rarityColors = getRarityColor(result.item.rarity);
+    const rarityColor = getRarityColor(result.item.rarity);
 
     return (
       <motion.div
@@ -27,16 +27,12 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
       >
         {/* Gradient background */}
         <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to top, ${rarityColors.hex}, ${rarityColors.hex}20)`,
-          }}
+          className={`absolute inset-0 bg-gradient-to-t from-[${rarityColor}] to-[${rarityColor}]/20`}
         />
 
         {/* Small dot in left bottom corner */}
         <div
-          className="absolute bottom-8 left-8 z-20 h-3 w-3 rounded-full"
-          style={{ backgroundColor: rarityColors.hex }}
+          className={`absolute bottom-8 left-8 z-20 h-3 w-3 rounded-full bg-[${rarityColor}]`}
         />
 
         {/* Content */}

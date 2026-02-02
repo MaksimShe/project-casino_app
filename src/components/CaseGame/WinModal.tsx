@@ -6,16 +6,20 @@ import { WinningItemDisplay } from './components/WinningItemDisplay';
 import { useCaseNotification } from './hooks/useCaseNotification';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import type { CurrentUserResponse } from '@/types/auth';
+import { CaseViewState } from './constants';
 
-export const WinModal = memo(() => {
-  const { openingResult, viewState, selectedCase, resetGame, setViewState } =
-    useCaseStore();
+interface WinModalProps {
+  onOpenAgain?: () => void;
+}
+
+export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
+  const { openingResult, viewState, selectedCase, resetGame } = useCaseStore();
   const queryClient = useQueryClient();
   const { showWinNotification } = useCaseNotification();
 
   // Lock scroll when modal is open
   useEffect(() => {
-    if (viewState === 'result' && openingResult) {
+    if (viewState === CaseViewState.RESULT && openingResult) {
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = '';
@@ -46,7 +50,7 @@ export const WinModal = memo(() => {
   }, [openingResult, queryClient, showWinNotification, resetGame]);
 
   const handleSellAndAgain = useCallback(() => {
-    if (!openingResult || !selectedCase) return;
+    if (!openingResult || !selectedCase || !onOpenAgain) return;
 
     // Add item value to balance
     queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
@@ -63,29 +67,41 @@ export const WinModal = memo(() => {
     // Show notification
     showWinNotification(openingResult.item.value, openingResult.profit);
 
-    // Return to selection state but keep the case selected
-    setViewState('selection');
+    // Clear opening result and animation state, then return to selection
+    useCaseStore.setState({
+      openingResult: null,
+      isOpening: false,
+      isAnimating: false,
+      animationItems: [],
+      animationProgress: 0,
+      viewState: CaseViewState.SELECTION,
+    });
+
+    // Trigger new case opening after a short delay to ensure state is clean
+    setTimeout(() => {
+      onOpenAgain();
+    }, 100);
   }, [
     openingResult,
     selectedCase,
     queryClient,
     showWinNotification,
-    setViewState,
+    onOpenAgain,
   ]);
 
-  if (viewState !== 'result' || !openingResult) {
+  if (viewState !== CaseViewState.RESULT || !openingResult) {
     return null;
   }
 
   return (
     <AnimatePresence>
       <motion.div
-        className="absolute inset-0 z-50 flex items-center justify-center bg-black/10 max-sm:items-start sm:backdrop-blur-xs"
+        className="absolute inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/10 max-sm:items-start sm:backdrop-blur-xs"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="flex flex-col items-center gap-8 px-4 max-sm:mt-28">
+        <div className="flex max-h-screen flex-col items-center gap-8 overflow-y-auto px-4 py-8 max-sm:mt-28">
           <WinningItemDisplay
             result={openingResult}
             caseName={selectedCase?.name}

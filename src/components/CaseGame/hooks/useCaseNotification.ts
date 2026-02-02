@@ -8,8 +8,10 @@ export const useCaseNotification = () => {
       toast.success(
         `Won $${formatNumber(amount)}! Profit: $${formatNumber(profit)}`
       );
-    } else {
+    } else if (profit < 0) {
       toast.error(`Lost $${formatNumber(Math.abs(profit))}`);
+    } else {
+      toast.message(`Draw $${formatNumber(Math.abs(profit))}`);
     }
   }, []);
 

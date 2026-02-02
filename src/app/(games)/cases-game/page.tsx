@@ -21,7 +21,7 @@ export default function CasesGamePage() {
   const cases = casesData?.cases.sort((a, b) => a.price - b.price) || [];
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center">
+    <div className="flex items-center justify-center">
       <div className="mx-auto max-w-7xl">
         {/* Cases Grid */}
         <div className="grid grid-cols-2 gap-4 px-6 pt-3 lg:grid-cols-3 lg:gap-6 lg:p-6 xl:grid-cols-4">

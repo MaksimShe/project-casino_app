@@ -1,8 +1,10 @@
+import { type Rarity } from '@/components/CaseGame/constants';
+
 // API Response Types (from backend_dock.md)
 export interface CaseItem {
   id: string;
   name: string;
-  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Gold';
+  rarity: Rarity;
   value: number;
   chance: number;
   imageUrl: string; // Backend sends imageUrl not image

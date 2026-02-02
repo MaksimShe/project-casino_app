@@ -16,16 +16,14 @@ export const CaseOpening = memo(() => {
   if (!selectedCase) return null;
 
   return (
-    <div className="relative h-screen w-[820px] overflow-hidden">
+    <div className="relative h-[calc(100vh-200px)] w-[820px] overflow-hidden">
       {/* Case Display */}
       <CaseDisplay />
 
       {/* Scrolling strip container */}
       <div
-        className="absolute mx-6 flex h-60 items-center overflow-hidden rounded-3xl border border-amber-300 bg-black max-sm:h-48"
+        className="absolute right-0 left-0 mx-6 flex h-60 items-center overflow-hidden rounded-3xl border border-amber-300 bg-black max-sm:h-48"
         style={{
-          left: 0,
-          right: 0,
           top: `calc(${CASE_VISUAL.CASE_Y_POSITION} + ${CASE_VISUAL.STRIP_Y_OFFSET}px)`,
         }}
       >
@@ -33,14 +31,13 @@ export const CaseOpening = memo(() => {
         <Image
           src={winIndicatorImg}
           alt="line"
-          height={CASE_VISUAL.ITEM_SLOT_HEIGHT + 24}
-          width={CASE_VISUAL.ITEM_SLOT_HEIGHT / 9.6}
+          height={CASE_VISUAL.ITEM_SLOT_HEIGHT + CASE_VISUAL.IMAGE_PADDING}
+          width={CASE_VISUAL.ITEM_SLOT_HEIGHT / CASE_VISUAL.IMAGE_ASPECT_RATIO}
           className="absolute left-1/2 z-20 -translate-x-1/2"
         />
         <motion.div
-          className="absolute flex justify-center"
+          className="absolute left-1/2 flex justify-center"
           style={{
-            left: '50%',
             gap: `${CASE_VISUAL.ITEM_SLOT_GAP}px`,
           }}
           initial={{ x: 0 }}

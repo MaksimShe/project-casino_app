@@ -25,7 +25,7 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
   return (
     <div className="grid grid-cols-3 gap-6 max-sm:gap-4 md:grid-cols-4 lg:grid-cols-8">
       {items.map(item => {
-        const rarityColors = getRarityColor(item.rarity);
+        const rarityColor = getRarityColor(item.rarity);
         const isFlipped = flippedItems.has(item.id);
 
         return (
@@ -43,14 +43,14 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(to top, ${rarityColors.hex}, ${rarityColors.hex}20)`,
+                    background: `linear-gradient(to top, ${rarityColor}, color-mix(in srgb, ${rarityColor} 20%, transparent))`,
                   }}
                 />
 
                 {/* Small dot in left bottom corner */}
                 <div
                   className="absolute bottom-3 left-3 z-20 h-2 w-2 rounded-full"
-                  style={{ backgroundColor: rarityColors.hex }}
+                  style={{ backgroundColor: rarityColor }}
                 />
 
                 <div className="relative z-10 flex h-[98%] w-[98%] flex-col justify-between rounded-lg bg-[#423E69]">
@@ -66,7 +66,7 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
               {/* Back side */}
               <div
                 className="absolute inset-0 flex rotate-y-180 flex-col items-center justify-center rounded-lg backface-hidden"
-                style={{ backgroundColor: rarityColors.hex }}
+                style={{ backgroundColor: rarityColor }}
               >
                 <div className="px-4 text-center">
                   {/* Rarity name */}

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Case, OpeningResult, AnimationItem } from '@/types/case';
+import { CaseViewState } from '@/components/CaseGame/constants';
 
 interface CaseStore {
   // Available cases
@@ -7,7 +8,7 @@ interface CaseStore {
   selectedCase: Case | null;
 
   // UI state
-  viewState: 'selection' | 'opening' | 'result';
+  viewState: CaseViewState;
 
   // Opening state
   isOpening: boolean;
@@ -27,7 +28,7 @@ interface CaseStore {
   // Actions
   setAvailableCases: (cases: Case[]) => void;
   setSelectedCase: (caseItem: Case | null) => void;
-  setViewState: (state: 'selection' | 'opening' | 'result') => void;
+  setViewState: (state: CaseViewState) => void;
   setIsOpening: (isOpening: boolean) => void;
   setOpeningResult: (result: OpeningResult | null) => void;
   setAnimationItems: (items: AnimationItem[]) => void;
@@ -43,7 +44,7 @@ export const useCaseStore = create<CaseStore>(set => ({
   // Initial state
   availableCases: null,
   selectedCase: null,
-  viewState: 'selection',
+  viewState: CaseViewState.SELECTION,
   isOpening: false,
   openingResult: null,
   animationItems: [],
@@ -77,7 +78,7 @@ export const useCaseStore = create<CaseStore>(set => ({
 
   resetGame: () =>
     set({
-      viewState: 'selection',
+      viewState: CaseViewState.SELECTION,
       isOpening: false,
       openingResult: null,
       animationItems: [],

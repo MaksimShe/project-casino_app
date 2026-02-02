@@ -77,25 +77,13 @@
   --panel-title-weight: 600;
 
   /* Case Game Rarity Colors */
-  --rarity-common-bg: #6b7280;
-  --rarity-common-border: #9ca3af;
-  --rarity-common-glow: rgba(107, 114, 128, 0.5);
-
-  --rarity-uncommon-bg: #10b981;
-  --rarity-uncommon-border: #34d399;
-  --rarity-uncommon-glow: rgba(16, 185, 129, 0.5);
-
-  --rarity-rare-bg: #3b82f6;
-  --rarity-rare-border: #60a5fa;
-  --rarity-rare-glow: rgba(59, 130, 246, 0.5);
-
-  --rarity-epic-bg: #8b5cf6;
-  --rarity-epic-border: #a78bfa;
-  --rarity-epic-glow: rgba(139, 92, 246, 0.5);
-
-  --rarity-legendary-bg: #f59e0b;
-  --rarity-legendary-border: #fbbf24;
-  --rarity-legendary-glow: rgba(245, 158, 11, 0.5);
+  --rarity-common: #adb5bd;
+  --rarity-uncommon: #82c91e;
+  --rarity-rare: #6caaf6;
+  --rarity-epic: #a86cf6;
+  --rarity-legendary: #e59603;
+  --rarity-gold: #ff0000;
+  --rarity-default: #6b7280;
 }
 
 @theme inline {
@@ -122,7 +110,7 @@
 body {
   background: linear-gradient(180deg, #0f0c29 0%, #312c5f 50%, #24243e 100%)
     fixed;
-  min-height: 100vh;
+  min-height: calc(100vh - 100px);
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 16px;
@@ -133,6 +121,7 @@ body {
 
 @media (max-width: 1024px) {
   body {
+    min-height: calc(100vh - 60px);
     padding-top: 60px;
   }
 }

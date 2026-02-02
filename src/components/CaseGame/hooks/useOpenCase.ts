@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCaseStore } from '@/stores/useCaseStore';
 import { caseService } from '@/services/CaseService.class';
 import { AuthApiError } from '@/services/AuthService.class';
@@ -7,33 +6,20 @@ import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import { showErrorNotification } from '@/utils/notifications';
 import { generateAnimationItems } from '../helpers/generateAnimationItems';
 import type { CurrentUserResponse } from '@/types/auth';
+import type { CaseItem } from '@/types/case';
+import { type Rarity, CaseViewState } from '../constants';
 
-export const useCaseGame = () => {
+interface UseOpenCaseOptions {
+  casePrice: number;
+  caseItems: CaseItem[];
+}
+
+export const useOpenCase = ({ casePrice, caseItems }: UseOpenCaseOptions) => {
   const store = useCaseStore();
   const queryClient = useQueryClient();
 
-  // Fetch all cases
-  const { data: casesData, isLoading: casesLoading } = useQuery({
-    queryKey: ['cases'],
-    queryFn: async () => {
-      const response = await caseService.getAllCases();
-      store.setAvailableCases(response.cases);
-      return response;
-    },
-  });
-
-  // Fetch case details when selected
-  const { data: caseDetails, isLoading: detailsLoading } = useQuery({
-    queryKey: ['case', store.selectedCase?.id],
-    queryFn: () => caseService.getCaseDetails(store.selectedCase!.id),
-    enabled: !!store.selectedCase,
-  });
-
-  // Open case mutation
-  const openMutation = useMutation({
+  return useMutation({
     mutationFn: async (id: string) => {
-      // Optimistically subtract case price from balance
-      const casePrice = store.selectedCase?.price || 0;
       queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
         if (!oldData) return oldData;
         return {
@@ -45,18 +31,11 @@ export const useCaseGame = () => {
       return caseService.openCase(id);
     },
     onSuccess: data => {
-      // Store result
       store.setOpeningResult({
         item: {
           id: data.item.id,
           name: data.item.name,
-          rarity: data.item.rarity as
-            | 'Common'
-            | 'Uncommon'
-            | 'Rare'
-            | 'Epic'
-            | 'Legendary'
-            | 'Gold',
+          rarity: data.item.rarity as Rarity,
           value: data.item.value,
           chance: 0,
           imageUrl: data.item.imageUrl || data.item.image || '❓',
@@ -72,24 +51,22 @@ export const useCaseGame = () => {
       });
 
       // Generate animation items
-      const items = generateAnimationItems(caseDetails?.items || [], data.item);
+      const items = generateAnimationItems(caseItems, data.item);
       store.setAnimationItems(items);
 
       // Add to session stats
       store.addToSessionStats(data.casePrice, data.itemValue);
 
-      // Start animation or skip to result
       if (store.skipAnimation) {
-        store.setViewState('result');
+        store.setViewState(CaseViewState.RESULT);
         store.setIsAnimating(false);
         store.setIsOpening(false);
       } else {
-        store.setViewState('opening');
+        store.setViewState(CaseViewState.OPENING);
         store.setIsAnimating(true);
         store.setIsOpening(false);
       }
 
-      // Update user balance
       queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
         if (!oldData) return oldData;
         return {
@@ -99,8 +76,6 @@ export const useCaseGame = () => {
       });
     },
     onError: error => {
-      // Restore balance on error
-      const casePrice = store.selectedCase?.price || 0;
       queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
         if (!oldData) return oldData;
         return {
@@ -131,21 +106,4 @@ export const useCaseGame = () => {
       store.setIsOpening(false);
     },
   });
-
-  const handleOpenCase = useCallback(() => {
-    if (!store.selectedCase || store.isOpening || store.isAnimating) {
-      return;
-    }
-
-    store.setIsOpening(true);
-    openMutation.mutate(store.selectedCase.id);
-  }, [store, openMutation]);
-
-  return {
-    cases: casesData?.cases || [],
-    caseDetails,
-    isLoading: casesLoading || detailsLoading,
-    handleOpenCase,
-    isOpening: openMutation.isPending || store.isOpening,
-  };
 };

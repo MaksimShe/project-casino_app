@@ -1,3 +1,21 @@
+// Rarity types and values
+export const RARITIES = [
+  'Common',
+  'Uncommon',
+  'Rare',
+  'Epic',
+  'Legendary',
+  'Gold',
+] as const;
+export type Rarity = (typeof RARITIES)[number];
+
+// View state enum
+export enum CaseViewState {
+  SELECTION = 'selection',
+  OPENING = 'opening',
+  RESULT = 'result',
+}
+
 // Animation timing
 export const CASE_ANIMATION = {
   // Opening animation phases
@@ -19,15 +37,16 @@ export const CASE_ANIMATION = {
 
 // Visual layout
 export const CASE_VISUAL = {
-  // Case position (CSS percentages)
-  CASE_X_POSITION: '50%', // centered
-  CASE_Y_POSITION: '30%', // upper-middle
+  CASE_X_POSITION: '50%',
+  CASE_Y_POSITION: '30%',
 
   // Scrolling strip
   ITEM_SLOT_WIDTH: 160, // px
   ITEM_SLOT_HEIGHT: 192, // px
   ITEM_SLOT_GAP: 20, // px
   STRIP_Y_OFFSET: -180, // px above case
+  IMAGE_PADDING: 24,
+  IMAGE_ASPECT_RATIO: 9.6,
 
   // Animation items
   TOTAL_ITEMS_COUNT: 60, // items in strip
