@@ -83,6 +83,4 @@ const RocketAnimation = memo(
   }
 );
 
-RocketAnimation.displayName = 'RocketAnimation';
-
 export default RocketAnimation;

@@ -127,5 +127,3 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
     </AnimatePresence>
   );
 });
-
-WinModal.displayName = 'WinModal';

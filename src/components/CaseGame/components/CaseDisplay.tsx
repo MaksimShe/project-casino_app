@@ -23,5 +23,3 @@ export const CaseDisplay = () => {
     </motion.div>
   );
 };
-
-CaseDisplay.displayName = 'CaseDisplay';

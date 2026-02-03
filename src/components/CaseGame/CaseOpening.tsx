@@ -60,5 +60,3 @@ export const CaseOpening = memo(() => {
     </div>
   );
 });
-
-CaseOpening.displayName = 'CaseOpening';

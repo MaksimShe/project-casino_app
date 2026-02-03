@@ -103,5 +103,3 @@ export const CaseDetails = memo(
     );
   }
 );
-
-CaseDetails.displayName = 'CaseDetails';

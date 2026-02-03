@@ -49,5 +49,3 @@ export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
     </motion.div>
   );
 });
-
-CaseCard.displayName = 'CaseCard';

@@ -29,5 +29,3 @@ export const CaseItem = memo<CaseItemProps>(
     );
   }
 );
-
-CaseItem.displayName = 'CaseItem';

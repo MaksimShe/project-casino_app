@@ -28,5 +28,3 @@ export const ItemSlot = memo<ItemSlotProps>(({ item }) => {
     </div>
   );
 });
-
-ItemSlot.displayName = 'ItemSlot';

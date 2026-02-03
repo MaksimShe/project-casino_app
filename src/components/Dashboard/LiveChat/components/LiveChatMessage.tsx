@@ -55,5 +55,3 @@ export const LiveChatMessage: FC<Props> = memo(({ message }) => {
     </div>
   );
 });
-
-LiveChatMessage.displayName = 'LiveChatMessage';

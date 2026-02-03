@@ -92,5 +92,3 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
     </div>
   );
 });
-
-CaseContent.displayName = 'CaseContent';

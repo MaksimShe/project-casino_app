@@ -67,5 +67,3 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
     );
   }
 );
-
-WinningItemDisplay.displayName = 'WinningItemDisplay';
