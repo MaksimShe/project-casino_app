@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCaseStore } from '@/stores/useCaseStore';
@@ -16,6 +16,7 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
   const { openingResult, viewState, selectedCase, resetGame } = useCaseStore();
   const queryClient = useQueryClient();
   const { showWinNotification } = useCaseNotification();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Lock scroll when modal is open
   useEffect(() => {
@@ -26,6 +27,16 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
       };
     }
   }, [viewState, openingResult]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleSell = useCallback(() => {
     if (!openingResult) return;
@@ -77,9 +88,15 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
       viewState: CaseViewState.SELECTION,
     });
 
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     // Trigger new case opening after a short delay to ensure state is clean
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       onOpenAgain();
+      timeoutRef.current = null;
     }, 100);
   }, [
     openingResult,
