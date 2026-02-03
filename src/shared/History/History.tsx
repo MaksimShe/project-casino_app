@@ -11,7 +11,7 @@ import { getGameTypeFromPath } from './utils';
 import { UniversalTable } from './components/UniversalTable';
 
 // Extract history data from response
-function extractHistoryData(data: any): Record<string, unknown>[] {
+function extractHistoryData(data: unknown): Record<string, unknown>[] {
   if (!data) return [];
 
   const dataKeys = ['openings', 'games', 'drops', 'bets'];

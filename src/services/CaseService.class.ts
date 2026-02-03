@@ -21,9 +21,11 @@ class CaseService {
   private async fetchApi<T>(
     endpoint: string,
     options?: RequestInit,
-    skipRefresh = false
+    skipRefresh = false,
+    providedToken?: string
   ): Promise<T> {
-    const accessToken = authService.getAccessToken();
+    // Use provided token (for server-side) or get from client-side
+    const accessToken = providedToken || authService.getAccessToken();
     if (!accessToken) {
       throw new AuthApiError('No access token found', 401);
     }
@@ -85,22 +87,36 @@ class CaseService {
     return data;
   }
 
-  public async getAllCases(): Promise<CasesResponse> {
-    return this.fetchApi<CasesResponse>('/cases');
+  public async getAllCases(token?: string): Promise<CasesResponse> {
+    return this.fetchApi<CasesResponse>('/cases', undefined, false, token);
   }
 
-  public async getCaseDetails(id: string): Promise<CaseDetailsResponse> {
-    return this.fetchApi<CaseDetailsResponse>(`/cases/${id}`);
+  public async getCaseDetails(
+    id: string,
+    token?: string
+  ): Promise<CaseDetailsResponse> {
+    return this.fetchApi<CaseDetailsResponse>(
+      `/cases/${id}`,
+      undefined,
+      false,
+      token
+    );
   }
 
   public async openCase(
     id: string,
-    clientSeed?: string
+    clientSeed?: string,
+    token?: string
   ): Promise<OpenCaseResponse> {
-    return this.fetchApi<OpenCaseResponse>(`/cases/${id}/open`, {
-      method: 'POST',
-      body: JSON.stringify({ clientSeed }),
-    });
+    return this.fetchApi<OpenCaseResponse>(
+      `/cases/${id}/open`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ clientSeed }),
+      },
+      false,
+      token
+    );
   }
 }
 

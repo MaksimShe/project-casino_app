@@ -18,7 +18,7 @@ class SocketService {
   private readonly BASE_URL: string;
   private pendingListeners: Array<{
     event: string;
-    callback: (...args: any[]) => void;
+    callback: (...args: unknown[]) => void;
   }> = [];
 
   private constructor() {
