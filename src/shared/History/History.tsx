@@ -12,12 +12,15 @@ import { UniversalTable } from './components/UniversalTable';
 
 // Extract history data from response
 function extractHistoryData(data: unknown): Record<string, unknown>[] {
-  if (!data) return [];
+  if (!data || typeof data !== 'object') return [];
 
   const dataKeys = ['openings', 'games', 'drops', 'bets'];
   for (const key of dataKeys) {
     if (key in data) {
-      return data[key] as unknown as Record<string, unknown>[];
+      return (data as Record<string, unknown>)[key] as unknown as Record<
+        string,
+        unknown
+      >[];
     }
   }
 
