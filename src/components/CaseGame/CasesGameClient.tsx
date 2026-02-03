@@ -1,7 +1,7 @@
 'use client';
 
 import { CaseCard } from '@/components/CaseGame/components/CaseCard';
-import type { Case } from '@/services/CaseService.class';
+import type { Case } from '@/types/case';
 
 interface CasesGameClientProps {
   initialCases: Case[];
