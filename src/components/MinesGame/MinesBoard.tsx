@@ -1,0 +1,77 @@
+import { useMinesStore } from '@/stores/useMinesStore';
+import { MinesCellState, MinesGameStatus } from '@/types/mines';
+import { MinesCell } from './MinesCell';
+import { WinModal } from './modals/WinModal';
+import { LoseModal } from './modals/LoseModal';
+import { MINES_CONSTANTS } from './constants';
+
+interface MinesBoardProps {
+  onCellClick: (index: number) => void;
+  onNewGame: () => void;
+}
+
+export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
+  const {
+    gridSize,
+    cells,
+    gameStatus,
+    isRevealingCell,
+    isStartingGame,
+    showWinModal,
+    showLoseModal,
+    modalData,
+  } = useMinesStore();
+
+  const dimensions = MINES_CONSTANTS.GRID_DIMENSIONS[gridSize];
+  const totalCells = gridSize * gridSize;
+
+  const getCellState = (index: number): MinesCellState => {
+    return cells.get(index) || MinesCellState.UNREVEALED;
+  };
+
+  const isDisabled =
+    (gameStatus !== MinesGameStatus.ACTIVE &&
+      gameStatus !== MinesGameStatus.IDLE) ||
+    isRevealingCell ||
+    isStartingGame;
+
+  return (
+    <div className="relative flex aspect-square w-[500px] items-center justify-center max-sm:w-full">
+      <div
+        key={`grid-${gridSize}`}
+        className="grid h-full w-full gap-2 max-sm:gap-1"
+        style={{
+          gridTemplateColumns: `repeat(${dimensions.cols}, 1fr)`,
+          gridTemplateRows: `repeat(${dimensions.rows}, 1fr)`,
+        }}
+      >
+        {Array.from({ length: totalCells }, (_, index) => (
+          <MinesCell
+            key={`${gridSize}-${index}`}
+            index={index}
+            state={getCellState(index)}
+            isDisabled={isDisabled}
+            onClick={onCellClick}
+          />
+        ))}
+      </div>
+
+      {showWinModal && modalData && (
+        <WinModal
+          amount={modalData.amount}
+          multiplier={modalData.multiplier}
+          tilesRevealed={modalData.tilesRevealed}
+          onNewGame={onNewGame}
+        />
+      )}
+
+      {showLoseModal && modalData && (
+        <LoseModal
+          amount={modalData.amount}
+          tilesRevealed={modalData.tilesRevealed}
+          onNewGame={onNewGame}
+        />
+      )}
+    </div>
+  );
+};
