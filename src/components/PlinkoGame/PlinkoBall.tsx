@@ -41,5 +41,3 @@ export const PlinkoBall = memo<PlinkoBallProps>(({ ball }) => {
     />
   );
 });
-
-PlinkoBall.displayName = 'PlinkoBall';

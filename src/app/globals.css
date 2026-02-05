@@ -75,6 +75,15 @@
   /* Panel Text */
   --panel-title-size: 1.875rem;
   --panel-title-weight: 600;
+
+  /* Case Game Rarity Colors */
+  --rarity-common: #adb5bd;
+  --rarity-uncommon: #82c91e;
+  --rarity-rare: #6caaf6;
+  --rarity-epic: #a86cf6;
+  --rarity-legendary: #e59603;
+  --rarity-gold: #ff0000;
+  --rarity-default: #6b7280;
 }
 
 @theme inline {
@@ -101,7 +110,7 @@
 body {
   background: linear-gradient(180deg, #0f0c29 0%, #312c5f 50%, #24243e 100%)
     fixed;
-  min-height: 100vh;
+  min-height: calc(100vh - 100px);
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 16px;
@@ -112,6 +121,7 @@ body {
 
 @media (max-width: 1024px) {
   body {
+    min-height: calc(100vh - 60px);
     padding-top: 60px;
   }
 }
@@ -129,7 +139,7 @@ h2 {
   font-weight: 600;
   font-size: 32px;
   line-height: 1.3;
-  color: var(--second-text-color);
+  color: var(--main-text-color);
 }
 
 h3 {
@@ -348,4 +358,26 @@ input[type='number'] {
 /* Sliding markers animation */
 .sliding-markers {
   transition: transform 0.1s linear;
+}
+
+/* 3D Flip Card Utilities */
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+@utility preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@utility backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@utility rotate-y-0 {
+  transform: rotateY(0deg);
+}
+
+@utility rotate-y-180 {
+  transform: rotateY(180deg);
 }

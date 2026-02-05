@@ -40,6 +40,7 @@ const eslintConfig = defineConfig([
         { props: 'never', children: 'never' },
       ],
       'react/self-closing-comp': 'error',
+      'react/display-name': 'off',
 
       // General code quality
       'no-console': ['warn', { allow: ['warn', 'error'] }],

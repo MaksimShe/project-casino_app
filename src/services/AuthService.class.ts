@@ -8,6 +8,7 @@ import {
   type LeaderboardResponse,
   type LeaderboardPeriod,
 } from '@/types/auth';
+import { cookieUtils } from '@/utils/cookies';
 
 export class AuthApiError extends Error {
   statusCode: number;
@@ -26,7 +27,32 @@ class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'accessToken';
   private readonly REFRESH_TOKEN_KEY = 'refreshToken';
 
-  private constructor() {}
+  private constructor() {
+    // Migrate tokens from localStorage to cookies if they exist
+    this.migrateFromLocalStorage();
+  }
+
+  private migrateFromLocalStorage(): void {
+    if (typeof window === 'undefined') return;
+
+    // Check if tokens exist in localStorage
+    const oldAccessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    const oldRefreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+
+    if (oldAccessToken && oldRefreshToken) {
+      // Move to cookies
+      this.saveTokens({
+        accessToken: oldAccessToken,
+        refreshToken: oldRefreshToken,
+      });
+
+      // Clean up localStorage
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+
+      // Tokens migrated from localStorage to cookies
+    }
+  }
 
   public static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -38,20 +64,29 @@ class AuthService {
   public saveTokens(tokens: TokenStorage): void {
     if (typeof window === 'undefined') return;
 
-    localStorage.setItem(this.ACCESS_TOKEN_KEY, tokens.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refreshToken);
+    // Store tokens in cookies with 7 days expiration
+    cookieUtils.set(this.ACCESS_TOKEN_KEY, tokens.accessToken, {
+      days: 7,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    cookieUtils.set(this.REFRESH_TOKEN_KEY, tokens.refreshToken, {
+      days: 7,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
   }
 
   public getAccessToken(): string | null {
     if (typeof window === 'undefined') return null;
 
-    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    return cookieUtils.get(this.ACCESS_TOKEN_KEY);
   }
 
   public getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
 
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    return cookieUtils.get(this.REFRESH_TOKEN_KEY);
   }
 
   public getTokens(): TokenStorage | null {
@@ -66,8 +101,8 @@ class AuthService {
   public removeTokens(): void {
     if (typeof window === 'undefined') return;
 
-    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    cookieUtils.remove(this.ACCESS_TOKEN_KEY);
+    cookieUtils.remove(this.REFRESH_TOKEN_KEY);
   }
 
   public isAuthenticated(): boolean {
@@ -169,6 +204,7 @@ class AuthService {
       }
 
       const data = await response.json();
+      // Save new tokens to cookies
       this.saveTokens({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,

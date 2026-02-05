@@ -84,5 +84,3 @@ export const PlinkoSlot = memo<PlinkoSlotProps>(({ multiplier, index }) => {
     </div>
   );
 });
-
-PlinkoSlot.displayName = 'PlinkoSlot';

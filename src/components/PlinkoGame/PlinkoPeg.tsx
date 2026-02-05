@@ -77,5 +77,3 @@ export const PlinkoPeg = memo<PlinkoPegProps>(({ peg }) => {
     </div>
   );
 });
-
-PlinkoPeg.displayName = 'PlinkoPeg';
