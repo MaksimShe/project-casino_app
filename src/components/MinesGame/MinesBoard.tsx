@@ -1,8 +1,7 @@
 import { useMinesStore } from '@/stores/useMinesStore';
 import { MinesCellState, MinesGameStatus } from '@/types/mines';
 import { MinesCell } from './MinesCell';
-import { WinModal } from './modals/WinModal';
-import { LoseModal } from './modals/LoseModal';
+import { EndGameModal } from './EndGameModal';
 import { MINES_CONSTANTS } from './constants';
 
 interface MinesBoardProps {
@@ -56,18 +55,11 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
         ))}
       </div>
 
-      {showWinModal && modalData && (
-        <WinModal
+      {(showWinModal || showLoseModal) && modalData && (
+        <EndGameModal
+          isWin={showWinModal}
           amount={modalData.amount}
           multiplier={modalData.multiplier}
-          tilesRevealed={modalData.tilesRevealed}
-          onNewGame={onNewGame}
-        />
-      )}
-
-      {showLoseModal && modalData && (
-        <LoseModal
-          amount={modalData.amount}
           tilesRevealed={modalData.tilesRevealed}
           onNewGame={onNewGame}
         />
