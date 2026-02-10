@@ -5,6 +5,7 @@ import firstPlace from '@/../public/leaderboard_icons/1st-place.svg';
 import secondPlace from '@/../public/leaderboard_icons/2nd-place.svg';
 import thirdPlace from '@/../public/leaderboard_icons/3rd-place.svg';
 import { formatNumber } from '@/utils/format';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface LeaderBoardItemProps {
   username: string;
@@ -66,6 +67,7 @@ export const LeaderBoardItem = ({
   isCurrentUser = false,
   showYouLabel = false,
 }: LeaderBoardItemProps) => {
+  const { t } = useTranslation();
   return (
     <div
       className={twMerge(
@@ -87,9 +89,11 @@ export const LeaderBoardItem = ({
             </div>
           </div>
           <div className="flex justify-between">
-            <h4>{gamesPlayed} games</h4>
+            <h4>
+              {gamesPlayed} {t.leaderboard.gamesItem}
+            </h4>
             <p className="text-sm text-[var(--system-success-color)]">
-              {formatNumber(winRate)}% win
+              {formatNumber(winRate)}% {t.leaderboard.winRate}
             </p>
           </div>
         </div>

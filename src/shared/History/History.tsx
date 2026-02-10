@@ -9,6 +9,7 @@ import {
 import { HISTORY_CONFIG, TABLE_STYLES, TEXT_STYLES } from './constants';
 import { getGameTypeFromPath } from './utils';
 import { UniversalTable } from './components/UniversalTable';
+import { useTranslation } from '@/i18n/useTranslation';
 
 // Extract history data from response
 function extractHistoryData(data: unknown): Record<string, unknown>[] {
@@ -30,6 +31,7 @@ function extractHistoryData(data: unknown): Record<string, unknown>[] {
 export default function History() {
   const pathname = usePathname();
   const gameType = getGameTypeFromPath(pathname);
+  const { t } = useTranslation();
 
   // For crash game, always show "myBets"
   const crashHistoryQuery = useCrashHistory('myBets', {
@@ -67,13 +69,13 @@ export default function History() {
         <p
           className={`${TEXT_STYLES.TITLE_SIZE} ${TEXT_STYLES.TITLE_WEIGHT} ${TEXT_STYLES.TITLE_COLOR}`}
         >
-          Game history
+          {t.history.title}
         </p>
       </div>
 
       {error ? (
         <div className={`py-8 text-center ${TABLE_STYLES.ERROR_TEXT_COLOR}`}>
-          Failed to load history: {error.message}
+          {t.history.failedLoad} {error.message}
         </div>
       ) : (
         <UniversalTable

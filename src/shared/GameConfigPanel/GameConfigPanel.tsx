@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  gamesConfig,
+  getGamesConfig,
   type GameConfig,
   PANEL_DEFAULTS,
 } from '@/shared/GameConfigPanel/constants';
@@ -16,6 +16,7 @@ import {
   type ButtonState,
 } from './components';
 import { CONFIG_PANEL } from '@/constants/configPanel';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
   game: GameType;
@@ -56,6 +57,8 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   maxBetCanBe = CONFIG_PANEL.MAX_BET,
   settingValues,
 }: Props) {
+  const { t, language } = useTranslation();
+  const gamesConfig = getGamesConfig(t);
   const config: GameConfig | undefined = gamesConfig[game];
   const [internalBetAmount, setInternalBetAmount] = useState<number>(
     PANEL_DEFAULTS.INITIAL_BET_AMOUNT
@@ -103,7 +106,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   if (!config) return null;
 
   const defaultPrimary: ButtonState = {
-    label: config.buttons[0] || 'Place bet',
+    label: config.buttons[0] || t.configPanel.placeBetButton,
   };
 
   const hasSecondButton = config.buttons.length > 1;
@@ -116,10 +119,15 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
       value: infoValues[label],
     })) ?? [];
 
+  const panelTitle =
+    language === 'ua'
+      ? `${t.configPanel.titleEnd} ${config.title}`
+      : `${config.title} ${t.configPanel.titleEnd}`;
+
   return (
     <div className="flex h-fit w-full max-w-[var(--panel-max-width)] flex-col gap-8 rounded-xl bg-[var(--panel-bg)] px-8 py-6">
       <p className="text-center font-[var(--panel-title-weight)] text-[var(--panel-title-size)]">
-        {config.title} Configuration
+        {panelTitle}
       </p>
 
       <div className="space-y-4">

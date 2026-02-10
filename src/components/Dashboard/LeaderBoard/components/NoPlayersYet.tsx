@@ -1,3 +1,6 @@
+import { useTranslation } from '@/i18n/useTranslation';
+
 export const NoPlayersYet = () => {
-  return <p className="text-center text-white">No players yet</p>;
+  const { t } = useTranslation();
+  return <p className="text-center text-white">{t.leaderboard.noPlayers}</p>;
 };

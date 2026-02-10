@@ -29,8 +29,10 @@ import {
   GAME_CONSTANTS,
 } from '@/components/CrashGame/constants';
 import { GAME_STATES } from '@/components/CrashGame/GameDisplay';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function CrashGamePage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const socketRef = useRef<Socket | null>(null);
   const subscribedGameIdRef = useRef<string | null>(null);
@@ -486,14 +488,21 @@ export default function CrashGamePage() {
   );
 
   const primaryLabel = useMemo(
-    () => (isPlacingBet ? 'Placing...' : myBet ? 'Bet Placed' : 'Place Bet'),
-    [isPlacingBet, myBet]
+    () =>
+      isPlacingBet
+        ? t.configPanel.placing
+        : myBet
+          ? t.configPanel.betPlaced
+          : t.configPanel.placeBetButton,
+    [isPlacingBet, myBet, t]
   );
 
   const secondaryLabel = useMemo(
     () =>
-      isCashingOut ? 'Cashing out...' : `Cashout $${potentialWin.toFixed(2)}`,
-    [isCashingOut, potentialWin]
+      isCashingOut
+        ? t.configPanel.cashingOut
+        : `${t.configPanel.cashoutButton} $${potentialWin.toFixed(2)}`,
+    [isCashingOut, potentialWin, t]
   );
 
   const isButtonDisabled = useMemo(
@@ -518,13 +527,13 @@ export default function CrashGamePage() {
 
   // Memoize object props for GameConfigPanel
   const optionValues = useMemo(
-    () => ({ 'Auto Cashout (optional)': autoCashoutValue }),
-    [autoCashoutValue]
+    () => ({ [t.configPanel.autoCashout]: autoCashoutValue }),
+    [autoCashoutValue, t]
   );
 
   const optionToggles = useMemo(
-    () => ({ 'Auto Cashout (optional)': isAutoCashoutEnabled }),
-    [isAutoCashoutEnabled]
+    () => ({ [t.configPanel.autoCashout]: isAutoCashoutEnabled }),
+    [isAutoCashoutEnabled, t]
   );
 
   const primaryButton = useMemo(
@@ -539,10 +548,10 @@ export default function CrashGamePage() {
 
   const infoValues = useMemo(
     () => ({
-      'Current multiplayer:': `${formatNumber(multiplier)}x`,
-      'Potential win:': `$${formatNumber(potentialWin)}`,
+      [t.configPanel.currentMultiplier]: `${formatNumber(multiplier)}x`,
+      [t.configPanel.potentialWin]: `$${formatNumber(potentialWin)}`,
     }),
-    [multiplier, potentialWin]
+    [multiplier, potentialWin, t]
   );
 
   // Memoize games array to prevent GlobalGameHistory re-renders

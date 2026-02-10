@@ -4,6 +4,7 @@ import { type FC, type KeyboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/shared/Input';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
   onSendMessage: (text: string) => void;
@@ -21,6 +22,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
       message: '',
     },
   });
+  const { t } = useTranslation();
 
   const messageValue = watch('message');
 
@@ -45,7 +47,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
     >
       <div className="flex-1">
         <Input
-          placeholder={disabled ? 'Connecting...' : 'Write a message...'}
+          placeholder={disabled ? '...' : t.chat.messagePlaceholder}
           {...register('message', {
             required: true,
             validate: value => value.trim().length > 0,

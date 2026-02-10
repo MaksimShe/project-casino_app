@@ -8,8 +8,10 @@ import GameConfigPanel from '@/shared/GameConfigPanel/GameConfigPanel';
 import { GameType } from '@/components/Dashboard/GameSelector/constants';
 import { PLINKO_CONFIG } from '@/components/PlinkoGame/constants';
 import { type ButtonState } from '@/shared/GameConfigPanel/components';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function PlinkoGamePage() {
+  const { t } = useTranslation();
   const {
     betAmount,
     isActiveGame,
@@ -22,22 +24,25 @@ export default function PlinkoGamePage() {
   const { handleDrop } = usePlinkoGame();
 
   // Handle settings changes (Risk, Rows) - disabled during active game
-  const onSettingChange = (title: string, value: string) => {
-    // Don't allow changing settings during active game
-    if (isActiveGame) {
-      return;
-    }
+  const onSettingChange = useCallback(
+    (title: string, value: string) => {
+      // Don't allow changing settings during active game
+      if (isActiveGame) {
+        return;
+      }
 
-    if (title === 'Risk') {
-      const riskValue = value.toLowerCase() as 'low' | 'medium' | 'high';
-      setRisk(riskValue);
-      resetGame();
-    } else if (title === 'Rows') {
-      const linesValue = parseInt(value, 10) as 8 | 10 | 12 | 14 | 16;
-      setLines(linesValue);
-      resetGame();
-    }
-  };
+      if (title === t.configPanel.risk) {
+        const riskValue = value.toLowerCase() as 'low' | 'medium' | 'high';
+        setRisk(riskValue);
+        resetGame();
+      } else if (title === t.configPanel.rows) {
+        const linesValue = parseInt(value, 10) as 8 | 10 | 12 | 14 | 16;
+        setLines(linesValue);
+        resetGame();
+      }
+    },
+    [isActiveGame, setRisk, setLines, resetGame, t]
+  );
   // Memoize callback for drop action
   const onDrop = useCallback(async () => {
     await handleDrop();
@@ -46,11 +51,11 @@ export default function PlinkoGamePage() {
   // Memoize primary button config
   const primaryButton: ButtonState = useMemo(
     () => ({
-      label: 'Drop',
+      label: t.configPanel.dropButton,
       onClick: onDrop,
       clickCooldown: 400,
     }),
-    [onDrop]
+    [onDrop, t]
   );
   return (
     <div className="flex justify-center gap-4 px-6 pt-4 max-lg:flex-col max-lg:items-center">

@@ -16,6 +16,7 @@ import {
   UserAvatar,
   SettingsDropdown,
 } from './components';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const HIDDEN_HEADER_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTRATION];
 
@@ -25,6 +26,7 @@ export const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const { data: user } = useCurrentUser();
+  const { t } = useTranslation();
 
   const handleCloseSidebar = () => {
     setIsClosing(true);
@@ -78,7 +80,7 @@ export const Header = () => {
               onClick={handleLogout}
               className="inline-flex h-10 w-28 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white"
             >
-              Log out
+              {t.header.logout}
               <Image src={logoutIcon} alt="logout" height={32} width={32} />
             </button>
           </div>

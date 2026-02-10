@@ -1,4 +1,5 @@
 import { GameType } from '@/components/Dashboard/GameSelector/constants';
+import type { TranslationKeys } from '@/i18n/translations/en';
 
 export interface InputConfig {
   name: string;
@@ -27,69 +28,78 @@ export const PANEL_DEFAULTS = {
   MIN_BALANCE: 1,
 } as const;
 
-export const gamesConfig: Partial<Record<GameType, GameConfig>> = {
+export const getGamesConfig = (
+  t: TranslationKeys
+): Partial<Record<GameType, GameConfig>> => ({
   [GameType.CRASH]: {
-    title: 'Crash',
+    title: t.configPanel.crash,
     inputs: [
       {
-        name: 'Bet Amount',
+        name: t.configPanel.betInput,
         default: true,
       },
       {
-        name: 'Auto Cashout (optional)',
+        name: t.configPanel.autoCashout,
         smallButtons: [],
         toggle: true,
       },
     ],
-    buttons: ['Place bet', 'Cashout'],
-    additionalInfos: ['Current multiplayer:', 'Potential win:'],
+    buttons: [t.configPanel.placeBetButton, t.configPanel.cashoutButton],
+    additionalInfos: [
+      t.configPanel.currentMultiplier,
+      t.configPanel.potentialWin,
+    ],
   },
 
   [GameType.MINES]: {
-    title: 'Mines',
+    title: t.configPanel.mines,
     inputs: [
       {
-        name: 'Bet Amount',
+        name: t.configPanel.betInput,
         default: true,
       },
       {
-        name: 'Mines Amount',
+        name: t.configPanel.minesAmount,
         smallButtons: ['1', '3', '5', '10', '24'],
         toggle: false,
       },
     ],
     gameSettings: [
       {
-        title: 'Grid size:',
+        title: t.configPanel.gridSize,
         smallButtons: ['5x5', '6x6', '7x7', '8x8'],
       },
     ],
-    buttons: ['Place bet', 'Cashout'],
+    buttons: [t.configPanel.placeBetButton, t.configPanel.cashoutButton],
     additionalInfos: [
-      'Current multiplayer:',
-      'Win amount:',
-      'Next multiplier:',
+      t.configPanel.currentMultiplier,
+      t.configPanel.winAmount,
+      t.configPanel.nextMultiplier,
     ],
   },
 
   [GameType.PLINKO]: {
-    title: 'Plinko',
+    title: t.configPanel.plinko,
     inputs: [
       {
-        name: 'Bet Amount',
+        name: t.configPanel.betInput,
         default: true,
       },
     ],
     gameSettings: [
       {
-        title: 'Risk',
-        smallButtons: ['Low', 'Medium', 'High'],
+        title: t.configPanel.risk,
+        smallButtons: [
+          t.configPanel.riskLow,
+          t.configPanel.riskMedium,
+          t.configPanel.riskHigh,
+        ],
       },
       {
-        title: 'Rows',
+        title: t.configPanel.rows,
         smallButtons: ['8', '10', '12', '14', '16'],
       },
     ],
-    buttons: ['Drop'],
+    buttons: [t.configPanel.dropButton],
   },
-};
+});

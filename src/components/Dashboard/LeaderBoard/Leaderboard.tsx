@@ -3,8 +3,10 @@ import cup from '@/../public/leaderboard_icons/gold cup.svg';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { LeaderBoardItem } from './components/LeaderBoardItem';
 import { NoPlayersYet } from './components/NoPlayersYet';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export const Leaderboard = () => {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useLeaderboard('all');
 
   const players = data?.players.slice(0, 8) ?? [];
@@ -24,13 +26,15 @@ export const Leaderboard = () => {
       />
 
       <div className="mb-6 flex flex-col items-center">
-        <p className="text-2xl font-bold text-white">Leaderboard</p>
-        <p className="text-[16px]">Top players</p>
+        <p className="text-2xl font-bold text-white">{t.leaderboard.title}</p>
+        <p className="text-[16px]">{t.leaderboard.topPlayers}</p>
       </div>
       <div className="flex flex-col gap-4">
-        {isLoading && <p className="text-center text-white">Loading...</p>}
+        {isLoading && (
+          <p className="text-center text-white">{t.leaderboard.loading}</p>
+        )}
         {error && (
-          <p className="text-center text-red-400">Failed to load leaderboard</p>
+          <p className="text-center text-red-400">{t.leaderboard.error}</p>
         )}
         {players.map(player => {
           const isCurrentPlayer = Boolean(
