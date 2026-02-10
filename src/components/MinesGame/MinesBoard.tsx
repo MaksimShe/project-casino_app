@@ -1,5 +1,5 @@
 import { useMinesStore } from '@/stores/useMinesStore';
-import { MinesCellState } from '@/types/mines';
+import { MinesCellState, type GridSize } from '@/types/mines';
 import { MinesCell } from './MinesCell';
 import { EndGameModal } from './EndGameModal';
 import { GRID_DIMENSIONS } from '@/components/MinesGame/constants';
@@ -19,7 +19,7 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
     isDisabled,
   } = useMinesStore();
 
-  const dimensions = GRID_DIMENSIONS[gridSize];
+  const dimensions = GRID_DIMENSIONS[gridSize as GridSize];
   const totalCells = gridSize * gridSize;
 
   const getCellState = (index: number): MinesCellState => {
