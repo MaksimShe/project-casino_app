@@ -75,7 +75,7 @@ interface MinesStore {
   isDisabled: () => boolean;
 }
 
-export const useMinesStore = create<MinesStore>(set => ({
+export const useMinesStore = create<MinesStore>((set, get) => ({
   amount: 1,
   minesCount: 1,
   gridSize: 5,
@@ -221,7 +221,7 @@ export const useMinesStore = create<MinesStore>(set => ({
 
   // Computed values
   isDisabled: () => {
-    const state = useMinesStore.getState();
+    const state = get();
     return (
       (state.gameStatus !== MinesGameStatus.ACTIVE &&
         state.gameStatus !== MinesGameStatus.IDLE) ||

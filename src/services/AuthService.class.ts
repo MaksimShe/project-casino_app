@@ -236,7 +236,7 @@ class AuthService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    await this.fetchApi<{ message: string }>('/auth/logout', {
+    await this.#fetchApi<{ message: string }>('/auth/logout', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
