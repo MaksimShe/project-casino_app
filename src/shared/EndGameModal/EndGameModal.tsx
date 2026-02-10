@@ -1,7 +1,8 @@
 import { formatNumber } from '@/utils/format';
 import cn from 'classnames';
 import { useTranslation } from '@/i18n/useTranslation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useShowNotification } from '@/hooks/useShowNotification';
 
 export interface EndGameModalProps {
   isWin: boolean;
@@ -10,6 +11,7 @@ export interface EndGameModalProps {
   additionalInfo?: string;
   autoCloseDelay?: number;
   onClose?: () => void;
+  betAmount?: number;
 }
 
 export const EndGameModal = ({
@@ -19,10 +21,29 @@ export const EndGameModal = ({
   additionalInfo,
   autoCloseDelay = 2000,
   onClose,
+  betAmount,
 }: EndGameModalProps) => {
   const { t } = useTranslation();
+  const { showGameResult } = useShowNotification();
+  const notificationShownRef = useRef(false);
 
-  // Auto-close functionality
+  // Show notification when modal appears (only once)
+  useEffect(() => {
+    if (notificationShownRef.current) return;
+
+    if (isWin && betAmount !== undefined) {
+      // Win: profit = winAmount - betAmount
+      const profit = amount - betAmount;
+      showGameResult(profit);
+      notificationShownRef.current = true;
+    } else if (!isWin) {
+      // Loss: profit = -amount (amount is the bet amount for losses)
+      const profit = -amount;
+      showGameResult(profit);
+      notificationShownRef.current = true;
+    }
+  }, [amount, betAmount, isWin, showGameResult]);
+
   useEffect(() => {
     if (autoCloseDelay > 0 && onClose) {
       const timer = setTimeout(() => {

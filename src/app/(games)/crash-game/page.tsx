@@ -159,7 +159,11 @@ export default function CrashGamePage() {
       const result = await crashService.cashout({ betId: state.myBet.betId });
 
       // Show win modal
-      showWinModalWithData(result.winAmount, result.multiplier);
+      showWinModalWithData(
+        result.winAmount,
+        result.multiplier,
+        state.myBet.amount
+      );
       setTimeout(() => hideModals(), 2000);
 
       updatePlayerCashout(

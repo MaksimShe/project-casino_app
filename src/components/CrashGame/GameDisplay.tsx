@@ -57,6 +57,7 @@ export default function GameDisplay({
             amount={modalWinAmount}
             multiplier={modalMultiplier}
             onClose={hideModals}
+            betAmount={modalBetAmount ?? undefined}
           />
         )}
         {loseModalActive && (

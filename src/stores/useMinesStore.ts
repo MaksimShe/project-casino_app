@@ -10,6 +10,7 @@ interface MinesModalData {
   amount: number;
   multiplier: number;
   tilesRevealed: number;
+  betAmount?: number;
 }
 
 interface MinesStore {
@@ -57,6 +58,7 @@ interface MinesStore {
       amount: number;
       multiplier: number;
       tilesRevealed: number;
+      betAmount?: number;
     }
   ) => void;
   resetGame: () => void;

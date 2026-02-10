@@ -3,18 +3,19 @@ import { useGameStore, AudioSound } from '@/stores/useGameStore';
 import { translations } from '@/i18n/translations';
 
 /**
- * Shows a balance notification (win/loss) if notifications are enabled
- * @param difference - The balance difference (positive for win, negative for loss)
+ * Shows a game result notification (win/loss/break even)
+ * This is a non-hook version that can be used outside React components
+ * @param profit - The profit amount (positive for win, negative for loss, 0 for break even)
  * @param options - Optional toast options
  */
-export function showBalanceNotification(
-  difference: number,
+export function showGameResultNotification(
+  profit: number,
   options?: { description?: string }
 ) {
   const { isNotificationsOn, playAudio, language } = useGameStore.getState();
   const t = translations[language];
 
-  // Don't show balance notifications if disabled
+  // Don't show notifications if disabled
   if (!isNotificationsOn) {
     return;
   }
@@ -22,27 +23,21 @@ export function showBalanceNotification(
   // Play notify sound
   playAudio(AudioSound.NOTIFY);
 
-  if (difference > 0) {
-    toast.success(
-      t.notification.won.replace('{{amount}}', difference.toFixed(2)),
-      {
-        description:
-          options?.description ||
-          t.notification.profit.replace('{{amount}}', difference.toFixed(2)),
-      }
-    );
-  } else if (difference < 0) {
+  if (profit > 0) {
+    toast.success(t.notification.won.replace('{{amount}}', profit.toFixed(2)), {
+      description:
+        options?.description ||
+        t.notification.profit.replace('{{amount}}', profit.toFixed(2)),
+    });
+  } else if (profit < 0) {
     toast.error(
-      t.notification.lost.replace(
-        '{{amount}}',
-        Math.abs(difference).toFixed(2)
-      ),
+      t.notification.lost.replace('{{amount}}', Math.abs(profit).toFixed(2)),
       {
         description:
           options?.description ||
           t.notification.loss.replace(
             '{{amount}}',
-            Math.abs(difference).toFixed(2)
+            Math.abs(profit).toFixed(2)
           ),
       }
     );
@@ -50,6 +45,12 @@ export function showBalanceNotification(
     toast.info(t.notification.breakEven, options);
   }
 }
+
+/**
+ * @deprecated Use showGameResultNotification instead
+ * Legacy alias for backward compatibility
+ */
+export const showBalanceNotification = showGameResultNotification;
 
 /**
  * Shows an error notification (always shown, ignores notification settings)

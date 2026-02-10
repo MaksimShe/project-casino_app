@@ -18,7 +18,6 @@ import { formatNumber } from '@/utils/format';
 import { handleMinesError, updateUserBalance } from '@/utils/minesUtils';
 import { MINES_IMAGES } from '@/components/MinesGame/constants';
 import { useTranslation } from '@/i18n/useTranslation';
-import { useMinesNotification } from './hooks/useMinesNotification';
 
 interface MinesGameClientProps {
   activeGameData: MinesActiveGameResponse | null;
@@ -54,9 +53,6 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-
-  // Show notifications for wins/losses
-  useMinesNotification();
 
   // Restore active game on mount
   useEffect(() => {
@@ -146,6 +142,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
               amount: amount,
               multiplier: 0,
               tilesRevealed: (response.revealedTiles || []).length,
+              betAmount: amount,
             });
           }
 
@@ -183,6 +180,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
             amount: amount,
             multiplier: 0,
             tilesRevealed: (response.revealedTiles || []).length,
+            betAmount: amount,
           });
         }
 
@@ -219,6 +217,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
         amount: response.winAmount,
         multiplier: response.multiplier,
         tilesRevealed: revealedCells.length,
+        betAmount: amount,
       });
 
       updateUserBalance(queryClient);
@@ -229,6 +228,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
   }, [
     gameId,
     gameStatus,
+    amount,
     revealedCells,
     endGame,
     setIsCashingOut,

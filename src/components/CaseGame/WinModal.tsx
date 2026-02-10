@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCaseStore } from '@/stores/useCaseStore';
 import { WinningItemDisplay } from './components/WinningItemDisplay';
-import { useCaseNotification } from './hooks/useCaseNotification';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import type { CurrentUserResponse } from '@/types/auth';
 import { CaseViewState } from './constants';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useShowNotification } from '@/hooks/useShowNotification';
 
 interface WinModalProps {
   onOpenAgain?: () => void;
@@ -17,7 +17,7 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
   const { openingResult, viewState, selectedCase, resetGame } = useCaseStore();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { showWinNotification } = useCaseNotification();
+  const { showGameResult } = useShowNotification();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Lock scroll when modal is open
@@ -56,11 +56,11 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
     queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
     // Show notification
-    showWinNotification(openingResult.item.value, openingResult.profit);
+    showGameResult(openingResult.profit);
 
     // Return to selection
     resetGame();
-  }, [openingResult, queryClient, showWinNotification, resetGame]);
+  }, [openingResult, queryClient, showGameResult, resetGame]);
 
   const handleSellAndAgain = useCallback(() => {
     if (!openingResult || !selectedCase || !onOpenAgain) return;
@@ -78,7 +78,7 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
     queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
     // Show notification
-    showWinNotification(openingResult.item.value, openingResult.profit);
+    showGameResult(openingResult.profit);
 
     // Clear opening result and animation state, then return to selection
     useCaseStore.setState({
@@ -100,13 +100,7 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
       onOpenAgain();
       timeoutRef.current = null;
     }, 100);
-  }, [
-    openingResult,
-    selectedCase,
-    queryClient,
-    showWinNotification,
-    onOpenAgain,
-  ]);
+  }, [openingResult, selectedCase, queryClient, showGameResult, onOpenAgain]);
 
   if (viewState !== CaseViewState.RESULT || !openingResult) {
     return null;

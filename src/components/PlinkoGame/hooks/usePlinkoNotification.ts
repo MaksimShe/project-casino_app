@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { usePlinkoStore } from '@/stores/usePlinkoStore';
-import { showBalanceNotification } from '@/utils/notifications';
+import { useShowNotification } from '@/hooks/useShowNotification';
 
 /**
  * Hook for managing Plinko game notifications
@@ -9,6 +9,7 @@ import { showBalanceNotification } from '@/utils/notifications';
 export function usePlinkoNotification() {
   const { isActiveGame, sessionTotalBet, sessionTotalWin, resetSessionStats } =
     usePlinkoStore();
+  const { showGameResult } = useShowNotification();
 
   const wasActiveRef = useRef(false);
 
@@ -21,7 +22,7 @@ export function usePlinkoNotification() {
         const profit = sessionTotalWin - sessionTotalBet;
 
         // Show notification
-        showBalanceNotification(profit);
+        showGameResult(profit);
 
         // Reset session stats for next game
         resetSessionStats();
@@ -30,5 +31,11 @@ export function usePlinkoNotification() {
 
     // Track active state for next check
     wasActiveRef.current = isActiveGame;
-  }, [isActiveGame, sessionTotalBet, sessionTotalWin, resetSessionStats]);
+  }, [
+    isActiveGame,
+    sessionTotalBet,
+    sessionTotalWin,
+    resetSessionStats,
+    showGameResult,
+  ]);
 }

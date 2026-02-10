@@ -56,6 +56,7 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
           multiplier={modalData.multiplier}
           additionalInfo={`${t.modalWindows.tilesRevealed} ${modalData.tilesRevealed}`}
           onClose={onNewGame}
+          betAmount={modalData.betAmount}
         />
       )}
     </div>
