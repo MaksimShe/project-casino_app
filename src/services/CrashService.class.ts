@@ -8,19 +8,19 @@ import type {
 } from '@/types/crash';
 
 class CrashService {
-  private static instance: CrashService;
-  private readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  static #instance: CrashService;
+  readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   private constructor() {}
 
   public static getInstance(): CrashService {
-    if (!CrashService.instance) {
-      CrashService.instance = new CrashService();
+    if (!CrashService.#instance) {
+      CrashService.#instance = new CrashService();
     }
-    return CrashService.instance;
+    return CrashService.#instance;
   }
 
-  private async fetchApi<T>(
+  async #fetchApi<T>(
     endpoint: string,
     options?: RequestInit,
     skipRefresh = false
@@ -30,7 +30,7 @@ class CrashService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -67,7 +67,7 @@ class CrashService {
             Authorization: `Bearer ${newAccessToken}`,
           },
         };
-        return this.fetchApi<T>(endpoint, newOptions, true);
+        return this.#fetchApi<T>(endpoint, newOptions, true);
       }
       // If refresh failed, throw the error so it can be handled upstream
       throw new AuthApiError('Session expired. Please login again.', 401);
@@ -88,20 +88,20 @@ class CrashService {
   }
 
   public async getCurrentGame(): Promise<CrashCurrentGame> {
-    return this.fetchApi<CrashCurrentGame>('/crash/current', {
+    return this.#fetchApi<CrashCurrentGame>('/crash/current', {
       method: 'GET',
     });
   }
 
   public async placeBet(data: PlaceBetRequest): Promise<PlaceBetResponse> {
-    return this.fetchApi<PlaceBetResponse>('/crash/bet', {
+    return this.#fetchApi<PlaceBetResponse>('/crash/bet', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   public async cashout(data: CashoutRequest): Promise<CashoutResponse> {
-    return this.fetchApi<CashoutResponse>('/crash/cashout', {
+    return this.#fetchApi<CashoutResponse>('/crash/cashout', {
       method: 'POST',
       body: JSON.stringify(data),
     });

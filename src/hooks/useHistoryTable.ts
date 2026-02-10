@@ -9,7 +9,6 @@ import type {
   CrashHistoryType,
   CrashHistoryResponse,
   CrashBetsHistoryResponse,
-  HistoryItemMap,
 } from './useHistoryTable.types';
 
 export type {
@@ -115,20 +114,6 @@ export function useHistoryTable<T extends HistoryGameType>(
     enabled: typeof window !== 'undefined' && enabled,
     retry: false,
   });
-}
-
-// Helper function to extract items from history response
-export function getHistoryItems<T extends HistoryGameType>(
-  data: HistoryResponseMap[T] | undefined
-): HistoryItemMap[T] | undefined {
-  if (!data) return undefined;
-
-  if ('openings' in data) return data.openings as HistoryItemMap[T];
-  if ('games' in data) return data.games as HistoryItemMap[T];
-  if ('drops' in data) return data.drops as HistoryItemMap[T];
-  if ('bets' in data) return data.bets as HistoryItemMap[T];
-
-  return undefined;
 }
 
 // Special fetch function for crash history

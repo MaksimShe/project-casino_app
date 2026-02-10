@@ -8,16 +8,16 @@ import type {
 } from '@/types/plinko';
 
 class PlinkoService {
-  private static instance: PlinkoService;
-  private readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  static #instance: PlinkoService;
+  readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   private constructor() {}
 
   public static getInstance(): PlinkoService {
-    if (!PlinkoService.instance) {
-      PlinkoService.instance = new PlinkoService();
+    if (!PlinkoService.#instance) {
+      PlinkoService.#instance = new PlinkoService();
     }
-    return PlinkoService.instance;
+    return PlinkoService.#instance;
   }
 
   private async fetchApi<T>(
@@ -30,7 +30,7 @@ class PlinkoService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,

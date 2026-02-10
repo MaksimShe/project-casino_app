@@ -16,6 +16,8 @@ export const EXCLUDED_FIELDS = [
   'completed',
   'updatedAt',
   'completedAt',
+  'finishedAt',
+  'minePositions',
 ] as const;
 
 // Field name patterns to exclude
@@ -84,6 +86,15 @@ export const PLINKO_COLUMN_ORDER = [
   'riskLevel',
   'avgMultiplier',
   'totalWin',
+] as const;
+
+export const MINES_COLUMN_ORDER = [
+  'createdAt',
+  'betAmount',
+  'minesCount',
+  'multiplier',
+  'winAmount',
+  'status',
 ] as const;
 
 // Table styling

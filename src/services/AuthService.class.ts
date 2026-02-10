@@ -22,22 +22,22 @@ export class AuthApiError extends Error {
 }
 
 class AuthService {
-  private static instance: AuthService;
-  private readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  private readonly ACCESS_TOKEN_KEY = 'accessToken';
-  private readonly REFRESH_TOKEN_KEY = 'refreshToken';
+  static #instance: AuthService;
+  readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  readonly #ACCESS_TOKEN_KEY = 'accessToken';
+  readonly #REFRESH_TOKEN_KEY = 'refreshToken';
 
   private constructor() {
     // Migrate tokens from localStorage to cookies if they exist
-    this.migrateFromLocalStorage();
+    this.#migrateFromLocalStorage();
   }
 
-  private migrateFromLocalStorage(): void {
+  #migrateFromLocalStorage(): void {
     if (typeof window === 'undefined') return;
 
     // Check if tokens exist in localStorage
-    const oldAccessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
-    const oldRefreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    const oldAccessToken = localStorage.getItem(this.#ACCESS_TOKEN_KEY);
+    const oldRefreshToken = localStorage.getItem(this.#REFRESH_TOKEN_KEY);
 
     if (oldAccessToken && oldRefreshToken) {
       // Move to cookies
@@ -47,30 +47,30 @@ class AuthService {
       });
 
       // Clean up localStorage
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.#ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.#REFRESH_TOKEN_KEY);
 
       // Tokens migrated from localStorage to cookies
     }
   }
 
   public static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService();
+    if (!AuthService.#instance) {
+      AuthService.#instance = new AuthService();
     }
-    return AuthService.instance;
+    return AuthService.#instance;
   }
 
   public saveTokens(tokens: TokenStorage): void {
     if (typeof window === 'undefined') return;
 
     // Store tokens in cookies with 7 days expiration
-    cookieUtils.set(this.ACCESS_TOKEN_KEY, tokens.accessToken, {
+    cookieUtils.set(this.#ACCESS_TOKEN_KEY, tokens.accessToken, {
       days: 7,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
     });
-    cookieUtils.set(this.REFRESH_TOKEN_KEY, tokens.refreshToken, {
+    cookieUtils.set(this.#REFRESH_TOKEN_KEY, tokens.refreshToken, {
       days: 7,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -80,13 +80,13 @@ class AuthService {
   public getAccessToken(): string | null {
     if (typeof window === 'undefined') return null;
 
-    return cookieUtils.get(this.ACCESS_TOKEN_KEY);
+    return cookieUtils.get(this.#ACCESS_TOKEN_KEY);
   }
 
   public getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
 
-    return cookieUtils.get(this.REFRESH_TOKEN_KEY);
+    return cookieUtils.get(this.#REFRESH_TOKEN_KEY);
   }
 
   public getTokens(): TokenStorage | null {
@@ -101,8 +101,8 @@ class AuthService {
   public removeTokens(): void {
     if (typeof window === 'undefined') return;
 
-    cookieUtils.remove(this.ACCESS_TOKEN_KEY);
-    cookieUtils.remove(this.REFRESH_TOKEN_KEY);
+    cookieUtils.remove(this.#ACCESS_TOKEN_KEY);
+    cookieUtils.remove(this.#REFRESH_TOKEN_KEY);
   }
 
   public isAuthenticated(): boolean {
@@ -110,13 +110,13 @@ class AuthService {
   }
 
   // API Methods
-  private async fetchApi<T>(
+  async #fetchApi<T>(
     endpoint: string,
     options?: RequestInit,
     skipRefresh = false
   ): Promise<T> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+      const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
         headers: {
           'Content-Type': 'application/json',
           ...options?.headers,
@@ -154,7 +154,7 @@ class AuthService {
               Authorization: `Bearer ${newAccessToken}`,
             },
           };
-          return this.fetchApi<T>(endpoint, newOptions, true);
+          return this.#fetchApi<T>(endpoint, newOptions, true);
         }
       }
 
@@ -190,7 +190,7 @@ class AuthService {
     }
 
     try {
-      const response = await fetch(`${this.API_BASE_URL}/auth/refresh`, {
+      const response = await fetch(`${this.#API_BASE_URL}/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -217,14 +217,14 @@ class AuthService {
   }
 
   public async register(data: RegisterRequest): Promise<RegisterResponse> {
-    return this.fetchApi<RegisterResponse>('/auth/register', {
+    return this.#fetchApi<RegisterResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   public async login(data: LoginRequest): Promise<LoginResponse> {
-    return this.fetchApi<LoginResponse>('/auth/login', {
+    return this.#fetchApi<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -250,7 +250,7 @@ class AuthService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    return this.fetchApi<CurrentUserResponse>('/users/current', {
+    return this.#fetchApi<CurrentUserResponse>('/users/current', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -266,12 +266,15 @@ class AuthService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    return this.fetchApi<LeaderboardResponse>(`/leaderboard?period=${period}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    return this.#fetchApi<LeaderboardResponse>(
+      `/leaderboard?period=${period}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
   }
 
   public async getAllUsers(): Promise<
@@ -282,7 +285,7 @@ class AuthService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    return this.fetchApi<
+    return this.#fetchApi<
       Array<{ username: string; gamesPlayed: number; balance: number }>
     >('/users', {
       method: 'GET',

@@ -10,16 +10,16 @@ import type {
 } from '@/types/mines';
 
 class MinesService {
-  private static instance: MinesService;
-  private readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  static #instance: MinesService;
+  readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   private constructor() {}
 
   public static getInstance(): MinesService {
-    if (!MinesService.instance) {
-      MinesService.instance = new MinesService();
+    if (!MinesService.#instance) {
+      MinesService.#instance = new MinesService();
     }
-    return MinesService.instance;
+    return MinesService.#instance;
   }
 
   private async fetchApi<T>(
@@ -33,7 +33,7 @@ class MinesService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,

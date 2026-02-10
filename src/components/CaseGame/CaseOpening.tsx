@@ -52,7 +52,7 @@ export const CaseOpening = memo(() => {
       {isAnimating && (
         <button
           onClick={handleSkip}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[39%]"
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[42%]"
         >
           Skip opening
         </button>

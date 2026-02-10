@@ -17,6 +17,7 @@ import {
   TABLE_STYLES,
   HISTORY_CONFIG,
   PLINKO_COLUMN_ORDER,
+  MINES_COLUMN_ORDER,
 } from '../constants';
 
 interface UniversalTableProps {
@@ -57,6 +58,11 @@ export function UniversalTable({
       sortedKeys = [
         ...PLINKO_COLUMN_ORDER.filter(key => allKeys.includes(key)),
         ...allKeys.filter(key => !PLINKO_COLUMN_ORDER.includes(key as any)),
+      ];
+    } else if (gameType === 'mines') {
+      sortedKeys = [
+        ...MINES_COLUMN_ORDER.filter(key => allKeys.includes(key)),
+        ...allKeys.filter(key => !MINES_COLUMN_ORDER.includes(key as any)),
       ];
     }
 
