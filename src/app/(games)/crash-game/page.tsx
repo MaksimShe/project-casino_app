@@ -574,7 +574,7 @@ export default function CrashGamePage() {
             isRocketCrashed={isRocketCrashed}
           />
           {/* Bet Controls */}
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex w-full max-w-[28rem] flex-col gap-3">
             <GameConfigPanel
               game={GameType.CRASH}
               betAmount={betAmount}

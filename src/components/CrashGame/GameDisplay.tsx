@@ -2,9 +2,9 @@ import RocketAnimation from './components/RocketAnimation';
 import CrashChart from './components/CrashChart';
 import { CrashBackground } from '@/components/CrashGame/components/CrashBackground';
 import { MultiplierDisplay } from '@/components/CrashGame/components/MultiplierDisplay';
-import { WinModal } from '@/components/CrashGame/components/modals/WinModal';
-import { LoseModal } from '@/components/CrashGame/components/modals/LoseModal';
+import { EndGameModal } from '@/shared/EndGameModal';
 import { useCrashStore } from '@/stores/useCrashStore';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export const GAME_STATES = {
   WAITING: 'waiting',
@@ -27,6 +27,7 @@ export default function GameDisplay({
   shakeIntensity,
   isRocketCrashed,
 }: GameDisplayProps) {
+  const { t } = useTranslation();
   const {
     showWinModal,
     showLoseModal,
@@ -34,7 +35,12 @@ export default function GameDisplay({
     modalMultiplier,
     modalBetAmount,
     modalCrashPoint,
+    hideModals,
   } = useCrashStore();
+  const winModalActive =
+    showWinModal && modalWinAmount !== null && modalMultiplier !== null;
+  const loseModalActive =
+    showLoseModal && modalBetAmount !== null && modalCrashPoint !== null;
 
   return (
     <div className="h-[550px] w-full max-lg:h-[350px] sm:pl-16">
@@ -45,12 +51,22 @@ export default function GameDisplay({
         {/* Static Background */}
         <CrashBackground />
 
-        {/* Modals */}
-        {showWinModal && modalWinAmount && modalMultiplier && (
-          <WinModal winAmount={modalWinAmount} multiplier={modalMultiplier} />
+        {winModalActive && (
+          <EndGameModal
+            isWin={true}
+            amount={modalWinAmount}
+            multiplier={modalMultiplier}
+            onClose={hideModals}
+          />
         )}
-        {showLoseModal && modalBetAmount && modalCrashPoint && (
-          <LoseModal betAmount={modalBetAmount} crashPoint={modalCrashPoint} />
+        {loseModalActive && (
+          <EndGameModal
+            isWin={false}
+            amount={modalBetAmount}
+            multiplier={modalCrashPoint}
+            additionalInfo={`${t.modalWindows.crashedAt}${modalCrashPoint}x`}
+            onClose={hideModals}
+          />
         )}
 
         <div className="absolute top-3/12 right-1/2 translate-x-1/2">

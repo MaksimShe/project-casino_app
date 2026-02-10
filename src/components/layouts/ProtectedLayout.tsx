@@ -4,7 +4,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService.class';
 import { ROUTES } from '@/constants/routes';
-import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
+import { AuthVerificationProvider } from '@/contexts/AuthVerificationContext';
 
 interface ProtectedLayoutProps {
   children: ReactNode;
@@ -12,16 +12,14 @@ interface ProtectedLayoutProps {
 
 export function ProtectedLayout({ children }: ProtectedLayoutProps) {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     const verifyAuth = async () => {
       const hasTokens = authService.isAuthenticated();
 
       if (!hasTokens) {
-        setIsAuthenticated(false);
-        setIsLoading(false);
+        setIsVerifying(false);
         router.push(ROUTES.LOGIN);
         return;
       }
@@ -29,24 +27,34 @@ export function ProtectedLayout({ children }: ProtectedLayoutProps) {
       // Verify token is still valid
       try {
         await authService.getCurrentUser();
-        setIsAuthenticated(true);
       } catch (error) {
         // Token refresh failed or session expired
         console.error('Authentication verification failed:', error);
         authService.removeTokens();
-        setIsAuthenticated(false);
         router.push(ROUTES.LOGIN);
       } finally {
-        setIsLoading(false);
+        setIsVerifying(false);
       }
     };
 
     verifyAuth();
   }, [router]);
 
-  if (isLoading || !isAuthenticated) {
-    return <FullScreenLoader message="Verifying access" />;
-  }
+  // Optional timeout: enable controls after 10s if verification is still pending
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isVerifying) {
+        console.warn('Verification timeout - proceeding anyway');
+        setIsVerifying(false);
+      }
+    }, 10000);
 
-  return <>{children}</>;
+    return () => clearTimeout(timeoutId);
+  }, [isVerifying]);
+
+  return (
+    <AuthVerificationProvider isVerifying={isVerifying}>
+      {children}
+    </AuthVerificationProvider>
+  );
 }

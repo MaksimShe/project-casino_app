@@ -39,7 +39,7 @@ function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
           />
         </button>
       </div>
-      <div className="flex flex-wrap justify-center gap-1">
+      <div className="flex flex-wrap justify-center gap-0.5">
         {games.slice(0, UI_CONFIG.HISTORY_DISPLAY_COUNT).map((game, index) => {
           const crashPoint = game.crashPoint;
           const colorClass = getCrashPointColorClass(crashPoint);
@@ -47,7 +47,7 @@ function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
           return (
             <span
               key={index}
-              className={`rounded px-2 py-1 text-xs font-semibold ${colorClass}`}
+              className={`rounded px-1.5 py-1 text-[10px] font-semibold ${colorClass}`}
             >
               {formatNumber(crashPoint)}x
             </span>

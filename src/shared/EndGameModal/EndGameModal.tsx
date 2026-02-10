@@ -1,25 +1,37 @@
 import { formatNumber } from '@/utils/format';
-import { useMinesModalAutoClose } from '@/hooks/useMinesModalAutoClose';
 import cn from 'classnames';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useEffect } from 'react';
 
-interface EndGameModalProps {
+export interface EndGameModalProps {
   isWin: boolean;
   amount: number;
   multiplier?: number;
-  tilesRevealed: number;
-  onNewGame: () => void;
+  additionalInfo?: string;
+  autoCloseDelay?: number;
+  onClose?: () => void;
 }
 
 export const EndGameModal = ({
   isWin,
   amount,
   multiplier,
-  tilesRevealed,
-  onNewGame,
+  additionalInfo,
+  autoCloseDelay = 2000,
+  onClose,
 }: EndGameModalProps) => {
-  useMinesModalAutoClose(onNewGame);
   const { t } = useTranslation();
+
+  // Auto-close functionality
+  useEffect(() => {
+    if (autoCloseDelay > 0 && onClose) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, autoCloseDelay);
+
+      return () => clearTimeout(timer);
+    }
+  }, [autoCloseDelay, onClose]);
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center rounded-xl bg-black/50 backdrop-blur-xs">
@@ -45,15 +57,9 @@ export const EndGameModal = ({
           <p>
             {isWin ? t.modalWindows.win : t.modalWindows.lose} $
             {formatNumber(amount)}
+            {multiplier && ` (${formatNumber(multiplier)}x)`}
           </p>
-          {isWin && multiplier && (
-            <p>
-              {t.modalWindows.multiplier} {formatNumber(multiplier)}x
-            </p>
-          )}
-          <p>
-            {t.modalWindows.tilesRevealed} {tilesRevealed}
-          </p>
+          {additionalInfo && <p>{additionalInfo}</p>}
         </div>
       </div>
     </div>
