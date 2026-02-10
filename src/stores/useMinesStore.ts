@@ -70,6 +70,9 @@ interface MinesStore {
   setShowWinModal: (show: boolean) => void;
   setShowLoseModal: (show: boolean) => void;
   hideModals: () => void;
+
+  // Computed values
+  isDisabled: () => boolean;
 }
 
 export const useMinesStore = create<MinesStore>(set => ({
@@ -215,4 +218,15 @@ export const useMinesStore = create<MinesStore>(set => ({
       showLoseModal: false,
       modalData: null,
     }),
+
+  // Computed values
+  isDisabled: () => {
+    const state = useMinesStore.getState();
+    return (
+      (state.gameStatus !== MinesGameStatus.ACTIVE &&
+        state.gameStatus !== MinesGameStatus.IDLE) ||
+      state.isRevealingCell ||
+      state.isStartingGame
+    );
+  },
 }));

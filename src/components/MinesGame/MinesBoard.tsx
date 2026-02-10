@@ -1,5 +1,5 @@
 import { useMinesStore } from '@/stores/useMinesStore';
-import { MinesCellState, MinesGameStatus } from '@/types/mines';
+import { MinesCellState } from '@/types/mines';
 import { MinesCell } from './MinesCell';
 import { EndGameModal } from './EndGameModal';
 import { GRID_DIMENSIONS } from '@/components/MinesGame/constants';
@@ -13,12 +13,10 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
   const {
     gridSize,
     cells,
-    gameStatus,
-    isRevealingCell,
-    isStartingGame,
     showWinModal,
     showLoseModal,
     modalData,
+    isDisabled,
   } = useMinesStore();
 
   const dimensions = GRID_DIMENSIONS[gridSize];
@@ -27,12 +25,6 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
   const getCellState = (index: number): MinesCellState => {
     return cells.get(index) || MinesCellState.UNREVEALED;
   };
-
-  const isDisabled =
-    (gameStatus !== MinesGameStatus.ACTIVE &&
-      gameStatus !== MinesGameStatus.IDLE) ||
-    isRevealingCell ||
-    isStartingGame;
 
   return (
     <div className="relative flex aspect-square w-[500px] items-center justify-center max-sm:w-full">
@@ -49,7 +41,7 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
             key={`${gridSize}-${index}`}
             index={index}
             state={getCellState(index)}
-            isDisabled={isDisabled}
+            isDisabled={isDisabled()}
             onClick={onCellClick}
           />
         ))}
