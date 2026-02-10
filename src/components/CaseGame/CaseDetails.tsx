@@ -8,6 +8,8 @@ import caseImg from '@/../public/cases-game/case-img.png';
 import arrowBackIcon from '@/../public/cases-game/arrow-back.svg';
 import Image from 'next/image';
 import { ROUTES } from '@/constants/routes';
+import { useTranslation } from '@/i18n/useTranslation';
+import { getCaseName } from './helpers/getCaseName';
 
 interface CaseDetailsProps {
   caseData: CaseDetailsResponse;
@@ -18,6 +20,7 @@ export const CaseDetails = memo(
   ({ caseData, onOpenCase }: CaseDetailsProps) => {
     const router = useRouter();
     const store = useCaseStore();
+    const { t } = useTranslation();
 
     const handleToggleSkipAnimation = useCallback(() => {
       store.setSkipAnimation(!store.skipAnimation);
@@ -47,7 +50,7 @@ export const CaseDetails = memo(
               </div>
               <div className="mb-12 flex w-full flex-col gap-6 max-lg:items-center">
                 <h1 className="mb-4 w-full text-5xl font-bold text-white max-sm:text-center">
-                  {caseData.name}
+                  {getCaseName(caseData.name, t)}
                 </h1>
                 <Image src={caseImg} alt="case" width={450} height={200} />
               </div>
@@ -66,12 +69,19 @@ export const CaseDetails = memo(
                   }
                 )}
               >
-                {isOpening ? 'Opening...' : `Open case $${caseData.price}`}
+                {isOpening
+                  ? t.casesGame.opening
+                  : t.casesGame.openCase.replace(
+                      '{{price}}',
+                      caseData.price.toString()
+                    )}
               </button>
 
               {/* Skip animation toggle */}
               <div className="mb-10 flex items-center gap-3">
-                <span className="text-sm text-white/70">Skip Animation</span>
+                <span className="text-sm text-white/70">
+                  {t.casesGame.skipAnimation}
+                </span>
                 <button
                   onClick={handleToggleSkipAnimation}
                   className={`h-5 w-10 rounded-full transition-colors ${
@@ -94,8 +104,10 @@ export const CaseDetails = memo(
 
           {/* Case Contents */}
           <div className="mb-12">
-            <h2 className="text-3xl font-semibold text-white">Case Contents</h2>
-            <p className="mb-6">ⓘ Click on item for detail information</p>
+            <h2 className="text-3xl font-semibold text-white">
+              {t.casesGame.caseContents}
+            </h2>
+            <p className="mb-6">{t.casesGame.clickForDetails}</p>
             <CaseContent items={caseData.items} />
           </div>
         </div>

@@ -1,15 +1,17 @@
 //cuz we do not receive this from backend
-export const mockDescription = (name: string) => {
+import type { TranslationKeys } from '@/i18n/translations/en';
+
+export const mockDescription = (name: string, t: TranslationKeys) => {
   switch (name.toLowerCase()) {
     case 'food case':
-      return 'Open the Food Case and discover delicious surprises, rare ingredients, sweet bonuses, and powerful kitchen rewards that boost your adventure.';
+      return t.casesGame.descriptions.foodCase;
     case 'animal case':
-      return 'Unlock the Animal Case to reveal cute companions, wild creatures, and mythical beasts ready to join your collection.';
+      return t.casesGame.descriptions.animalCase;
     case 'sports case':
-      return 'Open the Sports Case and score exciting gear, champion bonuses, and exclusive items that enhance performance.';
+      return t.casesGame.descriptions.sportsCase;
     case 'space case':
-      return 'Launch the Space Case to uncover cosmic rewards, futuristic technology, and mysterious artifacts from distant galaxies.';
+      return t.casesGame.descriptions.spaceCase;
     default:
-      return 'Open this case';
+      return t.casesGame.descriptions.default;
   }
 };

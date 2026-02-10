@@ -5,6 +5,9 @@ import { CASE_ANIMATION, CASE_VISUAL } from '../constants';
 import type { OpeningResult } from '@/types/case';
 import Image from 'next/image';
 import caseImg from '@/../public/cases-game/case-img.png';
+import { useTranslation } from '@/i18n/useTranslation';
+import { getItemName } from '../helpers/getItemName';
+import { getCaseName } from '../helpers/getCaseName';
 
 interface WinningItemDisplayProps {
   result: OpeningResult;
@@ -13,6 +16,7 @@ interface WinningItemDisplayProps {
 
 export const WinningItemDisplay = memo<WinningItemDisplayProps>(
   ({ result, caseName }) => {
+    const { t } = useTranslation();
     const rarityColor = getRarityColor(result.item.rarity);
 
     return (
@@ -39,12 +43,12 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
         <div className="relative z-10 flex w-full flex-col items-center rounded-xl bg-[#423E69] p-8">
           {/* Item name */}
           <p className="mb-2 w-full text-3xl font-bold text-white">
-            {result.item.name}
+            {getItemName(result.item.name, t)}
           </p>
           {/* Case name */}
           <p className="flex w-full gap-2">
             <Image src={caseImg} alt="case" width={40} height={16} />
-            {caseName || 'Unknown Case'}
+            {caseName ? getCaseName(caseName, t) : t.casesGame.unknownCase}
           </p>
           {/* Large emoji */}
           <motion.div

@@ -55,7 +55,7 @@ export default function History() {
     return (
       <div className="rounded-xl bg-[#1a1625] p-6">
         <p className={TABLE_STYLES.NO_DATA_TEXT_COLOR}>
-          Unable to detect game type from URL
+          {t.history.unableToDetect}
         </p>
       </div>
     );

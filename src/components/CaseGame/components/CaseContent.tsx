@@ -2,12 +2,16 @@ import { memo, useState, useCallback } from 'react';
 import { formatNumber } from '@/utils/format';
 import { getRarityColor } from '../helpers/getRarityColor';
 import type { CaseItem } from '@/types/case';
+import { useTranslation } from '@/i18n/useTranslation';
+import { getItemName } from '../helpers/getItemName';
+import { getRarityName } from '../helpers/getRarityName';
 
 interface CaseContentProps {
   items: CaseItem[];
 }
 
 export const CaseContent = memo<CaseContentProps>(({ items }) => {
+  const { t } = useTranslation();
   const [flippedItems, setFlippedItems] = useState<Set<string>>(new Set());
 
   const handleFlip = useCallback((itemId: string, isFlipped: boolean) => {
@@ -55,7 +59,9 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
 
                 <div className="relative z-10 flex h-[98%] w-[98%] flex-col justify-between rounded-lg bg-[#423E69]">
                   {/* Item name */}
-                  <p className="mt-2 px-2 text-sm text-white">{item.name}</p>
+                  <p className="mt-2 px-2 text-sm text-white">
+                    {getItemName(item.name, t)}
+                  </p>
                   {/* Emoji */}
                   <div className="mb-8 text-center text-5xl">
                     {item.imageUrl}
@@ -71,7 +77,7 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
                 <div className="px-4 text-center">
                   {/* Rarity name */}
                   <div className="mb-3 text-xs font-bold tracking-wider text-white/80 uppercase">
-                    {item.rarity}
+                    {getRarityName(item.rarity, t)}
                   </div>
 
                   {/* Price */}
@@ -81,7 +87,10 @@ export const CaseContent = memo<CaseContentProps>(({ items }) => {
 
                   {/* Chance */}
                   <p className="text-sm text-white/70">
-                    {formatNumber(item.chance, 1)}% chance
+                    {t.casesGame.chance.replace(
+                      '{{value}}',
+                      formatNumber(item.chance, 1)
+                    )}
                   </p>
                 </div>
               </div>

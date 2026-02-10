@@ -7,9 +7,11 @@ import { ItemSlot } from './components/ItemSlot';
 import { CASE_VISUAL } from './constants';
 import Image from 'next/image';
 import winIndicatorImg from '@/../public/cases-game/line.svg';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export const CaseOpening = memo(() => {
   const { selectedCase, animationItems, isAnimating } = useCaseStore();
+  const { t } = useTranslation();
   const controls = useAnimation();
   const { handleAnimationComplete, handleSkip } = useCaseAnimation(controls);
 
@@ -54,7 +56,7 @@ export const CaseOpening = memo(() => {
           onClick={handleSkip}
           className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[42%]"
         >
-          Skip opening
+          {t.casesGame.skipOpening}
         </button>
       )}
     </div>

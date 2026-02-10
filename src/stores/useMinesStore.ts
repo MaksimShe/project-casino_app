@@ -153,8 +153,11 @@ export const useMinesStore = create<MinesStore>((set, get) => ({
         return {
           cells: newCells,
           revealedCells: revealedTiles,
-          multiplier: multiplier || state.multiplier,
-          currentWinnings: currentWinnings || state.currentWinnings,
+          multiplier: multiplier !== undefined ? multiplier : state.multiplier,
+          currentWinnings:
+            currentWinnings !== undefined
+              ? currentWinnings
+              : state.currentWinnings,
           isRevealingCell: false,
         };
       }
@@ -202,6 +205,7 @@ export const useMinesStore = create<MinesStore>((set, get) => ({
       ),
       multiplier: gameData.currentMultiplier || 0,
       currentWinnings: gameData.currentValue || 0,
+      multipliers: gameData.multipliers || [],
       isLoadingActiveGame: false,
     }),
 

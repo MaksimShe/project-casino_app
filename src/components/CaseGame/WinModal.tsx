@@ -7,6 +7,7 @@ import { useCaseNotification } from './hooks/useCaseNotification';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import type { CurrentUserResponse } from '@/types/auth';
 import { CaseViewState } from './constants';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface WinModalProps {
   onOpenAgain?: () => void;
@@ -14,6 +15,7 @@ interface WinModalProps {
 
 export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
   const { openingResult, viewState, selectedCase, resetGame } = useCaseStore();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { showWinNotification } = useCaseNotification();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -130,13 +132,13 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
               onClick={handleSell}
               className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-white shadow-white max-sm:w-40"
             >
-              Sell this
+              {t.casesGame.sellThis}
             </button>
             <button
               onClick={handleSellAndAgain}
               className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-white max-sm:w-40"
             >
-              Sell + Try again
+              {t.casesGame.sellAndTryAgain}
             </button>
           </div>
         </div>

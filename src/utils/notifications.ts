@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import { useGameStore, AudioSound } from '@/stores/useGameStore';
+import { translations } from '@/i18n/translations';
 
 /**
  * Shows a balance notification (win/loss) if notifications are enabled
@@ -10,7 +11,8 @@ export function showBalanceNotification(
   difference: number,
   options?: { description?: string }
 ) {
-  const { isNotificationsOn, playAudio } = useGameStore.getState();
+  const { isNotificationsOn, playAudio, language } = useGameStore.getState();
+  const t = translations[language];
 
   // Don't show balance notifications if disabled
   if (!isNotificationsOn) {
@@ -21,16 +23,31 @@ export function showBalanceNotification(
   playAudio(AudioSound.NOTIFY);
 
   if (difference > 0) {
-    toast.success(`Won $${difference.toFixed(2)}!`, {
-      description: options?.description || `Profit: +$${difference.toFixed(2)}`,
-    });
+    toast.success(
+      t.notification.won.replace('{{amount}}', difference.toFixed(2)),
+      {
+        description:
+          options?.description ||
+          t.notification.profit.replace('{{amount}}', difference.toFixed(2)),
+      }
+    );
   } else if (difference < 0) {
-    toast.error(`Lost $${Math.abs(difference).toFixed(2)}`, {
-      description:
-        options?.description || `Loss: -$${Math.abs(difference).toFixed(2)}`,
-    });
+    toast.error(
+      t.notification.lost.replace(
+        '{{amount}}',
+        Math.abs(difference).toFixed(2)
+      ),
+      {
+        description:
+          options?.description ||
+          t.notification.loss.replace(
+            '{{amount}}',
+            Math.abs(difference).toFixed(2)
+          ),
+      }
+    );
   } else {
-    toast.info('Break even!', options);
+    toast.info(t.notification.breakEven, options);
   }
 }
 

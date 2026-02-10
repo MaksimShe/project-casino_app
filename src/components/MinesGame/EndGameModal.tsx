@@ -1,6 +1,7 @@
 import { formatNumber } from '@/utils/format';
 import { useMinesModalAutoClose } from '@/hooks/useMinesModalAutoClose';
 import cn from 'classnames';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface EndGameModalProps {
   isWin: boolean;
@@ -18,14 +19,10 @@ export const EndGameModal = ({
   onNewGame,
 }: EndGameModalProps) => {
   useMinesModalAutoClose(onNewGame);
+  const { t } = useTranslation();
 
   return (
-    <div
-      className={cn(
-        'absolute inset-0 z-50 flex items-center justify-center rounded-xl',
-        isWin ? 'backdrop-blur-lg' : 'bg-black/50 backdrop-blur-xs'
-      )}
-    >
+    <div className="absolute inset-0 z-50 flex items-center justify-center rounded-xl bg-black/50 backdrop-blur-xs">
       <div
         className={cn(
           'rounded-xl border p-6',
@@ -42,16 +39,21 @@ export const EndGameModal = ({
               : 'text-[var(--modal-lose-text)]'
           )}
         >
-          {isWin ? 'You Won!' : 'You Lost!'}
+          {isWin ? t.modalWindows.titleWin : t.modalWindows.titleLose}
         </h2>
         <div className="space-y-1 text-white">
           <p>
-            {isWin ? 'Win' : 'Lost'}: ${formatNumber(amount)}
+            {isWin ? t.modalWindows.win : t.modalWindows.lose} $
+            {formatNumber(amount)}
           </p>
           {isWin && multiplier && (
-            <p>Multiplier: {formatNumber(multiplier)}x</p>
+            <p>
+              {t.modalWindows.multiplier} {formatNumber(multiplier)}x
+            </p>
           )}
-          <p>Tiles Revealed: {tilesRevealed}</p>
+          <p>
+            {t.modalWindows.tilesRevealed} {tilesRevealed}
+          </p>
         </div>
       </div>
     </div>

@@ -64,6 +64,7 @@ export interface MinesActiveGameData {
   totalTiles: number;
   currentMultiplier?: number;
   currentValue?: number;
+  multipliers?: number[];
 }
 
 export interface MinesActiveGameResponse {

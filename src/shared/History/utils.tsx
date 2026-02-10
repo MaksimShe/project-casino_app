@@ -10,6 +10,7 @@ import {
   TEXT_STYLES,
 } from './constants';
 import type { HistoryGameType } from '@/hooks/useHistoryTable';
+import type { TranslationKeys } from '@/i18n/translations/en';
 
 // Detect game type from URL pathname
 export function getGameTypeFromPath(pathname: string): HistoryGameType | null {
@@ -21,14 +22,26 @@ export function getGameTypeFromPath(pathname: string): HistoryGameType | null {
 }
 
 // Convert camelCase/snake_case to Title Case
-export function formatColumnName(key: string): string {
-  let newKey = key;
+export function formatColumnName(key: string, t: TranslationKeys): string {
+  // Check if translation exists for this column
+  const columnKey = key as keyof typeof t.history.columns;
+  if (columnKey in t.history.columns) {
+    return t.history.columns[columnKey];
+  }
 
-  // Apply field name mappings
+  // Apply field name mappings for backwards compatibility
+  let newKey = key;
   if (FIELD_NAME_MAPPINGS[key]) {
+    const mappedKey = FIELD_NAME_MAPPINGS[
+      key
+    ] as keyof typeof t.history.columns;
+    if (mappedKey in t.history.columns) {
+      return t.history.columns[mappedKey];
+    }
     newKey = FIELD_NAME_MAPPINGS[key];
   }
 
+  // Fallback to auto-formatting
   return newKey
     .replace(/([A-Z])/g, ' $1')
     .replace(/_/g, ' ')
@@ -132,9 +145,54 @@ function isIdField(key: string): boolean {
   );
 }
 
+// Helper to translate case names
+function translateCaseName(name: string, t: TranslationKeys): string {
+  const lowerName = name.toLowerCase();
+  if (lowerName === 'food case') return t.casesGame.caseNames.foodCase;
+  if (lowerName === 'animal case') return t.casesGame.caseNames.animalCase;
+  if (lowerName === 'sports case') return t.casesGame.caseNames.sportsCase;
+  if (lowerName === 'space case') return t.casesGame.caseNames.spaceCase;
+  return name;
+}
+
+// Helper to translate item names
+function translateItemName(name: string, t: TranslationKeys): string {
+  const toCamelCase = (str: string): string => {
+    return str
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word.toLowerCase();
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join('');
+  };
+
+  const key = toCamelCase(name);
+  if (key in t.casesGame.items) {
+    return t.casesGame.items[key as keyof typeof t.casesGame.items];
+  }
+  return name;
+}
+
 // Format value based on its type and key name
-export function formatValue(key: string, value: unknown): React.ReactNode {
+export function formatValue(
+  key: string,
+  value: unknown,
+  t: TranslationKeys
+): React.ReactNode {
   if (value === null || value === undefined) return '—';
+
+  // Handle case names
+  if (key.toLowerCase().includes('casename')) {
+    return translateCaseName(String(value), t);
+  }
+
+  // Handle item names
+  if (key.toLowerCase().includes('itemname')) {
+    return translateItemName(String(value), t);
+  }
 
   // Handle dates
   if (isDateField(key)) {
@@ -177,14 +235,27 @@ export function formatValue(key: string, value: unknown): React.ReactNode {
 
   // Handle status
   if (isStatusField(key)) {
-    const statusValue = String(value);
+    const statusValue = String(value).toLowerCase();
     const colorClass = getStatusColor(statusValue);
+
+    // Get translated status
+    let translatedStatus = statusValue;
+    if (statusValue === 'won') {
+      translatedStatus = t.history.status.won;
+    } else if (statusValue === 'cashed_out' || statusValue === 'cashedout') {
+      translatedStatus = t.history.status.cashedOut;
+    } else if (statusValue === 'lost') {
+      translatedStatus = t.history.status.lost;
+    } else {
+      translatedStatus =
+        statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+    }
 
     return (
       <span
         className={`${TEXT_STYLES.TAG_BORDER_RADIUS} ${TEXT_STYLES.TAG_PADDING} ${TEXT_STYLES.STATUS_TAG_SIZE} ${colorClass}`}
       >
-        {statusValue.charAt(0).toUpperCase() + statusValue.slice(1)}
+        {translatedStatus}
       </span>
     );
   }
@@ -194,11 +265,19 @@ export function formatValue(key: string, value: unknown): React.ReactNode {
     const levelValue = String(value);
     const colorClass = getLevelColor(levelValue);
 
+    // Check if it's a rarity value and translate it
+    const lowerLevel = levelValue.toLowerCase();
+    let translatedLevel = levelValue;
+    if (lowerLevel in t.casesGame.rarities) {
+      translatedLevel =
+        t.casesGame.rarities[lowerLevel as keyof typeof t.casesGame.rarities];
+    }
+
     return (
       <span
         className={`${TEXT_STYLES.TAG_BORDER_RADIUS} ${TEXT_STYLES.TAG_PADDING} ${TEXT_STYLES.TAG_SIZE} ${colorClass}`}
       >
-        {levelValue}
+        {translatedLevel}
       </span>
     );
   }
