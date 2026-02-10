@@ -14,9 +14,9 @@ import {
   type MinesActiveGameResponse,
 } from '@/types/mines';
 import { useQueryClient } from '@tanstack/react-query';
-import { MINES_CONSTANTS } from './constants';
 import { formatNumber } from '@/utils/format';
 import { handleMinesError, updateUserBalance } from '@/utils/minesUtils';
+import { MINES_IMAGES } from '@/components/MinesGame/constants';
 
 interface MinesGameClientProps {
   activeGameData: MinesActiveGameResponse | null;
@@ -61,7 +61,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
   // Preload images for better performance
   useEffect(() => {
-    const images = [MINES_CONSTANTS.COIN_IMAGE, MINES_CONSTANTS.BOMB_IMAGE];
+    const images = [MINES_IMAGES.COIN, MINES_IMAGES.BOMB];
 
     images.forEach(src => {
       const img = new Image();

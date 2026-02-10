@@ -1,7 +1,7 @@
 import { MinesCellState } from '@/types/mines';
-import { MINES_CONSTANTS } from './constants';
 import Image from 'next/image';
 import cn from 'classnames';
+import { MINES_IMAGES } from '@/components/MinesGame/constants';
 
 interface MinesCellProps {
   index: number;
@@ -26,29 +26,27 @@ export const MinesCell = ({
   };
 
   const getCellContent = () => {
-    if (state === MinesCellState.SAFE) {
-      return (
-        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] shadow-[0_0_16px_0_#00FF0040]">
-          <Image
-            src={MINES_CONSTANTS.COIN_IMAGE}
-            alt="safe"
-            width={40}
-            height={40}
-            className="object-contain"
-          />
-        </div>
-      );
-    }
+    const isRevealed =
+      state === MinesCellState.SAFE || state === MinesCellState.MINE;
 
-    if (state === MinesCellState.MINE) {
+    if (isRevealed) {
+      const isSafe = state === MinesCellState.SAFE;
+
       return (
-        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-b from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] shadow-[0_0_16px_0_#FF000040]">
+        <div
+          className={cn(
+            'flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-b',
+            isSafe
+              ? 'from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] shadow-[0_0_16px_0_#00FF0040]'
+              : 'from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] shadow-[0_0_16px_0_#FF000040]'
+          )}
+        >
           <Image
-            src={MINES_CONSTANTS.BOMB_IMAGE}
-            alt="mine"
+            src={isSafe ? MINES_IMAGES.COIN : MINES_IMAGES.BOMB}
+            alt={isSafe ? 'safe' : 'mine'}
             width={40}
             height={40}
-            className="object-contain"
+            className="h-10 w-10 object-contain max-sm:h-8 max-sm:w-8"
           />
         </div>
       );
