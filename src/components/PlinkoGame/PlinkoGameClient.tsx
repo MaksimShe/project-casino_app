@@ -6,7 +6,11 @@ import { usePlinkoGame } from '@/components/PlinkoGame/hooks';
 import { PlinkoBoard } from '@/components/PlinkoGame';
 import GameConfigPanel from '@/shared/GameConfigPanel/GameConfigPanel';
 import { GameType } from '@/components/Dashboard/GameSelector/constants';
-import { PLINKO_CONFIG } from '@/components/PlinkoGame/constants';
+import {
+  PLINKO_CONFIG,
+  RISK_LEVEL,
+  type RiskLevel,
+} from '@/components/PlinkoGame/constants';
 import { type ButtonState } from '@/shared/GameConfigPanel/components';
 import { useTranslation } from '@/i18n/useTranslation';
 
@@ -45,7 +49,7 @@ export default function PlinkoGameClient({
       }
 
       if (title === t.configPanel.risk) {
-        let riskValue: 'low' | 'medium' | 'high';
+        let riskValue: RiskLevel;
         if (value === t.configPanel.riskLow) {
           riskValue = 'low';
         } else if (value === t.configPanel.riskMedium) {
@@ -53,7 +57,7 @@ export default function PlinkoGameClient({
         } else if (value === t.configPanel.riskHigh) {
           riskValue = 'high';
         } else {
-          riskValue = value.toLowerCase() as 'low' | 'medium' | 'high';
+          riskValue = value.toLowerCase() as RiskLevel;
         }
         setRisk(riskValue);
         resetGame();
@@ -80,10 +84,10 @@ export default function PlinkoGameClient({
   );
 
   const settingValues = useMemo(() => {
-    let riskDisplayValue = '';
-    if (risk === 'low') {
+    let riskDisplayValue: string;
+    if (risk === RISK_LEVEL.LOW) {
       riskDisplayValue = t.configPanel.riskLow;
-    } else if (risk === 'medium') {
+    } else if (risk === RISK_LEVEL.MEDIUM) {
       riskDisplayValue = t.configPanel.riskMedium;
     } else {
       riskDisplayValue = t.configPanel.riskHigh;

@@ -47,7 +47,7 @@ export const CaseOpening = memo(() => {
       {isAnimating && (
         <button
           onClick={handleSkip}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-[var(--main-text-color)] transition-all hover:scale-105 active:scale-95 max-lg:top-2/5 sm:top-[42%]"
+          className="absolute top-[45%] left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-[var(--main-text-color)] transition-all hover:scale-105 active:scale-95 max-sm:top-[42%]"
         >
           {t.casesGame.skipOpening}
         </button>

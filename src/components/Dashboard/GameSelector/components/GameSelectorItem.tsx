@@ -39,12 +39,12 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
         <p className="text-center text-3xl font-black text-white max-xl:text-base">
           {game.name}
         </p>
-        <p className="text-white max-xl:text-xs max-lg:w-32">
+        <p className="text-center text-white max-xl:text-xs">
           {game.description}
         </p>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4">
+      <div className="absolute bottom-3 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4 lg:bottom-4 xl:bottom-6">
         <a href={game.link}>
           <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-[var(--main-text-color)] transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
             {t.games.startGame}
