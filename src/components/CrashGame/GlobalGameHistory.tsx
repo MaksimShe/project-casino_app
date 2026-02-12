@@ -20,7 +20,7 @@ function GlobalGameHistory({ games, onRefresh }: GlobalGameHistoryProps) {
   return (
     <div className="flex w-full flex-col gap-2 px-6">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-[var(--second-text-color)]">
           {t.history.crashGlobalHistory.replace(
             '{{count}}',
             String(UI_CONFIG.HISTORY_DISPLAY_COUNT)

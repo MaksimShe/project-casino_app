@@ -135,7 +135,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
       {/* Verification overlay - using pointer-events to prevent layout issues */}
       {isVerifying && (
         <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-[#1a1a2e]/80">
-          <div className="flex items-center gap-2 text-white">
+          <div className="flex items-center gap-2 text-[var(--main-text-color)]">
             <div className="relative h-5 w-5">
               <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#FFCD71]" />
             </div>

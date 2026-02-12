@@ -11,7 +11,7 @@ export const LiveChatHeader = ({
 }: LiveChatHeaderProps) => {
   const { t } = useTranslation();
   return (
-    <div className="w-full text-white">
+    <div className="w-full text-[var(--main-text-color)]">
       <div className="flex items-center justify-center">
         <p className="text-center text-2xl font-bold">
           L

@@ -56,7 +56,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
                 disabled={disabled}
                 className={`rounded-md px-3.5 py-1.5 text-sm transition-colors ${
                   selectedValues[setting.title] === btn
-                    ? 'bg-[#7F76CD] text-white'
+                    ? 'bg-[#7F76CD] text-[var(--main-text-color)]'
                     : 'bg-[#302C55] hover:bg-[#5A4C98]'
                 } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
               >

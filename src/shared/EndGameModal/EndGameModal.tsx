@@ -74,7 +74,7 @@ export const EndGameModal = ({
         >
           {isWin ? t.modalWindows.titleWin : t.modalWindows.titleLose}
         </h2>
-        <div className="space-y-1 text-white">
+        <div className="space-y-1 text-[var(--main-text-color)]">
           <p>
             {isWin ? t.modalWindows.win : t.modalWindows.lose} $
             {formatNumber(amount)}

@@ -49,7 +49,7 @@ export const CaseDetails = memo(
                 </button>
               </div>
               <div className="mb-12 flex w-full flex-col gap-6 max-lg:items-center">
-                <h1 className="mb-4 w-full text-5xl font-bold text-white max-sm:text-center">
+                <h1 className="mb-4 w-full text-5xl font-bold text-[var(--main-text-color)] max-sm:text-center">
                   {getCaseName(caseData.name, t)}
                 </h1>
                 <Image src={caseImg} alt="case" width={450} height={200} />
@@ -61,7 +61,7 @@ export const CaseDetails = memo(
                 onClick={onOpenCase}
                 disabled={isOpening}
                 className={cn(
-                  'h-12 w-7/12 min-w-64 rounded-full px-12 font-bold text-white transition-all',
+                  'h-12 w-7/12 min-w-64 rounded-full px-12 font-bold text-[var(--main-text-color)] transition-all',
                   'bg-gradient-to-t from-[#BA0034] to-[#FF185F]',
                   {
                     'cursor-not-allowed opacity-50': isOpening,
@@ -79,7 +79,7 @@ export const CaseDetails = memo(
 
               {/* Skip animation toggle */}
               <div className="mb-10 flex items-center gap-3">
-                <span className="text-sm text-white/70">
+                <span className="text-sm text-[var(--second-text-color)]">
                   {t.casesGame.skipAnimation}
                 </span>
                 <button
@@ -104,7 +104,7 @@ export const CaseDetails = memo(
 
           {/* Case Contents */}
           <div className="mb-12">
-            <h2 className="text-3xl font-semibold text-white">
+            <h2 className="text-3xl font-semibold text-[var(--main-text-color)]">
               {t.casesGame.caseContents}
             </h2>
             <p className="mb-6">{t.casesGame.clickForDetails}</p>

@@ -34,7 +34,9 @@ export const FullScreenLoader: FC<Props> = ({ message = 'Loading...' }) => {
 
       {/* Animated dots loader */}
       <div className="flex items-center gap-2">
-        <span className="text-xl font-bold text-white">{message}</span>
+        <span className="text-xl font-bold text-[var(--main-text-color)]">
+          {message}
+        </span>
         <div className="flex gap-1">
           <span
             className="h-2 w-2 animate-bounce rounded-full bg-[#FFCD71]"

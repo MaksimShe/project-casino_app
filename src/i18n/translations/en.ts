@@ -42,6 +42,19 @@ export const en = {
     returnToHomepage: 'All Games',
     logout: 'Log Out',
   },
+  userProfile: {
+    title: 'User Profile',
+    totalGames: 'Total Games',
+    winRate: 'Win Rate',
+    lossRate: 'Loss Rate',
+    location: 'Location',
+    bonus: 'Bonus',
+    claimBonus: 'Claim Bonus',
+    nextBonusIn: 'Next bonus in',
+    claiming: 'Claiming...',
+    bonusClaimed: 'Bonus claimed successfully!',
+    bonusError: 'Failed to claim bonus',
+  },
   history: {
     title: 'Game History',
     crashGlobalHistory: 'Last global {{count}} Games',
@@ -269,6 +282,19 @@ export type TranslationKeys = {
   header: {
     returnToHomepage: string;
     logout: string;
+  };
+  userProfile: {
+    title: string;
+    totalGames: string;
+    winRate: string;
+    lossRate: string;
+    location: string;
+    bonus: string;
+    claimBonus: string;
+    nextBonusIn: string;
+    claiming: string;
+    bonusClaimed: string;
+    bonusError: string;
   };
   history: {
     title: string;

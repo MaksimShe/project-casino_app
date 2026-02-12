@@ -42,7 +42,7 @@ export const WinningItemDisplay = memo<WinningItemDisplayProps>(
         {/* Content */}
         <div className="relative z-10 flex w-full flex-col items-center rounded-xl bg-[#423E69] p-8">
           {/* Item name */}
-          <p className="mb-2 w-full text-3xl font-bold text-white">
+          <p className="mb-2 w-full text-3xl font-bold text-[var(--main-text-color)]">
             {getItemName(result.item.name, t)}
           </p>
           {/* Case name */}

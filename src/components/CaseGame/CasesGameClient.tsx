@@ -26,10 +26,10 @@ export function CasesGameClient({ initialCases }: CasesGameClientProps) {
         {cases.length === 0 && (
           <div className="flex min-h-[400px] items-center justify-center">
             <div className="text-center">
-              <p className="text-xl text-gray-400">
+              <p className="text-xl text-[var(--second-text-color)]">
                 {t.casesGame.noCasesAvailable}
               </p>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-[var(--second-text-color)]">
                 {t.casesGame.checkBackLater}
               </p>
             </div>

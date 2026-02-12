@@ -53,7 +53,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-gradient-to-b from-[#0F0C29] via-[#312C5F] to-[#24243E] px-16 max-lg:h-16 max-lg:bg-none max-lg:px-4">
+      <header className="fixed top-0 z-50 flex h-24 w-full items-center justify-between bg-gradient-to-b from-[var(--bg-gradient-start)] via-[var(--bg-gradient-mid)] to-[var(--bg-gradient-end)] px-16 max-lg:h-16 max-lg:bg-none max-lg:px-4">
         <div className="max-lg:hidden">
           <Logo />
         </div>
@@ -72,13 +72,17 @@ export const Header = () => {
         <div className="flex items-center gap-14 max-lg:hidden">
           <div className="flex items-center gap-4">
             <BalanceDisplay balance={user?.balance} variant="desktop" />
-            <UserAvatar avatarURL={user?.avatarURL} username={user?.username} />
+            <UserAvatar
+              avatarURL={user?.avatarURL}
+              username={user?.username}
+              onClick={() => router.push('/profile')}
+            />
           </div>
           <div className="flex gap-4">
             <SettingsDropdown />
             <button
               onClick={handleLogout}
-              className="inline-flex h-10 w-28 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-white"
+              className="inline-flex h-10 w-28 items-center rounded-2xl bg-gradient-to-b from-[#FFCD71] to-[#E59603] pr-1 pl-3 font-bold text-[var(--main-text-color)]"
             >
               {t.header.logout}
               <Image src={logoutIcon} alt="logout" height={32} width={32} />
@@ -87,7 +91,11 @@ export const Header = () => {
         </div>
 
         <div className="hidden max-lg:flex">
-          <UserAvatar avatarURL={user?.avatarURL} username={user?.username} />
+          <UserAvatar
+            avatarURL={user?.avatarURL}
+            username={user?.username}
+            onClick={() => router.push('/profile')}
+          />
         </div>
       </header>
 

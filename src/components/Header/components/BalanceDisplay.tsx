@@ -21,7 +21,7 @@ export const BalanceDisplay = ({
           width={24}
           className="h-6 w-6 object-contain"
         />
-        <span className="text-base text-white">
+        <span className="text-base text-[var(--main-text-color)]">
           {balance === undefined ? '--' : formatNumber(balance)}
         </span>
       </div>
@@ -37,7 +37,9 @@ export const BalanceDisplay = ({
         width={32}
         className="h-8 w-8 object-contain"
       />
-      <span className="text-xl text-white">{balance?.toFixed(2) ?? '--'}</span>
+      <span className="text-xl text-[var(--main-text-color)]">
+        {balance?.toFixed(2) ?? '--'}
+      </span>
     </div>
   );
 };

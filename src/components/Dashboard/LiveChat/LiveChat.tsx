@@ -18,7 +18,7 @@ export const LiveChat = () => {
   const onlineCount = currentRoomData?.activeUsers ?? 0;
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center max-lg:rounded-t-2xl max-lg:bg-[#423E69] max-lg:p-6">
+    <div className="relative flex h-full w-full flex-col items-center max-lg:rounded-t-2xl max-lg:bg-[var(--chat-bg)] max-lg:p-6">
       <LiveChatHeader onlineCount={onlineCount} friendsCount={accountCount} />
 
       <LiveChatBody messages={messages} isLoading={isLoading} error={error} />

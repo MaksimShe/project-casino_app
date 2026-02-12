@@ -55,7 +55,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
           onKeyDown={handleKeyDown}
           disabled={disabled}
           className={twMerge(
-            'h-12 w-full rounded-4xl bg-[#7C7CE854] text-white backdrop-blur-sm',
+            'h-12 w-full rounded-4xl bg-[#7C7CE854] text-[var(--main-text-color)] backdrop-blur-sm',
             disabled && 'cursor-not-allowed opacity-50'
           )}
         />
@@ -64,7 +64,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
         type="submit"
         disabled={disabled || !messageValue?.trim()}
         className={twMerge(
-          'h-12 w-12 shrink-0 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-white backdrop-blur-sm transition-colors',
+          'h-12 w-12 shrink-0 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-[var(--main-text-color)] backdrop-blur-sm transition-colors',
           disabled || !messageValue?.trim()
             ? 'cursor-not-allowed opacity-50'
             : 'hover:bg-[#3A88FF]'

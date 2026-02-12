@@ -21,7 +21,7 @@ export const QuickButton: FC<QuickButtonProps> = ({
       disabled={disabled}
       className={`rounded-md px-2 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
         isActive
-          ? 'bg-[var(--quick-btn-active)] text-white'
+          ? 'bg-[var(--quick-btn-active)] text-[var(--main-text-color)]'
           : 'bg-[var(--quick-btn-default)] hover:bg-[var(--quick-btn-hover)] active:bg-[var(--quick-btn-pressed)]'
       }`}
     >

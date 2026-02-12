@@ -46,7 +46,7 @@ export const PlinkoSlot = memo<PlinkoSlotProps>(({ multiplier, index }) => {
     <div className="relative">
       <motion.div
         className={cn(
-          'flex h-4 w-5 items-center justify-center gap-1 rounded text-white md:h-8 md:w-11',
+          'flex h-4 w-5 items-center justify-center gap-1 rounded text-[var(--main-text-color)] md:h-8 md:w-11',
           colorClass
         )}
         animate={{

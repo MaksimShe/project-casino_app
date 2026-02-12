@@ -46,8 +46,8 @@ export default function Registration() {
   };
 
   return (
-    <div className="-mt-[130px] flex h-[100vh] w-full items-center justify-center bg-gradient-to-b from-[#0F0C29] via-[#302B63] to-[#24243E]">
-      <div className="h-fill box-border flex w-[462px] flex-col items-center gap-8 rounded-[var(--main-radius)] bg-[#100F22] p-10 pt-4 max-sm:scale-85">
+    <div className="-mt-[130px] flex h-[100vh] w-full items-center justify-center">
+      <div className="h-fill box-border flex w-[462px] flex-col items-center gap-8 rounded-[var(--main-radius)] bg-[var(--bg-auth-window)] p-10 pt-4 max-sm:scale-85">
         <div className="flex w-full flex-col items-center justify-center">
           <Image src="/logo/logo.svg" alt="logo" width={96} height={96} />
           <h1>Blaze casino</h1>
@@ -121,7 +121,7 @@ export default function Registration() {
             <button
               type="submit"
               disabled={isPending}
-              className="mt-8 h-12 w-full rounded-3xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] font-bold text-white transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-8 h-12 w-full rounded-3xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] font-bold text-[var(--main-text-color)] transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPending ? 'Creating account...' : 'Sign Up'}
             </button>

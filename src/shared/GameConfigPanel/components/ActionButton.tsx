@@ -90,7 +90,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     <button
       onClick={handleClick}
       disabled={disabled || isAnimating}
-      className={`relative w-full rounded-full py-2 text-[16px] font-semibold text-white transition-all duration-150 ${buttonClass} ${
+      className={`relative w-full rounded-full py-2 text-[16px] font-semibold text-[var(--main-text-color)] transition-all duration-150 ${buttonClass} ${
         disabled ? 'cursor-not-allowed opacity-50' : ''
       } ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}
     >

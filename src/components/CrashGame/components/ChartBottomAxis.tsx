@@ -15,7 +15,7 @@ export default function ChartBottomAxis({
     <div className="absolute right-0 -bottom-18 left-0 h-24 overflow-hidden">
       {/* Sliding time markers - 0s at center, slides LEFT as time increases */}
       <motion.div
-        className="absolute right-0 bottom-7 left-0 flex pl-[49%] text-white opacity-90"
+        className="absolute right-0 bottom-7 left-0 flex pl-[49%] text-[var(--main-text-color)] opacity-90"
         style={{
           x: timeOffsetMotion,
           gap: `${timeSpacing}px`,

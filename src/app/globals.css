@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,10 +15,7 @@
   --system-error-color: #c62121;
   --system-success-color: #82c91e;
 
-  --main-text-color: #ffffff;
-  --second-text-color: #adb5bd;
-  --placeholder-color: #adb5bd;
-
+  /* Shared Non-Color Variables */
   --main-radius: 16px;
   --input-radius: 8px;
 
@@ -24,12 +28,38 @@
   --secondary-font-size: 14px;
   --small-font-size: 12px;
 
-  /* Crash Game Colors */
+  /* LIGHT MODE COLORS (default) */
+  --bg-gradient-start: #c0ebf8;
+  --bg-gradient-mid: #dfdff3;
+  --bg-gradient-end: #e8b2f5;
+  --bg-auth-window: #cfffcf;
+  --bg-user-stats: #423e6980;
+
+  --main-text-color: #1a1625;
+  --second-text-color: #4a4458;
+  --placeholder-color: #8b7f94;
+
+  --panel-bg: rgba(255, 251, 245, 0.7);
+  --panel-input-bg: rgba(240, 235, 248, 0.5);
+
+  --dropdown-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-btn-bg: rgba(240, 235, 248, 0.8);
+  --sidebar-btn-hover: rgba(223, 212, 243, 0.9);
+  --chat-bg: rgba(255, 251, 245, 0.95);
+  --chat-message-bg: rgba(240, 235, 248, 0.95);
+  --leaderboard-item-bg: rgba(240, 235, 248, 0.95);
+  --case-item-bg: rgba(232, 226, 245, 0.95);
+
+  --shadow-color: rgba(138, 127, 181, 0.3);
+  --border-color: rgba(138, 127, 181, 0.3);
+
+  /* Crash Game Colors (theme-independent) */
   --crash-game-bg: #1a1625;
   --crash-game-shadow: rgba(227, 61, 148, 0.6);
   --crash-multiplier-color: rgb(168 85 247);
 
-  /* Modal Colors */
+  /* Modal Colors (theme-independent) */
   --modal-win-bg: rgba(21, 128, 61, 0.9);
   --modal-win-border: rgb(34 197 94);
   --modal-win-text: rgb(74 222 128);
@@ -37,7 +67,7 @@
   --modal-lose-border: rgb(239 68 68);
   --modal-lose-text: rgb(248 113 113);
 
-  /* Game History Colors */
+  /* Game History Colors (theme-independent) */
   --history-gray-bg: rgba(17, 24, 39, 0.5);
   --history-gray-text: rgb(209 213 219);
   --history-yellow-bg: rgba(113, 63, 18, 0.5);
@@ -47,11 +77,7 @@
   --history-purple-bg: rgba(88, 28, 135, 0.5);
   --history-purple-text: rgb(216 180 254);
 
-  /* Game Config Panel Colors */
-  --panel-bg: rgba(66, 62, 105, 0.5);
-  --panel-input-bg: rgba(124, 124, 232, 0.33);
-
-  /* Action Button Colors */
+  /* Action Button Colors (theme-independent) */
   --btn-primary-start: #ba0034;
   --btn-primary-end: #ff185f;
   --btn-primary-shadow: #ff185f;
@@ -60,12 +86,12 @@
   --btn-secondary-shadow: #e59603;
 
   /* Quick Button Colors */
-  --quick-btn-active: #6a5ca8;
-  --quick-btn-default: #302c55;
-  --quick-btn-hover: #301c55;
-  --quick-btn-pressed: #220c30;
+  --quick-btn-active: #8b7fbd;
+  --quick-btn-default: #e8e2f5;
+  --quick-btn-hover: #dfd4f3;
+  --quick-btn-pressed: #d0c4eb;
 
-  /* Toggle Colors */
+  /* Toggle Colors (theme-independent) */
   --toggle-enabled: rgb(34 197 94);
   --toggle-disabled: rgb(107 114 128);
 
@@ -76,7 +102,7 @@
   --panel-title-size: 1.875rem;
   --panel-title-weight: 600;
 
-  /* Case Game Rarity Colors */
+  /* Case Game Rarity Colors (theme-independent) */
   --rarity-common: #adb5bd;
   --rarity-uncommon: #82c91e;
   --rarity-rare: #6caaf6;
@@ -86,16 +112,42 @@
   --rarity-default: #6b7280;
 }
 
+.dark {
+  /* DARK MODE COLORS */
+  --bg-gradient-start: #0f0c29;
+  --bg-gradient-mid: #312c5f;
+  --bg-gradient-end: #24243e;
+  --bg-auth-window: #100f22;
+
+  --main-text-color: #ffffff;
+  --second-text-color: #adb5bd;
+  --placeholder-color: #adb5bd;
+
+  --panel-bg: rgba(66, 62, 105, 0.5);
+  --panel-input-bg: rgba(124, 124, 232, 0.33);
+
+  --dropdown-bg: #1a1730;
+  --sidebar-bg: #0f0c29;
+  --sidebar-btn-bg: rgba(66, 62, 105, 0.5);
+  --sidebar-btn-hover: #24243f;
+  --chat-bg: #423e69;
+  --chat-message-bg: #24243f;
+  --leaderboard-item-bg: #24243f;
+  --case-item-bg: #423e69;
+
+  --shadow-color: rgba(227, 61, 148, 0.6);
+  --border-color: rgba(124, 124, 232, 0.33);
+
+  /* Quick Button Colors (dark mode) */
+  --quick-btn-active: #6a5ca8;
+  --quick-btn-default: #302c55;
+  --quick-btn-hover: #301c55;
+  --quick-btn-pressed: #220c30;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 @font-face {
@@ -108,7 +160,12 @@
 }
 
 body {
-  background: linear-gradient(180deg, #0f0c29 0%, #312c5f 50%, #24243e 100%)
+  background: linear-gradient(
+      180deg,
+      var(--bg-gradient-start) 0%,
+      var(--bg-gradient-mid) 50%,
+      var(--bg-gradient-end) 100%
+    )
     fixed;
   min-height: calc(100vh - 100px);
   font-family: 'Inter', sans-serif;
@@ -117,6 +174,9 @@ body {
   line-height: 1.6;
   color: var(--second-text-color);
   padding-top: 100px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 @media (max-width: 1024px) {
@@ -361,23 +421,26 @@ input[type='number'] {
 }
 
 /* 3D Flip Card Utilities */
-@utility perspective-1000 {
-  perspective: 1000px;
-}
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
 
-@utility preserve-3d {
-  transform-style: preserve-3d;
-}
+  .preserve-3d {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
 
-@utility backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
 
-@utility rotate-y-0 {
-  transform: rotateY(0deg);
-}
+  .rotate-y-0 {
+    transform: rotateY(0deg);
+  }
 
-@utility rotate-y-180 {
-  transform: rotateY(180deg);
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
 }

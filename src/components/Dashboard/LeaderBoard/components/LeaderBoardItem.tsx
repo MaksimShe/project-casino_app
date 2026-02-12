@@ -51,7 +51,7 @@ const getRankImage = (place: number) => {
       );
     default:
       return (
-        <span className="flex w-20 items-center justify-center text-2xl font-semibold text-white">
+        <span className="flex w-20 items-center justify-center text-2xl font-semibold text-[var(--main-text-color)]">
           {place}
         </span>
       );
@@ -75,21 +75,23 @@ export const LeaderBoardItem = ({
         isCurrentUser && 'bg-gradient-to-b from-[#FFCD71] to-[#E59603] p-[2px]'
       )}
     >
-      <div className="flex w-full rounded-[10px] bg-[#24243F]">
+      <div className="flex w-full rounded-[10px] bg-[var(--leaderboard-item-bg)]">
         {getRankImage(rank)}
         <div className="box-border flex h-[73px] w-full flex-col p-4 pl-0">
           <div className="flex justify-between">
-            <h3>
+            <h3 className="text-[var(--main-text-color)]">
               {username}
               {showYouLabel && ' (You)'}
             </h3>
             <div className="flex gap-2">
               <Image src={coin} alt="coin" width={16} height={16} />
-              <h3>{formatNumber(totalWagered)}</h3>
+              <h3 className="text-[var(--main-text-color)]">
+                {formatNumber(totalWagered)}
+              </h3>
             </div>
           </div>
           <div className="flex justify-between">
-            <h4>
+            <h4 className="text-[var(--main-text-color)]">
               {gamesPlayed} {t.leaderboard.gamesItem}
             </h4>
             <p className="text-sm text-[var(--system-success-color)]">

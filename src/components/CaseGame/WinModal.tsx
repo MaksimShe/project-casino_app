@@ -124,13 +124,13 @@ export const WinModal = memo(({ onOpenAgain }: WinModalProps) => {
           <div className="flex gap-4">
             <button
               onClick={handleSell}
-              className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-white shadow-white max-sm:w-40"
+              className="h-12 w-52 rounded-full bg-gradient-to-t from-[var(--btn-primary-start)] to-[var(--btn-primary-end)] font-bold text-[var(--main-text-color)] shadow-white max-sm:w-40"
             >
               {t.casesGame.sellThis}
             </button>
             <button
               onClick={handleSellAndAgain}
-              className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-white max-sm:w-40"
+              className="h-12 w-52 rounded-2xl bg-gradient-to-b from-[var(--btn-secondary-start)] to-[var(--btn-secondary-end)] font-bold text-[var(--main-text-color)] max-sm:w-40"
             >
               {t.casesGame.sellAndTryAgain}
             </button>

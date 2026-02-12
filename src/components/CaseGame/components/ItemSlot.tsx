@@ -25,7 +25,7 @@ export const ItemSlot = memo<ItemSlotProps>(({ item }) => {
       />
 
       <div className="relative z-10 flex h-full w-full flex-col justify-between rounded-lg bg-[#211F35]">
-        <p className="mt-2 px-2 text-sm text-white">
+        <p className="mt-2 px-2 text-sm text-[var(--main-text-color)]">
           {getItemName(item.name, t)}
         </p>
         <div className="mb-8 text-center text-5xl">{item.imageUrl}</div>

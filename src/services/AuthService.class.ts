@@ -244,8 +244,8 @@ class AuthService {
     });
   }
 
-  public async getCurrentUser(): Promise<CurrentUserResponse> {
-    const accessToken = this.getAccessToken();
+  public async getCurrentUser(token?: string): Promise<CurrentUserResponse> {
+    const accessToken = token || this.getAccessToken();
     if (!accessToken) {
       throw new AuthApiError('No access token found', 401);
     }
@@ -259,9 +259,10 @@ class AuthService {
   }
 
   public async getLeaderboard(
-    period: LeaderboardPeriod = 'all'
+    period: LeaderboardPeriod = 'all',
+    token?: string
   ): Promise<LeaderboardResponse> {
-    const accessToken = this.getAccessToken();
+    const accessToken = token || this.getAccessToken();
     if (!accessToken) {
       throw new AuthApiError('No access token found', 401);
     }

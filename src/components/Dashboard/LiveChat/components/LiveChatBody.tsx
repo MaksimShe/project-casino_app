@@ -46,8 +46,10 @@ export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
   if (isLoading) {
     return (
       <div className="mt-4 flex h-[83%] flex-col items-center justify-center max-lg:h-[90%]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#3A88FF]" />
-        <p className="mt-2 text-sm text-white/70">Connecting to chat...</p>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--main-text-color)]/20 border-t-[#3A88FF]" />
+        <p className="mt-2 text-sm text-[var(--second-text-color)]">
+          Connecting to chat...
+        </p>
       </div>
     );
   }
@@ -63,7 +65,7 @@ export const LiveChatBody: FC<Props> = ({ messages, isLoading, error }) => {
   if (messages.length === 0) {
     return (
       <div className="mt-4 flex h-[83%] flex-col items-center justify-center max-lg:h-[90%]">
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-[var(--second-text-color)]">
           No messages yet. Start the conversation!
         </p>
       </div>

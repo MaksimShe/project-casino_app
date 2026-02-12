@@ -19,7 +19,9 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
           boxShadow: `0px 0px 16px 0px ${game.badge.shadowColor}`,
         }}
       >
-        <p className="font-bold text-white">{game.badge.text}</p>
+        <p className="font-bold text-[var(--main-text-color)]">
+          {game.badge.text}
+        </p>
       </div>
 
       <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-[0px_0px_100px_1px_#FFFFFF4D]">
@@ -44,7 +46,7 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
 
       <div className="absolute bottom-8 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4">
         <a href={game.link}>
-          <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-white transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
+          <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-[var(--main-text-color)] transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
             {t.games.startGame}
           </button>
         </a>

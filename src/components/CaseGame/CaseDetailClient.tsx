@@ -64,10 +64,12 @@ export function CaseDetailClient({
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">{t.casesGame.caseNotFound}</p>
+          <p className="text-xl text-[var(--second-text-color)]">
+            {t.casesGame.caseNotFound}
+          </p>
           <button
             onClick={() => router.push('/cases-game')}
-            className="mt-4 rounded-lg bg-purple-600 px-6 py-2 text-white hover:bg-purple-700"
+            className="mt-4 rounded-lg bg-purple-600 px-6 py-2 text-[var(--main-text-color)] hover:bg-purple-700"
           >
             {t.casesGame.backToCases}
           </button>
