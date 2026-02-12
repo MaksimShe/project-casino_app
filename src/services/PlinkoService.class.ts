@@ -96,14 +96,53 @@ class PlinkoService {
 
   public async getMultipliers(
     risk: string,
-    lines: number
+    lines: number,
+    token?: string
   ): Promise<MultipliersResponse> {
-    return this.fetchApi<MultipliersResponse>(
-      `/plinko/multipliers?risk=${risk}&lines=${lines}`,
-      {
+    const endpoint = `/plinko/multipliers?risk=${risk}&lines=${lines}`;
+
+    // Server-side call with explicit token
+    if (token) {
+      const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
         method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await response.text();
+      let data: MultipliersResponse | null = null;
+
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new AuthApiError(
+            `Invalid response from server: ${text.substring(0, 100)}`,
+            response.status
+          );
+        }
       }
-    );
+
+      if (!response.ok) {
+        const errorMessage =
+          (data as { message?: string })?.message ||
+          `Request failed with status ${response.status}`;
+        throw new AuthApiError(errorMessage, response.status);
+      }
+
+      if (data === null) {
+        throw new AuthApiError('Empty response from server', response.status);
+      }
+
+      return data;
+    }
+
+    // Client-side call using cookies
+    return this.fetchApi<MultipliersResponse>(endpoint, {
+      method: 'GET',
+    });
   }
 
   public async getHistory(

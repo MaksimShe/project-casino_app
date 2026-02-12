@@ -6,6 +6,7 @@ import type {
   CashoutRequest,
   CashoutResponse,
 } from '@/types/crash';
+import type { CrashHistoryResponse } from '@/hooks/useHistoryTable.types';
 
 class CrashService {
   static #instance: CrashService;
@@ -87,8 +88,49 @@ class CrashService {
     return data;
   }
 
-  public async getCurrentGame(): Promise<CrashCurrentGame> {
-    return this.#fetchApi<CrashCurrentGame>('/crash/current', {
+  public async getCurrentGame(token?: string): Promise<CrashCurrentGame> {
+    const endpoint = '/crash/current';
+
+    // Server-side call with explicit token
+    if (token) {
+      const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await response.text();
+      let data: CrashCurrentGame | null = null;
+
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new AuthApiError(
+            `Invalid response from server: ${text.substring(0, 100)}`,
+            response.status
+          );
+        }
+      }
+
+      if (!response.ok) {
+        const errorMessage =
+          (data as { message?: string })?.message ||
+          `Request failed with status ${response.status}`;
+        throw new AuthApiError(errorMessage, response.status);
+      }
+
+      if (data === null) {
+        throw new AuthApiError('Empty response from server', response.status);
+      }
+
+      return data;
+    }
+
+    // Client-side call using cookies
+    return this.#fetchApi<CrashCurrentGame>(endpoint, {
       method: 'GET',
     });
   }
@@ -104,6 +146,57 @@ class CrashService {
     return this.#fetchApi<CashoutResponse>('/crash/cashout', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  public async getAllGamesHistory(
+    token?: string,
+    options?: { limit?: number }
+  ): Promise<CrashHistoryResponse> {
+    const limit = options?.limit || 10;
+    const endpoint = `/crash/history?limit=${limit}&offset=0`;
+
+    // Server-side call with explicit token
+    if (token) {
+      const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await response.text();
+      let data: CrashHistoryResponse | null = null;
+
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new AuthApiError(
+            `Invalid response from server: ${text.substring(0, 100)}`,
+            response.status
+          );
+        }
+      }
+
+      if (!response.ok) {
+        const errorMessage =
+          (data as { message?: string })?.message ||
+          `Request failed with status ${response.status}`;
+        throw new AuthApiError(errorMessage, response.status);
+      }
+
+      if (data === null) {
+        throw new AuthApiError('Empty response from server', response.status);
+      }
+
+      return data;
+    }
+
+    // Client-side call using cookies
+    return this.#fetchApi<CrashHistoryResponse>(endpoint, {
+      method: 'GET',
     });
   }
 }

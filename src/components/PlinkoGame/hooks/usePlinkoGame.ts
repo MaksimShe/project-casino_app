@@ -19,6 +19,7 @@ export function usePlinkoGame() {
     lines,
     betAmount,
     isActiveGame,
+    multipliers,
     setLastDropResults,
     setTotalWin,
     setLastDropBet,
@@ -33,6 +34,10 @@ export function usePlinkoGame() {
   const pendingWinRef = useRef<number | null>(null);
   const wasActiveGameRef = useRef(false);
   const historyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Track previous risk/lines to detect actual changes
+  const prevRiskRef = useRef(risk);
+  const prevLinesRef = useRef(lines);
 
   /**
    * Fetch multipliers for current configuration
@@ -127,11 +132,24 @@ export function usePlinkoGame() {
   ]);
 
   /**
-   * Fetch multipliers when risk or lines change
+   * Fetch multipliers when risk or lines change (skip initial mount if multipliers already exist)
    */
   useEffect(() => {
-    fetchMultipliers();
-  }, [fetchMultipliers]);
+    const riskChanged = prevRiskRef.current !== risk;
+    const linesChanged = prevLinesRef.current !== lines;
+
+    // Only fetch if risk or lines actually changed AND we're not on initial mount with existing multipliers
+    if (riskChanged || linesChanged) {
+      fetchMultipliers();
+      prevRiskRef.current = risk;
+      prevLinesRef.current = lines;
+    } else if (multipliers.length === 0) {
+      // If no multipliers exist yet (shouldn't happen with server-side fetch, but fallback)
+      fetchMultipliers();
+      prevRiskRef.current = risk;
+      prevLinesRef.current = lines;
+    }
+  }, [risk, lines, multipliers.length, fetchMultipliers]);
 
   /**
    * Watch for animation completion (isActiveGame: true -> false)
