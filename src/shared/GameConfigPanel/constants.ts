@@ -65,7 +65,11 @@ export const gamesConfig: Partial<Record<GameType, GameConfig>> = {
       },
     ],
     buttons: ['Place bet', 'Cashout'],
-    additionalInfos: ['Current multiplayer:', 'Win amount:'],
+    additionalInfos: [
+      'Current multiplayer:',
+      'Win amount:',
+      'Next multiplier:',
+    ],
   },
 
   [GameType.PLINKO]: {

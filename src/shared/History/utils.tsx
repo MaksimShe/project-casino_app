@@ -52,7 +52,7 @@ function getCrashPointColor(numValue: number): string {
 // Get color class for status
 function getStatusColor(statusValue: string): string {
   const lowerStatus = statusValue.toLowerCase();
-  if (lowerStatus === 'won') {
+  if (lowerStatus === 'won' || lowerStatus === 'cashed_out') {
     return STATUS_COLORS.WON;
   } else {
     return STATUS_COLORS.LOST;

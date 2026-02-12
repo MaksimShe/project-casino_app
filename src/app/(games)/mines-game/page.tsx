@@ -1,35 +1,18 @@
-'use client';
+import { minesService } from '@/services/MinesService.class';
+import { getServerAccessToken } from '@/utils/serverAuth';
+import { MinesGameClient } from '@/components/MinesGame/MinesGameClient';
 
-import { GameType } from '@/components/Dashboard/GameSelector/constants';
-import GameConfigPanel from '@/shared/GameConfigPanel/GameConfigPanel';
-import { useState } from 'react';
+export default async function MinesGamePage() {
+  const token = await getServerAccessToken();
+  let activeGame = null;
 
-export default function MinesGame() {
-  const [selectedGame, setSelectedGame] = useState<GameType>(GameType.PLINKO);
+  if (token) {
+    try {
+      activeGame = await minesService.getActiveGame(token);
+    } catch (error) {
+      console.error('Failed to fetch active game:', error);
+    }
+  }
 
-  return (
-    <div className="flex h-[100vh] items-center justify-center">
-      <div>
-        <button
-          className="h-10 w-60 bg-blue-200 text-black"
-          onClick={() => setSelectedGame(GameType.CRASH)}
-        >
-          Crash
-        </button>
-        <button
-          className="h-10 w-60 bg-blue-200 text-black"
-          onClick={() => setSelectedGame(GameType.PLINKO)}
-        >
-          Pinko
-        </button>
-        <button
-          className="h-10 w-60 bg-blue-200 text-black"
-          onClick={() => setSelectedGame(GameType.MINES)}
-        >
-          Mines
-        </button>
-      </div>
-      <GameConfigPanel game={selectedGame} />
-    </div>
-  );
+  return <MinesGameClient activeGameData={activeGame} />;
 }

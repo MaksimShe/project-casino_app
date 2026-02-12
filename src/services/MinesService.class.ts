@@ -1,31 +1,34 @@
 import { authService, AuthApiError } from '@/services/AuthService.class';
 import type {
-  DropRequest,
-  DropResponse,
-  MultipliersResponse,
-  HistoryResponse,
-  RecentResponse,
-} from '@/types/plinko';
+  MinesStartGameRequest,
+  MinesStartGameResponse,
+  MinesRevealCellRequest,
+  MinesRevealCellResponse,
+  MinesCashoutRequest,
+  MinesCashoutResponse,
+  MinesActiveGameResponse,
+} from '@/types/mines';
 
-class PlinkoService {
-  static #instance: PlinkoService;
+class MinesService {
+  static #instance: MinesService;
   readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   private constructor() {}
 
-  public static getInstance(): PlinkoService {
-    if (!PlinkoService.#instance) {
-      PlinkoService.#instance = new PlinkoService();
+  public static getInstance(): MinesService {
+    if (!MinesService.#instance) {
+      MinesService.#instance = new MinesService();
     }
-    return PlinkoService.#instance;
+    return MinesService.#instance;
   }
 
   private async fetchApi<T>(
     endpoint: string,
     options?: RequestInit,
-    skipRefresh = false
+    skipRefresh = false,
+    token?: string
   ): Promise<T> {
-    const accessToken = authService.getAccessToken();
+    const accessToken = token || authService.getAccessToken();
     if (!accessToken) {
       throw new AuthApiError('No access token found', 401);
     }
@@ -54,10 +57,9 @@ class PlinkoService {
     }
 
     // Handle 401 - try to refresh token and retry
-    if (response.status === 401 && !skipRefresh) {
+    if (response.status === 401 && !skipRefresh && !token) {
       const refreshed = await authService.refreshTokens();
       if (refreshed) {
-        // Retry the request with new token
         const newAccessToken = authService.getAccessToken();
         const newOptions = {
           ...options,
@@ -69,7 +71,6 @@ class PlinkoService {
         };
         return this.fetchApi<T>(endpoint, newOptions, true);
       }
-      // If refresh failed, throw the error so it can be handled upstream
       throw new AuthApiError('Session expired. Please login again.', 401);
     }
 
@@ -87,42 +88,43 @@ class PlinkoService {
     return data;
   }
 
-  public async drop(data: DropRequest): Promise<DropResponse> {
-    return this.fetchApi<DropResponse>('/plinko/drop', {
+  public async startGame(
+    data: MinesStartGameRequest
+  ): Promise<MinesStartGameResponse> {
+    return this.fetchApi<MinesStartGameResponse>('/mines/start', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  public async getMultipliers(
-    risk: string,
-    lines: number
-  ): Promise<MultipliersResponse> {
-    return this.fetchApi<MultipliersResponse>(
-      `/plinko/multipliers?risk=${risk}&lines=${lines}`,
-      {
-        method: 'GET',
-      }
-    );
-  }
-
-  public async getHistory(
-    limit: number = 10,
-    offset: number = 0
-  ): Promise<HistoryResponse> {
-    return this.fetchApi<HistoryResponse>(
-      `/plinko/history?limit=${limit}&offset=${offset}`,
-      {
-        method: 'GET',
-      }
-    );
-  }
-
-  public async getRecent(): Promise<RecentResponse> {
-    return this.fetchApi<RecentResponse>('/plinko/recent', {
-      method: 'GET',
+  public async revealCell(
+    data: MinesRevealCellRequest
+  ): Promise<MinesRevealCellResponse> {
+    return this.fetchApi<MinesRevealCellResponse>('/mines/reveal', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
+  }
+
+  public async cashout(
+    data: MinesCashoutRequest
+  ): Promise<MinesCashoutResponse> {
+    return this.fetchApi<MinesCashoutResponse>('/mines/cashout', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  public async getActiveGame(token?: string): Promise<MinesActiveGameResponse> {
+    return this.fetchApi<MinesActiveGameResponse>(
+      '/mines/active',
+      {
+        method: 'GET',
+      },
+      false,
+      token
+    );
   }
 }
 
-export const plinkoService = PlinkoService.getInstance();
+export const minesService = MinesService.getInstance();

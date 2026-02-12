@@ -24,7 +24,7 @@ export const CaseOpening = memo(() => {
       <div
         className="absolute right-0 left-0 mx-6 flex h-60 items-center overflow-hidden rounded-3xl border border-amber-300 bg-black max-sm:h-48"
         style={{
-          top: `calc(${CASE_VISUAL.CASE_Y_POSITION} + ${CASE_VISUAL.STRIP_Y_OFFSET}px)`,
+          top: `calc(${'30%'} + ${CASE_VISUAL.STRIP_Y_OFFSET}px)`,
         }}
       >
         {/* Winning indicator line */}
@@ -52,7 +52,7 @@ export const CaseOpening = memo(() => {
       {isAnimating && (
         <button
           onClick={handleSkip}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[39%]"
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 rounded-lg border px-6 py-3 text-white transition-all hover:scale-105 active:scale-95 sm:top-[42%]"
         >
           Skip opening
         </button>

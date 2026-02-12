@@ -34,6 +34,7 @@ interface Props {
   betAmount?: number;
   balance?: number;
   maxBetCanBe?: number;
+  settingValues?: Record<string, string>;
 }
 
 const GameConfigPanel = React.memo(function GameConfigPanel({
@@ -53,6 +54,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   betAmount: controlledBetAmount,
   balance,
   maxBetCanBe = CONFIG_PANEL.MAX_BET,
+  settingValues,
 }: Props) {
   const config: GameConfig | undefined = gamesConfig[game];
   const [internalBetAmount, setInternalBetAmount] = useState<number>(
@@ -158,6 +160,7 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
           settings={config.gameSettings}
           onSettingChange={onSettingChange}
           disabled={isGameActive}
+          currentValues={settingValues}
         />
       )}
 

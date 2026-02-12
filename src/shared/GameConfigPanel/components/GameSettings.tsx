@@ -1,18 +1,20 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { type GameSettingConfig } from '../constants';
 
 interface GameSettingsProps {
   settings: GameSettingConfig[];
   onSettingChange?: (title: string, value: string) => void;
   disabled?: boolean;
+  currentValues?: Record<string, string>;
 }
 
 export const GameSettings: FC<GameSettingsProps> = ({
   settings,
   onSettingChange,
   disabled = false,
+  currentValues,
 }) => {
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     () => {
@@ -25,6 +27,13 @@ export const GameSettings: FC<GameSettingsProps> = ({
       return initial;
     }
   );
+
+  // Sync with external values when provided
+  useEffect(() => {
+    if (currentValues) {
+      setSelectedValues(prev => ({ ...prev, ...currentValues }));
+    }
+  }, [currentValues]);
 
   const handleSelect = (title: string, value: string) => {
     if (disabled) return;

@@ -6,19 +6,19 @@ import type {
 } from '@/types/case';
 
 class CaseService {
-  private static instance: CaseService;
-  private readonly API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  static #instance: CaseService;
+  readonly #API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   private constructor() {}
 
   public static getInstance(): CaseService {
-    if (!CaseService.instance) {
-      CaseService.instance = new CaseService();
+    if (!CaseService.#instance) {
+      CaseService.#instance = new CaseService();
     }
-    return CaseService.instance;
+    return CaseService.#instance;
   }
 
-  private async fetchApi<T>(
+  async #fetchApi<T>(
     endpoint: string,
     options?: RequestInit,
     skipRefresh = false,
@@ -30,7 +30,7 @@ class CaseService {
       throw new AuthApiError('No access token found', 401);
     }
 
-    const response = await fetch(`${this.API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${this.#API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -67,7 +67,7 @@ class CaseService {
             Authorization: `Bearer ${newAccessToken}`,
           },
         };
-        return this.fetchApi<T>(endpoint, newOptions, true);
+        return this.#fetchApi<T>(endpoint, newOptions, true);
       }
       // If refresh failed, throw the error so it can be handled upstream
       throw new AuthApiError('Session expired. Please login again.', 401);
@@ -88,14 +88,14 @@ class CaseService {
   }
 
   public async getAllCases(token?: string): Promise<CasesResponse> {
-    return this.fetchApi<CasesResponse>('/cases', undefined, false, token);
+    return this.#fetchApi<CasesResponse>('/cases', undefined, false, token);
   }
 
   public async getCaseDetails(
     id: string,
     token?: string
   ): Promise<CaseDetailsResponse> {
-    return this.fetchApi<CaseDetailsResponse>(
+    return this.#fetchApi<CaseDetailsResponse>(
       `/cases/${id}`,
       undefined,
       false,
@@ -108,7 +108,7 @@ class CaseService {
     clientSeed?: string,
     token?: string
   ): Promise<OpenCaseResponse> {
-    return this.fetchApi<OpenCaseResponse>(
+    return this.#fetchApi<OpenCaseResponse>(
       `/cases/${id}/open`,
       {
         method: 'POST',

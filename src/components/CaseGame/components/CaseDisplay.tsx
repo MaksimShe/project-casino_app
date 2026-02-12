@@ -1,16 +1,12 @@
 import { motion } from 'framer-motion';
-import { CASE_ANIMATION, CASE_VISUAL } from '../constants';
+import { CASE_ANIMATION } from '../constants';
 import caseImg from '@/../public/cases-game/case-img.png';
 import Image from 'next/image';
 
 export const CaseDisplay = () => {
   return (
     <motion.div
-      className="absolute flex -translate-x-1/2 flex-col"
-      style={{
-        left: CASE_VISUAL.CASE_X_POSITION,
-        top: '50%',
-      }}
+      className="absolute top-3/5 left-1/2 flex -translate-x-1/2 flex-col"
       initial={{ scale: 1 }}
       animate={{ scale: CASE_ANIMATION.CASE_SCALE_SIZE }}
       transition={{

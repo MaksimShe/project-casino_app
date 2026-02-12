@@ -34,6 +34,7 @@ export default function History() {
   // For crash game, always show "myBets"
   const crashHistoryQuery = useCrashHistory('myBets', {
     limit: HISTORY_CONFIG.LIMIT,
+    enabled: gameType === 'crash',
   });
 
   // For other games, use regular hook
