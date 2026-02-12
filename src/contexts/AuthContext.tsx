@@ -39,17 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(hasTokens);
     };
 
-    // Check on mount and when storage changes
+    // Check on mount
     checkAuth();
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'accessToken' || e.key === 'refreshToken') {
-        checkAuth();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (

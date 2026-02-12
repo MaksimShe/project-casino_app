@@ -27,32 +27,7 @@ class AuthService {
   readonly #ACCESS_TOKEN_KEY = 'accessToken';
   readonly #REFRESH_TOKEN_KEY = 'refreshToken';
 
-  private constructor() {
-    // Migrate tokens from localStorage to cookies if they exist
-    this.#migrateFromLocalStorage();
-  }
-
-  #migrateFromLocalStorage(): void {
-    if (typeof window === 'undefined') return;
-
-    // Check if tokens exist in localStorage
-    const oldAccessToken = localStorage.getItem(this.#ACCESS_TOKEN_KEY);
-    const oldRefreshToken = localStorage.getItem(this.#REFRESH_TOKEN_KEY);
-
-    if (oldAccessToken && oldRefreshToken) {
-      // Move to cookies
-      this.saveTokens({
-        accessToken: oldAccessToken,
-        refreshToken: oldRefreshToken,
-      });
-
-      // Clean up localStorage
-      localStorage.removeItem(this.#ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.#REFRESH_TOKEN_KEY);
-
-      // Tokens migrated from localStorage to cookies
-    }
-  }
+  private constructor() {}
 
   public static getInstance(): AuthService {
     if (!AuthService.#instance) {
@@ -87,15 +62,6 @@ class AuthService {
     if (typeof window === 'undefined') return null;
 
     return cookieUtils.get(this.#REFRESH_TOKEN_KEY);
-  }
-
-  public getTokens(): TokenStorage | null {
-    const accessToken = this.getAccessToken();
-    const refreshToken = this.getRefreshToken();
-
-    if (!accessToken || !refreshToken) return null;
-
-    return { accessToken, refreshToken };
   }
 
   public removeTokens(): void {

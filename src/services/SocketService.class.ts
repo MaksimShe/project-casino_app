@@ -43,20 +43,17 @@ class SocketService {
   }
 
   public connect(): Socket {
-    // If socket exists and is connected, just attach any pending listeners and return
     if (this.#socket?.connected) {
       this.#attachPendingListeners();
       return this.#socket;
     }
 
-    // If socket exists but is disconnected, reconnect and attach pending listeners
     if (this.#socket && !this.#socket.connected) {
       this.#socket.connect();
       this.#attachPendingListeners();
       return this.#socket;
     }
 
-    // Create new socket
     const token = authService.getAccessToken();
 
     this.#socket = io(this.#BASE_URL, {
@@ -68,55 +65,9 @@ class SocketService {
       timeout: 10000,
     });
 
-    // Attach any pending listeners
     this.#attachPendingListeners();
 
     return this.#socket;
-  }
-
-  public connectToNamespace(namespace: string): Socket {
-    // Check if we already have a socket for this namespace
-    const existingSocket = this.#namespaceSockets.get(namespace);
-    if (existingSocket?.connected) {
-      return existingSocket;
-    }
-
-    if (existingSocket && !existingSocket.connected) {
-      existingSocket.connect();
-      return existingSocket;
-    }
-
-    // Create new socket for this namespace
-    const token = authService.getAccessToken();
-    const namespaceUrl = `${this.#BASE_URL}${namespace}`;
-
-    const socket = io(namespaceUrl, {
-      auth: { token },
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      transports: ['websocket', 'polling'],
-      timeout: 10000,
-    });
-
-    this.#namespaceSockets.set(namespace, socket);
-    return socket;
-  }
-
-  public disconnectNamespace(namespace: string): void {
-    const socket = this.#namespaceSockets.get(namespace);
-    if (socket) {
-      socket.disconnect();
-      this.#namespaceSockets.delete(namespace);
-    }
-  }
-
-  public getNamespaceSocket(namespace: string): Socket | null {
-    return this.#namespaceSockets.get(namespace) || null;
-  }
-
-  public isNamespaceConnected(namespace: string): boolean {
-    return this.#namespaceSockets.get(namespace)?.connected ?? false;
   }
 
   public disconnect(): void {
@@ -124,7 +75,6 @@ class SocketService {
       this.#socket.disconnect();
       this.#socket = null;
     }
-    // Also disconnect all namespace sockets
     this.#namespaceSockets.forEach(socket => socket.disconnect());
     this.#namespaceSockets.clear();
     this.#pendingListeners = [];
@@ -132,10 +82,6 @@ class SocketService {
 
   public isConnected(): boolean {
     return this.#socket?.connected ?? false;
-  }
-
-  public getSocket(): Socket | null {
-    return this.#socket;
   }
 
   public joinRoom(roomId: string): void {

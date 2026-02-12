@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { isAuthenticated } from '@/utils/token';
+import { authService } from '@/services/AuthService.class';
 import { ROUTES } from '@/constants/routes';
 
 export default function NotFound() {
@@ -11,7 +11,7 @@ export default function NotFound() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsAuth(isAuthenticated());
+    setIsAuth(authService.isAuthenticated());
     setIsLoading(false);
   }, []);
 
