@@ -32,7 +32,7 @@ export const PasswordInput: React.FC<InputProps> = ({
           type={isVisible ? 'text' : 'password'}
           value={props.value ?? ''}
           placeholder="Enter password"
-          className={`w-full rounded-xl bg-white px-4 py-2 pr-12 text-[var(--main-text-color)] placeholder:text-[#ADB5BD] ${className}`}
+          className={`w-full rounded-xl bg-white px-4 py-2 pr-12 text-black placeholder:text-gray-400 ${className}`}
         />
 
         <button

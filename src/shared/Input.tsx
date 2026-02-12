@@ -21,7 +21,7 @@ export const Input: React.FC<InputProps> = ({
       <input
         id={id}
         className={twMerge(
-          'rounded-xl bg-white px-4 py-2 text-[var(--main-text-color)] placeholder:text-[#ADB5BD]',
+          'rounded-xl bg-white px-4 py-2 text-black placeholder:text-gray-400',
           className
         )}
         {...props}
