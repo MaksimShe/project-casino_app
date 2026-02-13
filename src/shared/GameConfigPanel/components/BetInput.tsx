@@ -21,6 +21,7 @@ interface BetInputProps {
   placeholder?: string;
   balance?: number;
   disabled?: boolean;
+  onSound?: () => void;
 }
 
 export const BetInput: FC<BetInputProps> = ({
@@ -31,6 +32,7 @@ export const BetInput: FC<BetInputProps> = ({
   placeholder = '10.00',
   balance,
   disabled = false,
+  onSound,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [displayValue, setDisplayValue] = useState(value.toString());
@@ -154,6 +156,7 @@ export const BetInput: FC<BetInputProps> = ({
               label={btn.label}
               onClick={btn.onClick}
               disabled={isDisabled}
+              onSound={onSound}
             />
           ))}
         </div>

@@ -13,6 +13,7 @@ interface OptionInputProps {
   onToggleChange?: (enabled: boolean) => void;
   placeholder?: string;
   disabled?: boolean;
+  onSound?: () => void;
 }
 
 export const OptionInput: FC<OptionInputProps> = ({
@@ -25,6 +26,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   onToggleChange,
   placeholder = 'e.g 2.00',
   disabled = false,
+  onSound,
 }) => {
   const [internalToggle, setInternalToggle] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(
@@ -35,6 +37,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   const toggleEnabled = isToggleControlled ? controlledToggle : internalToggle;
 
   const handleToggle = () => {
+    onSound?.();
     const newValue = !toggleEnabled;
     if (!isToggleControlled) {
       setInternalToggle(newValue);
@@ -88,6 +91,7 @@ export const OptionInput: FC<OptionInputProps> = ({
                 label={option}
                 onClick={() => handleOptionClick(option)}
                 isActive={selectedOption === option}
+                onSound={onSound}
               />
             ))}
           </div>

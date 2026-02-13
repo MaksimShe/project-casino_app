@@ -19,6 +19,7 @@ import { handleMinesError, updateUserBalance } from '@/utils/minesUtils';
 import { MINES_IMAGES } from '@/components/MinesGame/constants';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useShowNotification } from '@/hooks/useShowNotification';
+import { useGameStore, AudioSound } from '@/stores/useGameStore';
 
 interface MinesGameClientProps {
   activeGameData: MinesActiveGameResponse | null;
@@ -139,6 +140,13 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
             undefined
           );
 
+          // Play sound based on result
+          if (response.isMine) {
+            useGameStore.getState().playAudio(AudioSound.BOOM_MINES);
+          } else {
+            useGameStore.getState().playAudio(AudioSound.DEFUSE_MINES);
+          }
+
           // If hit a mine, show lose modal
           if (response.isMine) {
             endGame(MinesGameStatus.LOST, {
@@ -176,6 +184,13 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
           response.currentValue,
           undefined
         );
+
+        // Play sound based on result
+        if (response.isMine) {
+          useGameStore.getState().playAudio(AudioSound.BOOM_MINES);
+        } else {
+          useGameStore.getState().playAudio(AudioSound.DEFUSE_MINES);
+        }
 
         // If hit a mine, show lose modal
         if (response.isMine) {

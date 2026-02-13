@@ -13,7 +13,8 @@ export const CaseOpening = memo(() => {
   const { selectedCase, animationItems, isAnimating } = useCaseStore();
   const { t } = useTranslation();
   const controls = useAnimation();
-  const { handleAnimationComplete, handleSkip } = useCaseAnimation(controls);
+  const { handleAnimationComplete, handleSkip, handleAnimationUpdate } =
+    useCaseAnimation(controls);
 
   if (!selectedCase) return null;
 
@@ -37,6 +38,7 @@ export const CaseOpening = memo(() => {
           style={{ gap: CASE_VISUAL.ITEM_SLOT_GAP }}
           initial={{ x: 0 }}
           animate={controls}
+          onUpdate={handleAnimationUpdate}
           onAnimationComplete={handleAnimationComplete}
         >
           {animationItems.map((item, index) => (

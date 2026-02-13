@@ -13,7 +13,7 @@ import { SideBar } from '@/components/SideBar/SideBar';
 import {
   Logo,
   BalanceDisplay,
-  UserAvatar,
+  UserAvatarWithIndicator,
   SettingsDropdown,
 } from './components';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -72,7 +72,7 @@ export const Header = () => {
         <div className="flex items-center gap-14 max-lg:hidden">
           <div className="flex items-center gap-4">
             <BalanceDisplay balance={user?.balance} variant="desktop" />
-            <UserAvatar
+            <UserAvatarWithIndicator
               avatarURL={user?.avatarURL}
               username={user?.username}
               onClick={() => router.push('/profile')}
@@ -91,7 +91,7 @@ export const Header = () => {
         </div>
 
         <div className="hidden max-lg:flex">
-          <UserAvatar
+          <UserAvatarWithIndicator
             avatarURL={user?.avatarURL}
             username={user?.username}
             onClick={() => router.push('/profile')}

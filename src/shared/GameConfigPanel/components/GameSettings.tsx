@@ -8,6 +8,7 @@ interface GameSettingsProps {
   onSettingChange?: (title: string, value: string) => void;
   disabled?: boolean;
   currentValues?: Record<string, string>;
+  onSound?: () => void;
 }
 
 export const GameSettings: FC<GameSettingsProps> = ({
@@ -15,6 +16,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
   onSettingChange,
   disabled = false,
   currentValues,
+  onSound,
 }) => {
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     () => {
@@ -37,6 +39,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
 
   const handleSelect = (title: string, value: string) => {
     if (disabled) return;
+    onSound?.();
     setSelectedValues(prev => ({ ...prev, [title]: value }));
     onSettingChange?.(title, value);
   };

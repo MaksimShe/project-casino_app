@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, memo } from 'react';
-import { useBonus } from '@/hooks/useBonus';
+import { useBonusStatus, useBonus } from '@/hooks/useBonus';
 import { useTranslation } from '@/i18n/useTranslation';
 import { formatNumber } from '@/utils/format';
 import type { BonusStatusResponse } from '@/types/bonus';
@@ -12,20 +12,15 @@ interface BonusProps {
 
 export const Bonus = memo(({ initialBonusStatus }: BonusProps) => {
   const { t } = useTranslation();
+  const { data: bonusStatus } = useBonusStatus();
   const { claimBonus, isClaimingBonus, claimData } = useBonus();
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [canClaim, setCanClaim] = useState(false);
-  const [bonusAmount, setBonusAmount] = useState(
-    initialBonusStatus?.amount || 0
-  );
 
-  const nextClaimAt = claimData?.nextClaimAt || initialBonusStatus?.nextClaimAt;
-
-  useEffect(() => {
-    if (claimData) {
-      setBonusAmount(claimData.amount);
-    }
-  }, [claimData]);
+  // Use live data from React Query, fallback to SSR initial data
+  const status = bonusStatus || initialBonusStatus;
+  const bonusAmount = status?.amount || 0;
+  const nextClaimAt = claimData?.nextClaimAt || status?.nextClaimAt;
 
   useEffect(() => {
     if (!nextClaimAt) return;
@@ -59,7 +54,6 @@ export const Bonus = memo(({ initialBonusStatus }: BonusProps) => {
 
   const handleClaimBonus = () => {
     if (canClaim && !isClaimingBonus) {
-      setCanClaim(false);
       claimBonus();
     }
   };

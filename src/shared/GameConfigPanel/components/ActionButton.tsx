@@ -10,6 +10,7 @@ export interface ButtonState {
   className?: string;
   onClick?: () => void;
   clickCooldown?: number;
+  onSound?: () => void;
 }
 
 interface ActionButtonProps {
@@ -55,6 +56,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   const handleClick = () => {
     if (disabled || clickCooldownRef.current) return;
 
+    currentState.onSound?.();
     currentState.onClick?.();
 
     if (primaryState.clickCooldown && primaryState.clickCooldown > 0) {

@@ -1,11 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { useAnimation } from 'framer-motion';
 import { useCaseStore } from '@/stores/useCaseStore';
+import { useGameStore, AudioSound } from '@/stores/useGameStore';
 import { CASE_VISUAL, CASE_ANIMATION, CaseViewState } from '../constants';
 
 export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
   const store = useCaseStore();
+  const { playAudio } = useGameStore();
   const [isMobile, setIsMobile] = useState(false);
+  const lastItemIndexRef = useRef<number>(-1);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -44,6 +47,29 @@ export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
     store.setViewState(CaseViewState.RESULT);
   }, [controls, calculateFinalPosition, store]);
 
+  const handleAnimationUpdate = useCallback(
+    (latest: { x?: number }) => {
+      // Only play ticks during the normal animation (not during skip)
+      if (!store.isAnimating || typeof latest.x !== 'number') return;
+
+      const itemSlotWidth = isMobile ? 100 : CASE_VISUAL.ITEM_SLOT_WIDTH;
+      const itemWidth = itemSlotWidth + CASE_VISUAL.ITEM_SLOT_GAP;
+
+      // Calculate which item is currently at the center
+      const currentItemIndex = Math.floor(-latest.x / itemWidth);
+
+      // Play tick sound when a new item crosses the center
+      if (
+        currentItemIndex !== lastItemIndexRef.current &&
+        currentItemIndex >= 0
+      ) {
+        lastItemIndexRef.current = currentItemIndex;
+        playAudio(AudioSound.ROULETTE_TICK);
+      }
+    },
+    [store.isAnimating, isMobile, playAudio]
+  );
+
   // Start animation on mount
   useEffect(() => {
     controls.start({
@@ -59,5 +85,6 @@ export const useCaseAnimation = (controls: ReturnType<typeof useAnimation>) => {
     calculateFinalPosition,
     handleAnimationComplete,
     handleSkip,
+    handleAnimationUpdate,
   };
 };
