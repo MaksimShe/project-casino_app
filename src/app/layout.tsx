@@ -4,6 +4,7 @@ import { QueryProvider } from '@/providers/QueryProvider';
 import { ThemeSync } from '@/components/ThemeSync';
 import './globals.css';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { type ReactNode } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>

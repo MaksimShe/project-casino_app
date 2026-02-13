@@ -3,11 +3,12 @@
 import { Header } from '@/components/Header/Header';
 import { ProtectedLayout } from '@/components/layouts/ProtectedLayout';
 import { GoHomepage } from '@/shared/GoHomepage/GoHomepage';
+import { type ReactNode } from 'react';
 
 export default function GamesLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <ProtectedLayout>

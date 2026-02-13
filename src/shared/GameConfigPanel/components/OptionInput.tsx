@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type ChangeEvent, type FC, useState } from 'react';
 import { QuickButton } from './QuickButton';
 
 interface OptionInputProps {
@@ -47,10 +47,9 @@ export const OptionInput: FC<OptionInputProps> = ({
     onChange(option);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
-    // Allow empty string for user to clear the input
     if (newValue === '') {
       onChange(newValue);
       return;

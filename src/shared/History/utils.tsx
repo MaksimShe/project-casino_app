@@ -239,10 +239,10 @@ export function formatValue(
     const colorClass = getStatusColor(statusValue);
 
     // Get translated status
-    let translatedStatus = statusValue;
+    let translatedStatus: string;
     if (statusValue === 'won') {
       translatedStatus = t.history.status.won;
-    } else if (statusValue === 'cashed_out' || statusValue === 'cashedout') {
+    } else if (statusValue === 'cashed_out') {
       translatedStatus = t.history.status.cashedOut;
     } else if (statusValue === 'lost') {
       translatedStatus = t.history.status.lost;

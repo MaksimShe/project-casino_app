@@ -7,11 +7,12 @@ import { GoHomepage } from '@/shared/GoHomepage/GoHomepage';
 import { Toaster } from 'sonner';
 import { useCaseStore } from '@/stores/useCaseStore';
 import { CaseViewState } from '@/components/CaseGame/constants';
+import { type ReactNode } from 'react';
 
 export default function GamesLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   const { isAnimating, viewState } = useCaseStore();
   const shouldHideHistory = isAnimating || viewState === CaseViewState.RESULT;

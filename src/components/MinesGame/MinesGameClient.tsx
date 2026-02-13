@@ -18,6 +18,7 @@ import { formatNumber } from '@/utils/format';
 import { handleMinesError, updateUserBalance } from '@/utils/minesUtils';
 import { MINES_IMAGES } from '@/components/MinesGame/constants';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useShowNotification } from '@/hooks/useShowNotification';
 
 interface MinesGameClientProps {
   activeGameData: MinesActiveGameResponse | null;
@@ -53,6 +54,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { showError } = useShowNotification();
 
   // Restore active game on mount
   useEffect(() => {
@@ -86,7 +88,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
       updateUserBalance(queryClient);
     } catch (error) {
-      handleMinesError(error, MinesErrorMessage.START_GAME);
+      handleMinesError(error, MinesErrorMessage.START_GAME, showError);
       setIsStartingGame(false);
     }
   }, [
@@ -96,6 +98,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
     startNewGame,
     setIsStartingGame,
     queryClient,
+    showError,
   ]);
 
   // Handle revealing a cell
@@ -148,7 +151,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
           updateUserBalance(queryClient);
         } catch (error) {
-          handleMinesError(error, MinesErrorMessage.START_GAME);
+          handleMinesError(error, MinesErrorMessage.START_GAME, showError);
           setIsStartingGame(false);
           setIsRevealingCell(false);
         }
@@ -186,7 +189,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
         updateUserBalance(queryClient);
       } catch (error) {
-        handleMinesError(error, MinesErrorMessage.REVEAL_CELL);
+        handleMinesError(error, MinesErrorMessage.REVEAL_CELL, showError);
         setIsRevealingCell(false);
       }
     },
@@ -202,6 +205,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
       setIsStartingGame,
       setIsRevealingCell,
       queryClient,
+      showError,
     ]
   );
 
@@ -222,7 +226,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
       updateUserBalance(queryClient);
     } catch (error) {
-      handleMinesError(error, MinesErrorMessage.CASHOUT);
+      handleMinesError(error, MinesErrorMessage.CASHOUT, showError);
       setIsCashingOut(false);
     }
   }, [
@@ -233,6 +237,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
     endGame,
     setIsCashingOut,
     queryClient,
+    showError,
   ]);
 
   const handleNewGame = useCallback(() => {

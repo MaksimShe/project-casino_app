@@ -8,7 +8,6 @@ import type { TranslationKeys } from '@/i18n/translations/en';
 
 export enum GameType {
   CRASH = 'crash',
-  CASE = 'case',
   MINES = 'mines',
   PLINKO = 'plinko',
 }
