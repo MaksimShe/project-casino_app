@@ -40,10 +40,9 @@ export const CASE_VISUAL = {
   // Scrolling strip
   ITEM_SLOT_WIDTH: 160, // px
   ITEM_SLOT_HEIGHT: 192, // px
-  ITEM_SLOT_GAP: 20, // px
-  STRIP_Y_OFFSET: -180, // px above case
   IMAGE_PADDING: 24,
   IMAGE_ASPECT_RATIO: 9.6,
+  ITEM_SLOT_GAP: 20,
 
   // Animation items
   TOTAL_ITEMS_COUNT: 60, // items in strip

@@ -10,6 +10,7 @@ export interface ButtonState {
   className?: string;
   onClick?: () => void;
   clickCooldown?: number;
+  onSound?: () => void;
 }
 
 interface ActionButtonProps {
@@ -55,6 +56,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   const handleClick = () => {
     if (disabled || clickCooldownRef.current) return;
 
+    currentState.onSound?.();
     currentState.onClick?.();
 
     if (primaryState.clickCooldown && primaryState.clickCooldown > 0) {
@@ -90,7 +92,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
     <button
       onClick={handleClick}
       disabled={disabled || isAnimating}
-      className={`relative w-full rounded-full py-2 text-[16px] font-semibold text-white transition-all duration-150 ${buttonClass} ${
+      className={`relative w-full rounded-full py-2 text-[16px] font-semibold text-[var(--main-text-color)] transition-all duration-150 ${buttonClass} ${
         disabled ? 'cursor-not-allowed opacity-50' : ''
       } ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}
     >

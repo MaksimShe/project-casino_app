@@ -8,6 +8,7 @@ import { CaseDetails } from '@/components/CaseGame/CaseDetails';
 import { CaseViewState } from '@/components/CaseGame/constants';
 import { useOpenCase } from '@/components/CaseGame/hooks/useOpenCase';
 import type { CaseDetailsResponse, Case } from '@/types/case';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface CaseDetailClientProps {
   caseId: string;
@@ -57,16 +58,20 @@ export function CaseDetailClient({
     };
   }, [resetGame, setSelectedCase]);
 
+  const { t } = useTranslation();
+
   if (!caseData) {
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Case not found</p>
+          <p className="text-xl text-[var(--second-text-color)]">
+            {t.casesGame.caseNotFound}
+          </p>
           <button
             onClick={() => router.push('/cases-game')}
-            className="mt-4 rounded-lg bg-purple-600 px-6 py-2 text-white hover:bg-purple-700"
+            className="mt-4 rounded-lg bg-purple-600 px-6 py-2 text-[var(--main-text-color)] hover:bg-purple-700"
           >
-            Back to Cases
+            {t.casesGame.backToCases}
           </button>
         </div>
       </div>

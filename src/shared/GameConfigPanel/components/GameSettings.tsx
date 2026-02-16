@@ -8,6 +8,7 @@ interface GameSettingsProps {
   onSettingChange?: (title: string, value: string) => void;
   disabled?: boolean;
   currentValues?: Record<string, string>;
+  onSound?: () => void;
 }
 
 export const GameSettings: FC<GameSettingsProps> = ({
@@ -15,6 +16,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
   onSettingChange,
   disabled = false,
   currentValues,
+  onSound,
 }) => {
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     () => {
@@ -37,6 +39,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
 
   const handleSelect = (title: string, value: string) => {
     if (disabled) return;
+    onSound?.();
     setSelectedValues(prev => ({ ...prev, [title]: value }));
     onSettingChange?.(title, value);
   };
@@ -56,7 +59,7 @@ export const GameSettings: FC<GameSettingsProps> = ({
                 disabled={disabled}
                 className={`rounded-md px-3.5 py-1.5 text-sm transition-colors ${
                   selectedValues[setting.title] === btn
-                    ? 'bg-[#7F76CD] text-white'
+                    ? 'bg-[#7F76CD] text-[var(--main-text-color)]'
                     : 'bg-[#302C55] hover:bg-[#5A4C98]'
                 } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
               >

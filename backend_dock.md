@@ -297,6 +297,7 @@ Authorization: Bearer <accessToken>
       "name": "Starter Case",
       "price": 100,
       "image": "https://example.com/case-image.jpg",
+      "description": "A basic case with common items",
       "items": []
     },
     {
@@ -304,6 +305,7 @@ Authorization: Bearer <accessToken>
       "name": "Premium Case",
       "price": 500,
       "image": "https://example.com/premium-case.jpg",
+      "description": null,
       "items": []
     }
   ]
@@ -341,20 +343,23 @@ Authorization: Bearer <accessToken>
   "id": "65a1b2c3d4e5f6g7h8i9j0k1",
   "name": "Starter Case",
   "price": 100,
+  "description": "A basic case with common items",
   "items": [
     {
       "id": "65a1b2c3d4e5f6g7h8i9j0a1",
       "name": "AK-47 Redline",
       "rarity": "Rare",
       "value": 50,
-      "chance": 15.5
+      "chance": 15.5,
+      "imageUrl": "https://example.com/ak47-redline.jpg"
     },
     {
       "id": "65a1b2c3d4e5f6g7h8i9j0a2",
       "name": "Knife Butterfly",
       "rarity": "Legendary",
       "value": 500,
-      "chance": 0.5
+      "chance": 0.5,
+      "imageUrl": "https://example.com/knife-butterfly.jpg"
     }
   ]
 }
@@ -548,6 +553,9 @@ GET /api/cases/history?limit=10&offset=0
 
 - `general` - General Chat
 - `crash` - Crash Chat
+- `mines` - Mines Chat
+- `cases` - Cases Chat
+- `plinko` - Plinko Chat
 
 #### WebSocket события (Client → Server)
 
@@ -567,11 +575,8 @@ GET /api/cases/history?limit=10&offset=0
 
 1. Проверяет существование комнаты
 2. Присоединяет сокет к комнате `room:{roomId}`
-3. Если это первое подключение к комнате в рамках сессии:
-   - Сохраняет уведомление о присоединении в БД
-   - Отправляет уведомление другим участникам через `socket.broadcast.to(room).emit("message", ...)`
-4. Отправляет историю комнаты текущему пользователю через `socket.emit("chat:history", ...)`
-5. Фильтрует из истории сообщения о собственном присоединении/выходе
+3. Отправляет историю комнаты текущему пользователю через `socket.emit("chat:history", ...)`
+4. Отправляет обновление количества активных пользователей через `io.to(room).emit("chat:room:users", ...)`
 
 ##### Выход из комнаты
 
@@ -588,9 +593,8 @@ GET /api/cases/history?limit=10&offset=0
 **Действия сервера:**
 
 1. Проверяет, был ли пользователь в комнате
-2. Сохраняет уведомление о выходе в БД
-3. Отправляет уведомление другим участникам (покинувший не увидит)
-4. Удаляет сокет из комнаты
+2. Удаляет сокет из комнаты
+3. Отправляет обновление количества активных пользователей через `io.to(room).emit("chat:room:users", ...)`
 
 ##### Отправка сообщения
 
@@ -626,10 +630,41 @@ GET /api/cases/history?limit=10&offset=0
 
 ```json
 [
-  { "id": "general", "name": "General Chat" },
-  { "id": "crash", "name": "Crash Chat" }
+  {
+    "id": "general",
+    "name": "General Chat",
+    "activeUsers": 5
+  },
+  {
+    "id": "crash",
+    "name": "Crash Chat",
+    "activeUsers": 3
+  },
+  {
+    "id": "mines",
+    "name": "Mines Chat",
+    "activeUsers": 2
+  },
+  {
+    "id": "cases",
+    "name": "Cases Chat",
+    "activeUsers": 1
+  },
+  {
+    "id": "plinko",
+    "name": "Plinko Chat",
+    "activeUsers": 4
+  }
 ]
 ```
+
+**Поля ответа:**
+
+- `id` - ID комнаты
+- `name` - Название комнаты
+- `activeUsers` - Количество активных пользователей в комнате на момент подключения
+
+**Примечание:** Событие отправляется только подключившемуся пользователю (`socket.emit`). Для получения обновлений количества пользователей в реальном времени используйте событие `chat:room:users`.
 
 ##### История комнаты
 
@@ -648,6 +683,7 @@ GET /api/cases/history?limit=10&offset=0
       "username": "john_doe",
       "text": "Привет!",
       "userId": "65a1b2c3d4e5f6g7h8i9j0k2",
+      "avatarURL": "https://example.com/avatar.jpg",
       "time": "2:13 pm",
       "createdAt": "2024-01-15T14:13:58.000Z",
       "roomId": "general"
@@ -656,13 +692,33 @@ GET /api/cases/history?limit=10&offset=0
 }
 ```
 
-**Примечание:** Сообщения о собственном присоединении/выходе исключаются из истории.
+##### Обновление количества пользователей в комнате
+
+**Событие:** `chat:room:users`
+
+**Отправляется:** При изменении количества активных пользователей в комнате (присоединение, выход, отключение)
+
+**Данные:**
+
+```json
+{
+  "roomId": "general",
+  "activeUsers": 5
+}
+```
+
+**Поля ответа:**
+
+- `roomId` - ID комнаты
+- `activeUsers` - Текущее количество активных пользователей в комнате
+
+**Примечание:** Событие отправляется всем пользователям, которые в данный момент находятся в указанной комнате, при каждом изменении количества участников (присоединение нового пользователя, выход пользователя или отключение пользователя). Пользователь, который покинул комнату или отключился, не получает это событие.
 
 ##### Новое сообщение
 
 **Событие:** `message`
 
-**Отправляется:** При получении нового сообщения или уведомления о присоединении/выходе
+**Отправляется:** При получении нового сообщения от пользователя
 
 **Данные:**
 
@@ -673,6 +729,7 @@ GET /api/cases/history?limit=10&offset=0
   "username": "john_doe",
   "text": "Текст сообщения",
   "userId": "65a1b2c3d4e5f6g7h8i9j0k2",
+  "avatarURL": "https://example.com/avatar.jpg",
   "time": "2:13 pm",
   "createdAt": "2024-01-15T14:13:58.000Z"
 }
@@ -680,8 +737,7 @@ GET /api/cases/history?limit=10&offset=0
 
 **Примечание:**
 
-- Для обычных сообщений отправляется всем в комнате, включая отправителя
-- Для уведомлений о присоединении/выходе отправляется всем, кроме самого пользователя
+- Сообщения отправляются всем в комнате, включая отправителя
 
 ##### Ошибка
 
@@ -733,7 +789,11 @@ Authorization: Bearer <accessToken>
       "roomId": "general",
       "username": "john_doe",
       "text": "Привет!",
-      "userId": "65a1b2c3d4e5f6g7h8i9j0k2",
+      "userId": {
+        "_id": "65a1b2c3d4e5f6g7h8i9j0k2",
+        "username": "john_doe",
+        "avatarURL": "https://example.com/avatar.jpg"
+      },
       "createdAt": "2024-01-15T14:13:58.000Z"
     }
   ]
@@ -749,15 +809,8 @@ Authorization: Bearer <accessToken>
 
 **Хранение сообщений:**
 
-- Все сообщения сохраняются в MongoDB (модель: `ChatMessage`)
+- Все сообщения пользователей сохраняются в MongoDB (модель: `ChatMessage`)
 - Автоматическое удаление старых сообщений: в БД хранится не более **100 последних сообщений** для каждой комнаты
-- Бот-сообщения о присоединении/выходе также сохраняются в БД
-
-**Фильтрация сообщений:**
-
-- Пользователь не видит сообщения о своем собственном присоединении/выходе:
-  - Не получает их в реальном времени (используется `socket.broadcast.to()`)
-  - Не видит их в истории (фильтрация при отправке `chat:history`)
 
 **Форматирование времени:**
 
@@ -793,12 +846,15 @@ Authorization: Bearer <accessToken>
 {
   "amount": 10,
   "minesCount": 3,
+  "gridSize": 6,
   "clientSeed": "optional_client_seed"
 }
 ```
 
 - `amount`: Сумма ставки (0.10 - 10000)
-- `minesCount`: Количество мин (1-24)
+- `minesCount`: Количество мин; должно быть меньше числа ячеек (1 <= minesCount < gridSize²). Для 5×5: 1–24, для 6×6: 1–35, для 7×7: 1–48, для 8×8: 1–63
+- `gridSize`: Размер сетки (5, 6, 7 или 8). Опционально, по умолчанию 5. 5 → 5×5 (25 ячеек), 6 → 6×6 (36), 7 → 7×7 (49), 8 → 8×8 (64)
+- `clientSeed`: Опционально
 
 **Успешный ответ (201):**
 
@@ -807,6 +863,8 @@ Authorization: Bearer <accessToken>
   "gameId": "65b...",
   "amount": 10,
   "minesCount": 3,
+  "gridSize": 6,
+  "totalTiles": 36,
   "serverSeedHash": "hash...",
   "multipliers": [1.03, 1.08, ...]
 }
@@ -829,7 +887,7 @@ Authorization: Bearer <accessToken>
 }
 ```
 
-- `position`: Номер ячейки (0-24)
+- `position`: Номер ячейки в диапазоне 0 … (gridSize² − 1). Для 5×5: 0–24, для 6×6: 0–35, для 7×7: 0–48, для 8×8: 0–63
 
 **Успешный ответ (200):**
 
@@ -840,7 +898,9 @@ Authorization: Bearer <accessToken>
   "currentMultiplier": 1.03,
   "currentValue": 10.3,
   "revealedTiles": [5],
-  "safeTilesLeft": 21
+  "safeTilesLeft": 21,
+  "gridSize": 6,
+  "totalTiles": 36
 }
 ```
 
@@ -869,7 +929,9 @@ Authorization: Bearer <accessToken>
   "winAmount": 15.5,
   "multiplier": 1.55,
   "serverSeed": "original_server_seed",
-  "minePositions": [0, 12, 24]
+  "minePositions": [0, 12, 24],
+  "gridSize": 6,
+  "totalTiles": 36
 }
 ```
 
@@ -879,13 +941,13 @@ Authorization: Bearer <accessToken>
 
 **GET** `/mines/active`
 
-Возвращает текущую активную игру пользователя, если она есть.
+Возвращает текущую активную игру пользователя, если она есть. Объект игры содержит `gridSize` и при сериализации все поля документа (в т.ч. для построения сетки на фронте: `gridSize`, `revealedPositions`, `minesCount` и т.д.). Количество ячеек = gridSize × gridSize (`totalTiles`).
 
 **Успешный ответ (200):**
 
 ```json
 {
-  "game": { ... } // или null
+  "game": { "_id": "...", "gridSize": 6, "betAmount": 10, "minesCount": 3, "revealedPositions": [...], ... } // или null
 }
 ```
 
@@ -895,12 +957,86 @@ Authorization: Bearer <accessToken>
 
 **GET** `/mines/history`
 
-Возвращает историю игр пользователя.
+Возвращает историю завершённых игр пользователя (статусы: won, lost, cashed_out). Сортировка по дате окончания (сначала новые).
 
 **Query параметры:**
 
-- `limit`: Максимальное количество записей (default: 10)
-- `offset`: Смещение (default: 0)
+- `limit`: Максимальное количество записей (default: 10, max: 10)
+- `offset`: Смещение для пагинации (default: 0)
+
+**Успешный ответ (200):**
+
+```json
+{
+  "games": [
+    {
+      "_id": "65b...",
+      "userId": "65a...",
+      "betAmount": 10,
+      "gridSize": 6,
+      "minesCount": 3,
+      "minePositions": [0, 12, 24],
+      "revealedPositions": [5, 7, 11, 13],
+      "status": "cashed_out",
+      "cashoutMultiplier": 1.55,
+      "winAmount": 15.5,
+      "serverSeed": "revealed_after_finish...",
+      "serverSeedHash": "hash...",
+      "clientSeed": "client_seed...",
+      "nonce": 25,
+      "createdAt": "2024-01-15T12:00:00.000Z",
+      "finishedAt": "2024-01-15T12:01:30.000Z"
+    },
+    {
+      "_id": "65b...",
+      "betAmount": 5,
+      "gridSize": 5,
+      "minesCount": 2,
+      "minePositions": [10, 22],
+      "revealedPositions": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 23, 24
+      ],
+      "status": "won",
+      "cashoutMultiplier": 2.45,
+      "winAmount": 12.25,
+      "createdAt": "2024-01-15T11:00:00.000Z",
+      "finishedAt": "2024-01-15T11:05:00.000Z"
+    },
+    {
+      "_id": "65b...",
+      "betAmount": 20,
+      "gridSize": 5,
+      "minesCount": 5,
+      "minePositions": [2, 8, 14, 18, 24],
+      "revealedPositions": [0, 1, 3, 4, 5],
+      "status": "lost",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "finishedAt": "2024-01-15T10:02:00.000Z"
+    }
+  ]
+}
+```
+
+**Поля объекта игры:**
+
+- `_id` — ID игры
+- `userId` — ID пользователя
+- `betAmount` — сумма ставки
+- `gridSize` — размер сетки (5, 6, 7 или 8); количество ячеек = gridSize × gridSize
+- `minesCount` — количество мин в игре
+- `minePositions` — массив позиций мин (индексы 0 … gridSize² − 1)
+- `revealedPositions` — массив открытых безопасных позиций до окончания игры
+- `status` — исход: `won` (все безопасные открыты), `lost` (попал на мину), `cashed_out` (забрал выигрыш)
+- `cashoutMultiplier` — множитель на момент кешаута (если cashed_out или won)
+- `winAmount` — сумма выигрыша (если won или cashed_out); при lost отсутствует
+- `serverSeed`, `serverSeedHash`, `clientSeed`, `nonce` — данные для Provably Fair
+- `createdAt` — время создания игры
+- `finishedAt` — время окончания игры
+
+**Ошибки:**
+
+- `401` — не авторизован
 
 ---
 
@@ -1013,6 +1149,7 @@ Authorization: Bearer <accessToken>
       "linesCount": 16,
       "totalWin": 1.5,
       "avgMultiplier": "1.50",
+      "status": "won",
       "createdAt": "2024-01-01T00:00:00.000Z"
     }
   ]
@@ -1060,7 +1197,7 @@ Authorization: Bearer <accessToken>
 
 **POST** `/crash/bet`
 
-Создает новую ставку в текущем мультиплеерном раунде (несколько игроков могут участвовать в одном раунде). REST-эндпоинты для ставок и истории сохраняются. Реализация WebSocket для управления раундами была рефакторена в функциональный API (`initializeCrashHandler(io)`, `emitGameTick(...)`, `emitGameCrash(...)`) — сервер управляет раундами и рассылает события всем игрокам (или по комнатам).
+Создает новую ставку в текущем мультиплеерном раунде (несколько игроков могут участвовать в одном раунде). Для получения обновлений игры в реальном времени используйте WebSocket (см. раздел WebSocket подключение ниже).
 
 **Тело запроса:**
 
@@ -1230,6 +1367,137 @@ Authorization: Bearer <accessToken>
 
 ---
 
+#### WebSocket подключение
+
+**Namespace:** `/crash`
+
+**Аутентификация:**
+
+- WebSocket для crash не требует аутентификации
+- Подключение доступно всем клиентам
+
+**Примечание:** Для получения обновлений игры в реальном времени необходимо подписаться на конкретную игру через событие `subscribe:game`.
+
+#### WebSocket события (Client → Server)
+
+##### Подписка на игру
+
+**Событие:** `subscribe:game`
+
+**Данные:**
+
+```json
+{
+  "gameId": "65c1b2c3d4e5f6g7h8i9j0k1"
+}
+```
+
+**Действия сервера:**
+
+1. Присоединяет сокет к комнате `game:{gameId}`
+2. Клиент начинает получать события `game:tick` и `game:crash` для указанной игры
+
+**Примечание:** Клиент должен подписаться на игру после получения `gameId` из REST эндпоинта `/crash/current` или `/crash/bet`.
+
+#### WebSocket события (Server → Client)
+
+##### Обновление множителя
+
+**Событие:** `game:tick`
+
+**Отправляется:** Каждые 100ms во время активной игры (статус "running")
+
+**Данные:**
+
+```json
+{
+  "gameId": "65c1b2c3d4e5f6g7h8i9j0k1",
+  "multiplier": 1.25,
+  "elapsed": 2500
+}
+```
+
+**Поля ответа:**
+
+- `gameId` - ID игры
+- `multiplier` - Текущий множитель (например, 1.25x)
+- `elapsed` - Время с начала игры в миллисекундах
+
+**Примечание:** Событие отправляется всем клиентам, подписанным на игру через `subscribe:game`. Множитель обновляется каждые 100ms по формуле: `multiplier = floor(1.0024^(elapsed/100) * 100) / 100`.
+
+##### Завершение игры (Crash)
+
+**Событие:** `game:crash`
+
+**Отправляется:** Когда множитель достигает точки краша (`crashPoint`)
+
+**Данные:**
+
+```json
+{
+  "gameId": "65c1b2c3d4e5f6g7h8i9j0k1",
+  "crashPoint": 2.45,
+  "serverSeed": "revealed_server_seed",
+  "reveal": "revealed_server_seed"
+}
+```
+
+**Поля ответа:**
+
+- `gameId` - ID игры
+- `crashPoint` - Точка краша (множитель, на котором игра завершилась)
+- `serverSeed` - Раскрытый server seed для проверки Provably Fair
+- `reveal` - Раскрытый seed (для обратной совместимости)
+
+**Примечание:** Событие отправляется всем клиентам, подписанным на игру. После получения этого события все активные ставки без кешаута помечаются как проигранные.
+
+#### Пример использования
+
+**1. Подключение к namespace:**
+
+```javascript
+const socket = io('/crash');
+
+socket.on('connect', () => {
+  console.log('Connected to crash namespace');
+});
+```
+
+**2. Получение gameId и подписка:**
+
+```javascript
+// Получаем gameId через REST API
+const response = await fetch('/api/crash/current', {
+  headers: { Authorization: `Bearer ${token}` },
+});
+const { gameId } = await response.json();
+
+// Подписываемся на игру
+socket.emit('subscribe:game', { gameId });
+```
+
+**3. Обработка событий:**
+
+```javascript
+// Обновление множителя в реальном времени
+socket.on('game:tick', data => {
+  console.log(`Multiplier: ${data.multiplier}x`);
+  updateMultiplierDisplay(data.multiplier);
+});
+
+// Обработка завершения игры
+socket.on('game:crash', data => {
+  console.log(`Game crashed at ${data.crashPoint}x`);
+  showCrashResult(data.crashPoint);
+  // Загрузить следующую игру
+  loadNextGame();
+});
+```
+
+**Примечание:** WebSocket используется только для получения обновлений игры в реальном времени. Все действия (ставки, кешаут) выполняются через REST API эндпоинты.
+
+---
+
 ### Бонусы (Bonus)
 
 Базовый путь: `/bonus`
@@ -1356,6 +1624,7 @@ Authorization: Bearer <accessToken>
     {
       "rank": 1,
       "username": "player1",
+      "avatarURL": "https://example.com/avatar1.jpg",
       "totalWagered": 10000.5,
       "gamesPlayed": 150,
       "winRate": 65.33
@@ -1371,6 +1640,7 @@ Authorization: Bearer <accessToken>
   "currentUser": {
     "rank": 15,
     "username": "current_user",
+    "avatarURL": "https://example.com/avatar_current.jpg",
     "totalWagered": 2500.0,
     "gamesPlayed": 45,
     "winRate": 55.56
@@ -1384,6 +1654,7 @@ Authorization: Bearer <accessToken>
 - `currentUser` - Информация о текущем пользователе (может быть `null`, если пользователь не играл в указанный период)
 - `rank` - Позиция в рейтинге
 - `username` - Имя пользователя
+- `avatarURL` - URL аватара пользователя (может быть null)
 - `totalWagered` - Общая сумма поставленных средств
 - `gamesPlayed` - Количество сыгранных игр
 - `winRate` - Процент побед (округлено до 2 знаков после запятой)

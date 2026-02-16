@@ -4,6 +4,7 @@ import { type FC, type KeyboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/shared/Input';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
   onSendMessage: (text: string) => void;
@@ -21,6 +22,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
       message: '',
     },
   });
+  const { t } = useTranslation();
 
   const messageValue = watch('message');
 
@@ -45,7 +47,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
     >
       <div className="flex-1">
         <Input
-          placeholder={disabled ? 'Connecting...' : 'Write a message...'}
+          placeholder={disabled ? '...' : t.chat.messagePlaceholder}
           {...register('message', {
             required: true,
             validate: value => value.trim().length > 0,
@@ -53,7 +55,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
           onKeyDown={handleKeyDown}
           disabled={disabled}
           className={twMerge(
-            'h-12 w-full rounded-4xl bg-[#7C7CE854] text-white backdrop-blur-sm',
+            'h-12 w-full rounded-4xl bg-[#7C7CE854] text-[var(--main-text-color)] backdrop-blur-sm',
             disabled && 'cursor-not-allowed opacity-50'
           )}
         />
@@ -62,7 +64,7 @@ export const LiveChatFooter: FC<Props> = ({ onSendMessage, disabled }) => {
         type="submit"
         disabled={disabled || !messageValue?.trim()}
         className={twMerge(
-          'h-12 w-12 shrink-0 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-white backdrop-blur-sm transition-colors',
+          'h-12 w-12 shrink-0 rounded-4xl bg-[#7C7CE854] text-2xl font-black text-[var(--main-text-color)] backdrop-blur-sm transition-colors',
           disabled || !messageValue?.trim()
             ? 'cursor-not-allowed opacity-50'
             : 'hover:bg-[#3A88FF]'

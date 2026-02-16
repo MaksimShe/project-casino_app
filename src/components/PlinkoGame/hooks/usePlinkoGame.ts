@@ -5,7 +5,7 @@ import { AuthApiError } from '@/services/AuthService.class';
 import { useQueryClient } from '@tanstack/react-query';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
 import { HISTORY_QUERY_KEY } from '@/hooks/useHistoryTable';
-import { showErrorNotification } from '@/utils/notifications';
+import { useShowNotification } from '@/hooks/useShowNotification';
 import type { CurrentUserResponse } from '@/types/auth';
 import { PLINKO_ANIMATION } from '../constants';
 
@@ -19,6 +19,7 @@ export function usePlinkoGame() {
     lines,
     betAmount,
     isActiveGame,
+    multipliers,
     setLastDropResults,
     setTotalWin,
     setLastDropBet,
@@ -28,11 +29,16 @@ export function usePlinkoGame() {
   } = usePlinkoStore();
 
   const queryClient = useQueryClient();
+  const { showError } = useShowNotification();
 
   // Track pending win amount to add after animation completes
   const pendingWinRef = useRef<number | null>(null);
   const wasActiveGameRef = useRef(false);
   const historyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Track previous risk/lines to detect actual changes
+  const prevRiskRef = useRef(risk);
+  const prevLinesRef = useRef(lines);
 
   /**
    * Fetch multipliers for current configuration
@@ -46,12 +52,8 @@ export function usePlinkoGame() {
     }
   }, [risk, lines, setMultipliers]);
 
-  /**
-   * Handle drop (place bet and start game)
-   */
   const handleDrop = useCallback(async () => {
     try {
-      // Immediately subtract bet amount from balance (optimistic update)
       queryClient.setQueryData<CurrentUserResponse>(USER_QUERY_KEY, oldData => {
         if (!oldData) return oldData;
         return {
@@ -60,7 +62,6 @@ export function usePlinkoGame() {
         };
       });
 
-      // Call drop API
       const response = await plinkoService.drop({
         amount: betAmount,
         balls: 1,
@@ -68,7 +69,6 @@ export function usePlinkoGame() {
         lines,
       });
 
-      // Create unique session ID for this drop
       const sessionId = `${Date.now()}-${Math.random()}`;
 
       // Update results
@@ -96,17 +96,17 @@ export function usePlinkoGame() {
 
       if (error instanceof AuthApiError) {
         if (error.status === 400) {
-          showErrorNotification(
+          showError(
             'Insufficient balance',
             'Please add more funds to your account'
           );
         } else if (error.status === 401) {
-          showErrorNotification('Session expired', 'Please login again');
+          showError('Session expired', 'Please login again');
         } else {
-          showErrorNotification('Drop failed', error.message);
+          showError('Drop failed', error.message);
         }
       } else {
-        showErrorNotification(
+        showError(
           'Network error',
           'Please check your connection and try again'
         );
@@ -124,14 +124,28 @@ export function usePlinkoGame() {
     setDropSessionId,
     addToSessionStats,
     queryClient,
+    showError,
   ]);
 
   /**
-   * Fetch multipliers when risk or lines change
+   * Fetch multipliers when risk or lines change (skip initial mount if multipliers already exist)
    */
   useEffect(() => {
-    fetchMultipliers();
-  }, [fetchMultipliers]);
+    const riskChanged = prevRiskRef.current !== risk;
+    const linesChanged = prevLinesRef.current !== lines;
+
+    // Only fetch if risk or lines actually changed AND we're not on initial mount with existing multipliers
+    if (riskChanged || linesChanged) {
+      fetchMultipliers();
+      prevRiskRef.current = risk;
+      prevLinesRef.current = lines;
+    } else if (multipliers.length === 0) {
+      // If no multipliers exist yet (shouldn't happen with server-side fetch, but fallback)
+      fetchMultipliers();
+      prevRiskRef.current = risk;
+      prevLinesRef.current = lines;
+    }
+  }, [risk, lines, multipliers.length, fetchMultipliers]);
 
   /**
    * Watch for animation completion (isActiveGame: true -> false)

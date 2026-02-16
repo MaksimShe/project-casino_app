@@ -55,7 +55,7 @@ export const SettingsDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="animate-dropdown-slide absolute top-full right-0 z-50 mt-2 w-14 origin-top rounded-xl bg-[#1a1730] p-2 shadow-lg">
+        <div className="animate-dropdown-slide absolute top-full right-0 z-50 mt-2 w-14 origin-top rounded-xl bg-[var(--dropdown-bg)] p-2 shadow-lg">
           <div className="flex flex-col gap-3">
             <ToggleSwitch
               isOn={isAudioOn}

@@ -1,6 +1,13 @@
 'use client';
 
-import { type FC, useRef, useState, useEffect } from 'react';
+import React, {
+  type FC,
+  useRef,
+  useState,
+  useEffect,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
 import { QuickButton } from './QuickButton';
 import { formatNumber } from '@/utils/format';
 import Image from 'next/image';
@@ -14,6 +21,7 @@ interface BetInputProps {
   placeholder?: string;
   balance?: number;
   disabled?: boolean;
+  onSound?: () => void;
 }
 
 export const BetInput: FC<BetInputProps> = ({
@@ -24,6 +32,7 @@ export const BetInput: FC<BetInputProps> = ({
   placeholder = '10.00',
   balance,
   disabled = false,
+  onSound,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [displayValue, setDisplayValue] = useState(value.toString());
@@ -59,7 +68,7 @@ export const BetInput: FC<BetInputProps> = ({
     setDisplayValue(newValue.toString());
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
 
     // Block negative values
@@ -88,7 +97,7 @@ export const BetInput: FC<BetInputProps> = ({
     commitValue(displayValue);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       commitValue(displayValue);
       inputRef.current?.blur();
@@ -133,7 +142,7 @@ export const BetInput: FC<BetInputProps> = ({
           onChange={handleInputChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="flex-1 rounded-md bg-transparent px-1 py-2 text-sm font-medium text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-md bg-transparent px-1 py-2 text-sm font-medium text-[var(--main-text-color)] outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={placeholder}
           min={0}
           max={effectiveMax}
@@ -147,6 +156,7 @@ export const BetInput: FC<BetInputProps> = ({
               label={btn.label}
               onClick={btn.onClick}
               disabled={isDisabled}
+              onSound={onSound}
             />
           ))}
         </div>

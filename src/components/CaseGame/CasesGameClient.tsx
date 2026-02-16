@@ -2,12 +2,14 @@
 
 import { CaseCard } from '@/components/CaseGame/components/CaseCard';
 import type { Case } from '@/types/case';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface CasesGameClientProps {
   initialCases: Case[];
 }
 
 export function CasesGameClient({ initialCases }: CasesGameClientProps) {
+  const { t } = useTranslation();
   const cases = initialCases.sort((a, b) => a.price - b.price);
 
   return (
@@ -24,9 +26,11 @@ export function CasesGameClient({ initialCases }: CasesGameClientProps) {
         {cases.length === 0 && (
           <div className="flex min-h-[400px] items-center justify-center">
             <div className="text-center">
-              <p className="text-xl text-gray-400">No cases available</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Check back later for new cases
+              <p className="text-xl text-[var(--second-text-color)]">
+                {t.casesGame.noCasesAvailable}
+              </p>
+              <p className="mt-2 text-sm text-[var(--second-text-color)]">
+                {t.casesGame.checkBackLater}
               </p>
             </div>
           </div>

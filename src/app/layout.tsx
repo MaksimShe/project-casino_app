@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { ThemeSync } from '@/components/ThemeSync';
 import './globals.css';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { type ReactNode } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -22,13 +24,33 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('game-settings');
+                  if (stored) {
+                    const isDark = JSON.parse(stored).state.isDarkMode;
+                    if (!isDark) {
+                      document.documentElement.classList.remove('dark');
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ThemeSync />
         <QueryProvider>
           {children}
           <ReactQueryDevtools initialIsOpen={false} />

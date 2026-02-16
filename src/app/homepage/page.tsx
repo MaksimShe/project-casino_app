@@ -24,8 +24,6 @@ export default function MainPage() {
 
   return (
     <div className="m-10 flex items-center justify-between max-xl:m-6 max-lg:mx-4 max-lg:flex-col">
-      {/* Desktop: Leaderboard - GameSelector - LiveChat */}
-      {/* Mobile: GameSelector - Leaderboard */}
       <div className="order-1 max-lg:order-2 max-lg:mt-10 max-lg:w-full">
         <Leaderboard />
       </div>
@@ -36,7 +34,6 @@ export default function MainPage() {
         <LiveChat />
       </div>
 
-      {/* Mobile: Fixed chat button */}
       <button
         onClick={() => setIsChatOpen(true)}
         className="fixed right-4 bottom-4 z-50 hidden h-14 w-14 items-center justify-center rounded-full bg-gradient-to-b from-[#FFCD71] to-[#E59603] shadow-lg max-lg:flex"

@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type ChangeEvent, type FC, useState } from 'react';
 import { QuickButton } from './QuickButton';
 
 interface OptionInputProps {
@@ -13,6 +13,7 @@ interface OptionInputProps {
   onToggleChange?: (enabled: boolean) => void;
   placeholder?: string;
   disabled?: boolean;
+  onSound?: () => void;
 }
 
 export const OptionInput: FC<OptionInputProps> = ({
@@ -25,6 +26,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   onToggleChange,
   placeholder = 'e.g 2.00',
   disabled = false,
+  onSound,
 }) => {
   const [internalToggle, setInternalToggle] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(
@@ -35,6 +37,7 @@ export const OptionInput: FC<OptionInputProps> = ({
   const toggleEnabled = isToggleControlled ? controlledToggle : internalToggle;
 
   const handleToggle = () => {
+    onSound?.();
     const newValue = !toggleEnabled;
     if (!isToggleControlled) {
       setInternalToggle(newValue);
@@ -47,10 +50,9 @@ export const OptionInput: FC<OptionInputProps> = ({
     onChange(option);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
-    // Allow empty string for user to clear the input
     if (newValue === '') {
       onChange(newValue);
       return;
@@ -75,7 +77,7 @@ export const OptionInput: FC<OptionInputProps> = ({
           type="number"
           value={value}
           onChange={handleInputChange}
-          className="w-10 flex-1 rounded-md bg-transparent px-3 py-2 text-sm font-medium text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-10 flex-1 rounded-md bg-transparent px-3 py-2 text-sm font-medium text-[var(--main-text-color)] outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={placeholder}
           disabled={disabled || (hasToggle && !toggleEnabled)}
           min="1"
@@ -89,6 +91,7 @@ export const OptionInput: FC<OptionInputProps> = ({
                 label={option}
                 onClick={() => handleOptionClick(option)}
                 isActive={selectedOption === option}
+                onSound={onSound}
               />
             ))}
           </div>

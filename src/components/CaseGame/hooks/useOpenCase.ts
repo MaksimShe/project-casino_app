@@ -3,7 +3,7 @@ import { useCaseStore } from '@/stores/useCaseStore';
 import { caseService } from '@/services/CaseService.class';
 import { AuthApiError } from '@/services/AuthService.class';
 import { USER_QUERY_KEY } from '@/hooks/useCurrentUser';
-import { showErrorNotification } from '@/utils/notifications';
+import { useShowNotification } from '@/hooks/useShowNotification';
 import { generateAnimationItems } from '../helpers/generateAnimationItems';
 import type { CurrentUserResponse } from '@/types/auth';
 import type { CaseItem } from '@/types/case';
@@ -17,6 +17,7 @@ interface UseOpenCaseOptions {
 export const useOpenCase = ({ casePrice, caseItems }: UseOpenCaseOptions) => {
   const store = useCaseStore();
   const queryClient = useQueryClient();
+  const { showError } = useShowNotification();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -87,17 +88,17 @@ export const useOpenCase = ({ casePrice, caseItems }: UseOpenCaseOptions) => {
       // Show error notification
       if (error instanceof AuthApiError) {
         if (error.status === 400) {
-          showErrorNotification(
+          showError(
             'Insufficient balance',
             'Please add more funds to your account'
           );
         } else if (error.status === 401) {
-          showErrorNotification('Session expired', 'Please login again');
+          showError('Session expired', 'Please login again');
         } else {
-          showErrorNotification('Failed to open case', error.message);
+          showError('Failed to open case', error.message);
         }
       } else {
-        showErrorNotification(
+        showError(
           'Network error',
           'Please check your connection and try again'
         );

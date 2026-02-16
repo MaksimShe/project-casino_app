@@ -11,9 +11,16 @@ interface InfoDisplayProps {
 
 export const InfoDisplay: FC<InfoDisplayProps> = ({ items }) => {
   if (!items.length) return null;
-  const hasActualInfo = !items.some(
-    item => item.value === '$1.00' || item.value === '1.00x'
-  );
+
+  // Show info if any values are defined and not default values
+  const hasActualInfo = items.some(item => {
+    return !(
+      item.value === undefined ||
+      item.value === null ||
+      item.value === 0 ||
+      item.value === '0'
+    );
+  });
 
   return (
     hasActualInfo && (

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isAuthenticated } from '@/utils/token';
+import { authService } from '@/services/AuthService.class';
 import { ROUTES } from '@/constants/routes';
 import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 
@@ -10,7 +10,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated()) {
+    if (authService.isAuthenticated()) {
       router.push(ROUTES.HOMEPAGE);
     } else {
       router.push(ROUTES.REGISTRATION);
@@ -24,4 +24,4 @@ export default function Home() {
   );
 }
 
-//SheFing1@gmail.com lg and pw
+//SheFing0@i.ua lg and pw

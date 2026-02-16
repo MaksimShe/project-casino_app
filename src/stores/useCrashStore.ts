@@ -66,7 +66,11 @@ interface CrashStore {
   setGameStartTime: (time: number | null) => void;
   addMultiplierDataPoint: (point: MultiplierDataPoint) => void;
   clearMultiplierHistory: () => void;
-  showWinModalWithData: (winAmount: number, multiplier: number) => void;
+  showWinModalWithData: (
+    winAmount: number,
+    multiplier: number,
+    betAmount: number
+  ) => void;
   showLoseModalWithData: (betAmount: number, crashPoint: number) => void;
   hideModals: () => void;
 }
@@ -152,12 +156,13 @@ export const useCrashStore = create<CrashStore>(set => ({
     }),
   clearMultiplierHistory: () =>
     set({ multiplierHistory: [], gameStartTime: null }),
-  showWinModalWithData: (winAmount, multiplier) =>
+  showWinModalWithData: (winAmount, multiplier, betAmount) =>
     set({
       showWinModal: true,
       showLoseModal: false,
       modalWinAmount: winAmount,
       modalMultiplier: multiplier,
+      modalBetAmount: betAmount,
     }),
   showLoseModalWithData: (betAmount, crashPoint) =>
     set({

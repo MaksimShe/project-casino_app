@@ -33,17 +33,17 @@ export const CRASH_POINT_THRESHOLDS = {
   HIGH: 100,
 } as const;
 
-// Crash point colors
+// Crash point colors (semantic colors - keep these)
 export const CRASH_POINT_COLORS = {
-  VERY_LOW: 'text-gray-300',
-  LOW: 'text-yellow-300',
-  MEDIUM: 'text-blue-300',
+  VERY_LOW: 'text-[var(--second-text-color)]',
+  LOW: 'text-yellow-400',
+  MEDIUM: 'text-blue-400',
   HIGH: 'text-purple-300',
 } as const;
 
 // Status colors
 export const STATUS_COLORS = {
-  DEFAULT: 'bg-gray-500/20 text-gray-400',
+  DEFAULT: 'bg-[var(--second-text-color)]/20 text-[var(--second-text-color)]',
   WON: 'text-[var(--system-success-color)]',
   LOST: 'text-[var(--system-error-color)]',
   SUCCESS: 'text-[var(--system-success-color)]',
@@ -102,12 +102,12 @@ export const TABLE_STYLES = {
   BORDER_COLOR: '#ADB5BD33',
   HEADER_BG: '#ADB5BD33',
   TEXT_SIZE: 'text-sm',
-  HEADER_TEXT_COLOR: 'text-gray-300',
-  CELL_TEXT_COLOR: 'text-white',
+  HEADER_TEXT_COLOR: 'text-[var(--second-text-color)]',
+  CELL_TEXT_COLOR: 'text-[var(--main-text-color)]',
   CELL_PADDING: 'px-4 py-3',
   HEADER_PADDING: 'px-4 py-3',
-  NO_DATA_TEXT_COLOR: 'text-gray-400',
-  LOADING_TEXT_COLOR: 'text-gray-400',
+  NO_DATA_TEXT_COLOR: 'text-[var(--second-text-color)]',
+  LOADING_TEXT_COLOR: 'text-[var(--second-text-color)]',
   ERROR_TEXT_COLOR: 'text-red-400',
 } as const;
 
@@ -121,10 +121,10 @@ export const FIELD_NAME_MAPPINGS: Record<string, string> = {
 export const TEXT_STYLES = {
   TITLE_SIZE: 'text-[32px]',
   TITLE_WEIGHT: 'font-black',
-  TITLE_COLOR: 'text-white',
+  TITLE_COLOR: 'text-[var(--main-text-color)]',
   ID_FONT: 'font-mono',
   ID_SIZE: 'text-xs',
-  ID_COLOR: 'text-gray-400',
+  ID_COLOR: 'text-[var(--second-text-color)]',
   TAG_SIZE: 'text-xs',
   TAG_PADDING: 'px-2 py-1',
   TAG_BORDER_RADIUS: 'rounded',

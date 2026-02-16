@@ -10,6 +10,8 @@ import caseImage from '@/../public/cases-game/case-img.png';
 import { Stars } from '@/components/CaseGame/components/Stars';
 import coinImg from '@/../public/leaderboard_icons/dollar.svg';
 import { mockDescription } from '@/components/CaseGame/helpers/mockDescription';
+import { getCaseName } from '@/components/CaseGame/helpers/getCaseName';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface CaseCardProps {
   caseItem: Case;
@@ -18,6 +20,7 @@ interface CaseCardProps {
 
 export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <motion.div
@@ -30,10 +33,10 @@ export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
     >
       <div className="relative flex flex-col items-center justify-center gap-2 p-6">
         <Stars starsCount={index + 1} />
-        <p className="mt-2 p-0 text-xl font-bold text-white max-lg:text-center lg:text-3xl">
-          {caseItem.name}
+        <p className="mt-2 p-0 text-xl font-bold text-[var(--main-text-color)] max-lg:text-center lg:text-3xl">
+          {getCaseName(caseItem.name, t)}
         </p>
-        <div className="flex gap-1 rounded-full border border-amber-300 px-3.5 py-1.5 font-bold text-white">
+        <div className="flex gap-1 rounded-full border border-amber-300 px-3.5 py-1.5 font-bold text-[var(--main-text-color)]">
           {formatNumber(caseItem.price)}
           <Image src={coinImg} alt="coin" width={16} height={16} />
         </div>
@@ -44,8 +47,8 @@ export const CaseCard = memo(({ caseItem, index }: CaseCardProps) => {
 
       {/* Case Info */}
       <div className="px-6 py-2 sm:py-6 sm:pb-16">
-        <p className="mb-2 text-white max-sm:text-xs">
-          {mockDescription(caseItem.name)}
+        <p className="mb-2 text-[var(--main-text-color)] max-sm:text-xs">
+          {mockDescription(caseItem.name, t)}
         </p>
       </div>
     </motion.div>

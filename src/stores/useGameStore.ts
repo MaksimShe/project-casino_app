@@ -4,6 +4,11 @@ import { persist } from 'zustand/middleware';
 export enum AudioSound {
   BEEP = 'beep',
   NOTIFY = 'notify',
+  GAME_CONFIG_CLICK = 'game-config-click',
+  GAME_START = 'game-start',
+  BOOM_MINES = 'boom-mines',
+  DEFUSE_MINES = 'defuse-mines',
+  ROULETTE_TICK = 'roulette_tick',
 }
 
 interface GameStore {

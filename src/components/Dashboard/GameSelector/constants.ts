@@ -4,10 +4,10 @@ import minesImg from '@/../public/game_select/mines.png';
 import plinkoImg from '@/../public/game_select/plinko.png';
 import { type StaticImageData } from 'next/image';
 import { ROUTES } from '@/constants/routes';
+import type { TranslationKeys } from '@/i18n/translations/en';
 
 export enum GameType {
   CRASH = 'crash',
-  CASE = 'case',
   MINES = 'mines',
   PLINKO = 'plinko',
 }
@@ -41,47 +41,47 @@ export const BADGE_STYLES = {
   },
 } as const;
 
-export const GAMES: Game[] = [
+export const getGames = (t: TranslationKeys): Game[] => [
   {
-    name: 'Crash',
-    description: "Watch the multiplier rise and cash out before it's gone",
+    name: t.games.crash.name,
+    description: t.games.crash.description,
     link: ROUTES.CRASHGAME,
     image: crashImg,
     badge: {
-      text: 'New',
+      text: t.badges.new,
       gradient: BADGE_STYLES.new.gradient,
       shadowColor: BADGE_STYLES.new.shadowColor,
     },
   },
   {
-    name: 'Case',
-    description: 'Open cases and win random rewards',
+    name: t.games.case.name,
+    description: t.games.case.description,
     link: ROUTES.CASEGAME,
     image: caseImg,
     badge: {
-      text: 'Hot',
+      text: t.badges.hot,
       gradient: BADGE_STYLES.hot.gradient,
       shadowColor: BADGE_STYLES.hot.shadowColor,
     },
   },
   {
-    name: 'Mines',
-    description: 'Avoid the mines and collect bigger rewards',
+    name: t.games.mines.name,
+    description: t.games.mines.description,
     link: ROUTES.MINESGAME,
     image: minesImg,
     badge: {
-      text: 'New',
+      text: t.badges.new,
       gradient: BADGE_STYLES.new.gradient,
       shadowColor: BADGE_STYLES.new.shadowColor,
     },
   },
   {
-    name: 'Plinko',
-    description: 'Drop the ball, watch it bounce, and win prizes',
+    name: t.games.plinko.name,
+    description: t.games.plinko.description,
     link: ROUTES.PLINKOGAME,
     image: plinkoImg,
     badge: {
-      text: 'Popular',
+      text: t.badges.popular,
       gradient: BADGE_STYLES.popular.gradient,
       shadowColor: BADGE_STYLES.popular.shadowColor,
     },

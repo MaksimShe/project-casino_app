@@ -1,3 +1,5 @@
+import { useTranslation } from '@/i18n/useTranslation';
+
 interface LiveChatHeaderProps {
   onlineCount?: number;
   friendsCount?: number;
@@ -7,8 +9,9 @@ export const LiveChatHeader = ({
   onlineCount = 0,
   friendsCount = 0,
 }: LiveChatHeaderProps) => {
+  const { t } = useTranslation();
   return (
-    <div className="w-full text-white">
+    <div className="w-full text-[var(--main-text-color)]">
       <div className="flex items-center justify-center">
         <p className="text-center text-2xl font-bold">
           L
@@ -20,10 +23,12 @@ export const LiveChatHeader = ({
         </p>
       </div>
       <div className="mt-1.5 flex items-center justify-between border-t pt-1.5">
-        <p className="text-center">{onlineCount + 1} online</p>{' '}
+        <p className="text-center">
+          {onlineCount + 1} {t.chat.online}
+        </p>
         {/*cuz it do not count us*/}
         <p className="bg-gradient-to-b from-[#FFCD71] to-[#E59603] bg-clip-text text-center text-transparent">
-          {friendsCount} users
+          {friendsCount} {t.chat.users}
         </p>
       </div>
     </div>

@@ -17,6 +17,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { formatNumber } from '@/utils/format';
 import { handleMinesError, updateUserBalance } from '@/utils/minesUtils';
 import { MINES_IMAGES } from '@/components/MinesGame/constants';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useShowNotification } from '@/hooks/useShowNotification';
+import { useGameStore, AudioSound } from '@/stores/useGameStore';
 
 interface MinesGameClientProps {
   activeGameData: MinesActiveGameResponse | null;
@@ -51,6 +54,8 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
   } = useMinesStore();
 
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { showError } = useShowNotification();
 
   // Restore active game on mount
   useEffect(() => {
@@ -84,7 +89,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
 
       updateUserBalance(queryClient);
     } catch (error) {
-      handleMinesError(error, MinesErrorMessage.START_GAME);
+      handleMinesError(error, MinesErrorMessage.START_GAME, showError);
       setIsStartingGame(false);
     }
   }, [
@@ -94,6 +99,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
     startNewGame,
     setIsStartingGame,
     queryClient,
+    showError,
   ]);
 
   // Handle revealing a cell
@@ -134,18 +140,26 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
             undefined
           );
 
+          // Play sound based on result
+          if (response.isMine) {
+            useGameStore.getState().playAudio(AudioSound.BOOM_MINES);
+          } else {
+            useGameStore.getState().playAudio(AudioSound.DEFUSE_MINES);
+          }
+
           // If hit a mine, show lose modal
           if (response.isMine) {
             endGame(MinesGameStatus.LOST, {
               amount: amount,
               multiplier: 0,
               tilesRevealed: (response.revealedTiles || []).length,
+              betAmount: amount,
             });
           }
 
           updateUserBalance(queryClient);
         } catch (error) {
-          handleMinesError(error, MinesErrorMessage.START_GAME);
+          handleMinesError(error, MinesErrorMessage.START_GAME, showError);
           setIsStartingGame(false);
           setIsRevealingCell(false);
         }
@@ -171,18 +185,26 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
           undefined
         );
 
+        // Play sound based on result
+        if (response.isMine) {
+          useGameStore.getState().playAudio(AudioSound.BOOM_MINES);
+        } else {
+          useGameStore.getState().playAudio(AudioSound.DEFUSE_MINES);
+        }
+
         // If hit a mine, show lose modal
         if (response.isMine) {
           endGame(MinesGameStatus.LOST, {
             amount: amount,
             multiplier: 0,
             tilesRevealed: (response.revealedTiles || []).length,
+            betAmount: amount,
           });
         }
 
         updateUserBalance(queryClient);
       } catch (error) {
-        handleMinesError(error, MinesErrorMessage.REVEAL_CELL);
+        handleMinesError(error, MinesErrorMessage.REVEAL_CELL, showError);
         setIsRevealingCell(false);
       }
     },
@@ -198,6 +220,7 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
       setIsStartingGame,
       setIsRevealingCell,
       queryClient,
+      showError,
     ]
   );
 
@@ -213,20 +236,23 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
         amount: response.winAmount,
         multiplier: response.multiplier,
         tilesRevealed: revealedCells.length,
+        betAmount: amount,
       });
 
       updateUserBalance(queryClient);
     } catch (error) {
-      handleMinesError(error, MinesErrorMessage.CASHOUT);
+      handleMinesError(error, MinesErrorMessage.CASHOUT, showError);
       setIsCashingOut(false);
     }
   }, [
     gameId,
     gameStatus,
+    amount,
     revealedCells,
     endGame,
     setIsCashingOut,
     queryClient,
+    showError,
   ]);
 
   const handleNewGame = useCallback(() => {
@@ -240,12 +266,12 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
         return;
       }
 
-      if (name === 'Mines Amount') {
+      if (name === t.configPanel.minesAmount) {
         const count = parseInt(value, 10);
         setMineCount(count);
       }
     },
-    [gameStatus, setMineCount]
+    [gameStatus, setMineCount, t]
   );
 
   const onSettingChange = useCallback(
@@ -254,31 +280,31 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
         return;
       }
 
-      if (title === 'Grid size:') {
+      if (title === t.configPanel.gridSize) {
         const size = GRID_SIZE_DISPLAY_MAP[value];
         if (size) {
           setGridSize(size);
         }
       }
     },
-    [gameStatus, setGridSize]
+    [gameStatus, setGridSize, t]
   );
 
   const primaryButton: ButtonState = useMemo(
     () => ({
-      label: 'Place Bet',
+      label: t.configPanel.placeBetButton,
       onClick: handleStartGame,
     }),
-    [handleStartGame]
+    [handleStartGame, t]
   );
 
   const secondaryButton: ButtonState = useMemo(
     () => ({
-      label: 'Cashout',
+      label: t.configPanel.cashoutButton,
       onClick: handleCashout,
       disabled: isCashingOut,
     }),
-    [handleCashout, isCashingOut]
+    [handleCashout, isCashingOut, t]
   );
 
   const infoValues = useMemo(() => {
@@ -288,25 +314,25 @@ export function MinesGameClient({ activeGameData }: MinesGameClientProps) {
         : null;
 
     return {
-      'Current multiplayer:': formatNumber(multiplier) + 'x',
-      'Win amount:': '$' + formatNumber(currentWinnings),
+      [t.configPanel.currentMultiplier]: formatNumber(multiplier) + 'x',
+      [t.configPanel.winAmount]: '$' + formatNumber(currentWinnings),
       ...(nextMultiplier !== null && {
-        'Next multiplier:': formatNumber(nextMultiplier) + 'x',
+        [t.configPanel.nextMultiplier]: formatNumber(nextMultiplier) + 'x',
       }),
     };
-  }, [multiplier, currentWinnings, multipliers, revealedCells]);
+  }, [multiplier, currentWinnings, multipliers, revealedCells, t]);
 
   const optionValues = useMemo(() => {
     return {
-      'Mines Amount': minesCount.toString(),
+      [t.configPanel.minesAmount]: minesCount.toString(),
     };
-  }, [minesCount]);
+  }, [minesCount, t]);
 
   const settingValues = useMemo(() => {
     return {
-      'Grid size:': `${gridSize}x${gridSize}`,
+      [t.configPanel.gridSize]: `${gridSize}x${gridSize}`,
     };
-  }, [gridSize]);
+  }, [gridSize, t]);
 
   return (
     <div className="flex items-start justify-center gap-4 px-6 pt-4 max-lg:flex-col max-lg:items-center">

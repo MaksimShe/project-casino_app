@@ -38,15 +38,17 @@ const RocketAnimation = memo(
   }: RocketAnimationProps) => {
     return (
       <div
-        className={`absolute z-10 transition-all ${
-          animationPhase === 'launching'
-            ? `duration-[${ANIMATION_DURATION.LAUNCH}ms] ease-out`
-            : ''
-        } ${animationPhase === 'respawning' ? `duration-[${ANIMATION_DURATION.RESPAWN}ms] ease-in` : ''}`}
+        className="absolute z-10"
         style={{
           left: `${rocketPosition.x}%`,
           top: `${rocketPosition.y}%`,
-          transform: `translate(-50%, -50%)`,
+          transform: 'translate(-50%, -50%)',
+          transition:
+            animationPhase === 'launching'
+              ? `all ${ANIMATION_DURATION.LAUNCH}ms ease-out`
+              : animationPhase === 'respawning'
+                ? `all ${ANIMATION_DURATION.RESPAWN}ms ease-in`
+                : 'none',
         }}
       >
         <div

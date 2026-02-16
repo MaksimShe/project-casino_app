@@ -22,16 +22,13 @@ export function PlinkoBoard() {
   const isMobile = useIsMobile();
   const BOARD = isMobile ? PLINKO_BOARD_MOBILE : PLINKO_BOARD;
 
-  // Generate pegs based on lines and mobile state
   const pegs = useMemo(() => generatePegs(lines, isMobile), [lines, isMobile]);
 
-  // Calculate board height based on lines and mobile state
   const boardHeight = useMemo(() => {
     const { ROW_SPACING, PADDING_TOP, PADDING_BOTTOM } = BOARD;
     return PADDING_TOP + lines * ROW_SPACING + PADDING_BOTTOM;
   }, [lines, BOARD]);
 
-  // Use hooks for animation, highlights, and notifications
   usePlinkoBallAnimation({
     dropResults: lastDropResults,
     pegs,

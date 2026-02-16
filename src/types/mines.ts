@@ -64,6 +64,7 @@ export interface MinesActiveGameData {
   totalTiles: number;
   currentMultiplier?: number;
   currentValue?: number;
+  multipliers?: number[];
 }
 
 export interface MinesActiveGameResponse {
@@ -76,12 +77,6 @@ export enum MinesCellState {
   MINE = 'mine',
 }
 
-export interface MinesCellData {
-  index: number;
-  state: MinesCellState;
-}
-
-// Error message enum for consistent error handling
 export enum MinesErrorMessage {
   START_GAME = 'Failed to start game',
   REVEAL_CELL = 'Failed to reveal cell',
@@ -89,15 +84,9 @@ export enum MinesErrorMessage {
   DEFAULT = 'Please try again.',
 }
 
-// Grid size display mapping
 export const GRID_SIZE_DISPLAY_MAP: Record<string, GridSize> = {
   '5x5': 5,
   '6x6': 6,
   '7x7': 7,
   '8x8': 8,
-} as const;
-
-// Modal configuration constants
-export const MINES_MODAL_CONFIG = {
-  AUTO_CLOSE_DELAY: 2000, // ms
 } as const;

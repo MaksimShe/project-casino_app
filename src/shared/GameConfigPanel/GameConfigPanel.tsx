@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  gamesConfig,
+  getGamesConfig,
   type GameConfig,
   PANEL_DEFAULTS,
 } from '@/shared/GameConfigPanel/constants';
@@ -16,6 +16,9 @@ import {
   type ButtonState,
 } from './components';
 import { CONFIG_PANEL } from '@/constants/configPanel';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useAuthVerification } from '@/contexts/AuthVerificationContext';
+import { useGameStore, AudioSound } from '@/stores/useGameStore';
 
 interface Props {
   game: GameType;
@@ -56,6 +59,10 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
   maxBetCanBe = CONFIG_PANEL.MAX_BET,
   settingValues,
 }: Props) {
+  const { t, language } = useTranslation();
+  const { isVerifying } = useAuthVerification();
+  const { playAudio } = useGameStore();
+  const gamesConfig = getGamesConfig(t);
   const config: GameConfig | undefined = gamesConfig[game];
   const [internalBetAmount, setInternalBetAmount] = useState<number>(
     PANEL_DEFAULTS.INITIAL_BET_AMOUNT
@@ -90,7 +97,19 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
     [onOptionToggleChange]
   );
 
+  const playConfigClickSound = useCallback(() => {
+    playAudio(AudioSound.GAME_CONFIG_CLICK);
+  }, [playAudio]);
+
+  const playGameStartSound = useCallback(() => {
+    playAudio(AudioSound.GAME_START);
+  }, [playAudio]);
+
+  // Disable all config controls during verification or active game
+  const isConfigDisabled = isVerifying || isGameActive;
+
   const isButtonDisabled = useMemo(() => {
+    if (isVerifying) return true;
     if (buttonDisabled) return true;
     if (betAmount < PANEL_DEFAULTS.MIN_BET) return true;
     if (balance !== undefined) {
@@ -98,28 +117,59 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
       if (betAmount > balance) return true;
     }
     return false;
-  }, [buttonDisabled, betAmount, balance]);
+  }, [isVerifying, buttonDisabled, betAmount, balance]);
 
   if (!config) return null;
 
   const defaultPrimary: ButtonState = {
-    label: config.buttons[0] || 'Place bet',
+    label: config.buttons[0] || t.configPanel.placeBetButton,
+    onSound: playGameStartSound,
   };
 
   const hasSecondButton = config.buttons.length > 1;
   const defaultSecondary: ButtonState | undefined = hasSecondButton
-    ? { label: config.buttons[1] }
+    ? { label: config.buttons[1], onSound: playConfigClickSound }
     : undefined;
+
+  const enhancedPrimaryState: ButtonState = {
+    ...defaultPrimary,
+    ...primaryButton,
+    onSound: playGameStartSound,
+  };
+
+  const enhancedSecondaryState: ButtonState | undefined = hasSecondButton
+    ? {
+        ...(secondaryButton || defaultSecondary!),
+      }
+    : undefined;
+
   const infoItems =
     config.additionalInfos?.map(label => ({
       label,
       value: infoValues[label],
     })) ?? [];
 
+  const panelTitle =
+    language === 'ua'
+      ? `${t.configPanel.titleEnd} ${config.title}`
+      : `${config.title} ${t.configPanel.titleEnd}`;
+
   return (
-    <div className="flex h-fit w-full max-w-[var(--panel-max-width)] flex-col gap-8 rounded-xl bg-[var(--panel-bg)] px-8 py-6">
+    <div className="relative flex h-fit w-full max-w-[var(--panel-max-width)] flex-col gap-8 rounded-xl bg-[var(--panel-bg)] px-8 py-6">
+      {/* Verification overlay - using pointer-events to prevent layout issues */}
+      {isVerifying && (
+        <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-[#1a1a2e]/80">
+          <div className="flex items-center gap-2 text-[var(--main-text-color)]">
+            <div className="relative h-5 w-5">
+              <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#FFCD71]" />
+            </div>
+            <span className="text-sm">Verifying access...</span>
+          </div>
+        </div>
+      )}
+
       <p className="text-center font-[var(--panel-title-weight)] text-[var(--panel-title-size)]">
-        {config.title} Configuration
+        {panelTitle}
       </p>
 
       <div className="space-y-4">
@@ -133,6 +183,8 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
                 onChange={handleBetChange}
                 maxValue={maxBetCanBe}
                 balance={balance}
+                disabled={isConfigDisabled}
+                onSound={playConfigClickSound}
               />
             );
           }
@@ -149,7 +201,8 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
               onToggleChange={enabled =>
                 handleOptionToggleChange(input.name, enabled)
               }
-              disabled={isGameActive}
+              disabled={isConfigDisabled}
+              onSound={playConfigClickSound}
             />
           );
         })}
@@ -159,14 +212,15 @@ const GameConfigPanel = React.memo(function GameConfigPanel({
         <GameSettings
           settings={config.gameSettings}
           onSettingChange={onSettingChange}
-          disabled={isGameActive}
+          disabled={isConfigDisabled}
           currentValues={settingValues}
+          onSound={playConfigClickSound}
         />
       )}
 
       <ActionButton
-        primaryState={primaryButton || defaultPrimary}
-        secondaryState={secondaryButton || defaultSecondary}
+        primaryState={enhancedPrimaryState}
+        secondaryState={enhancedSecondaryState}
         isSecondary={isGameActive}
         onToggle={onActionToggle}
         disabled={isButtonDisabled}

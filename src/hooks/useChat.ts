@@ -27,7 +27,6 @@ interface UseChatReturn {
   connectionStatus: ConnectionStatus;
   error: string | null;
   sendMessage: (text: string) => void;
-  switchRoom: (roomId: string) => void;
   reconnect: () => void;
 }
 
@@ -38,18 +37,12 @@ export function useChat(
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
-  const [currentRoom, setCurrentRoom] = useState<string>(initialRoom);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.DISCONNECTED
   );
   const [error, setError] = useState<string | null>(null);
 
-  const previousRoomRef = useRef<string | null>(null);
-  const currentRoomRef = useRef<string>(initialRoom);
-
-  useEffect(() => {
-    currentRoomRef.current = currentRoom;
-  }, [currentRoom]);
+  const roomRef = useRef<string>(initialRoom);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -57,39 +50,44 @@ export function useChat(
     setConnectionStatus(ConnectionStatus.CONNECTING);
     setError(null);
 
-    // Set up all event handlers BEFORE connecting
-    socketService.onConnect(() => {
+    const handleConnect = () => {
       setConnectionStatus(ConnectionStatus.CONNECTED);
       setError(null);
-      socketService.joinRoom(currentRoomRef.current);
-    });
+      socketService.joinRoom(roomRef.current);
+    };
 
-    socketService.onDisconnect(reason => {
+    const handleDisconnect = (reason: string) => {
       setConnectionStatus(ConnectionStatus.DISCONNECTED);
       if (reason === 'io server disconnect') {
         setError('Disconnected by server');
       }
-    });
+    };
 
-    socketService.onConnectError(err => {
+    const handleConnectError = (err: Error) => {
       setConnectionStatus(ConnectionStatus.ERROR);
       setError(err.message || 'Connection failed');
-    });
+    };
 
-    socketService.onRooms(roomList => {
+    const handleRooms = (roomList: ChatRoom[]) => {
       setRooms(roomList);
-    });
+    };
 
-    socketService.onHistory(({ roomId, messages: serverMessages }) => {
-      if (roomId === currentRoomRef.current) {
+    const handleHistory = ({
+      roomId,
+      messages: serverMessages,
+    }: {
+      roomId: string;
+      messages: ServerMessage[];
+    }) => {
+      if (roomId === roomRef.current) {
         const normalized = serverMessages.map(normalizeMessage);
         setMessages(normalized);
       }
-    });
+    };
 
-    socketService.onMessage(serverMessage => {
+    const handleMessage = (serverMessage: ServerMessage) => {
       const message = normalizeMessage(serverMessage);
-      if (message.roomId === currentRoomRef.current) {
+      if (message.roomId === roomRef.current) {
         setMessages(prev => {
           const exists = prev.some(m => m.id === message.id);
           if (exists) return prev;
@@ -101,22 +99,27 @@ export function useChat(
           return updated;
         });
       }
-    });
+    };
 
-    socketService.onError(({ message }) => {
+    const handleError = ({ message }: { message: string }) => {
       setError(message);
-    });
+    };
 
-    // Connect AFTER all handlers are set up
+    socketService.onConnect(handleConnect);
+    socketService.onDisconnect(handleDisconnect);
+    socketService.onConnectError(handleConnectError);
+    socketService.onRooms(handleRooms);
+    socketService.onHistory(handleHistory);
+    socketService.onMessage(handleMessage);
+    socketService.onError(handleError);
+
     socketService.connect();
 
-    // Check if already connected (can happen on mobile/hot reload)
     if (socketService.isConnected()) {
       setConnectionStatus(ConnectionStatus.CONNECTED);
-      socketService.joinRoom(currentRoomRef.current);
+      socketService.joinRoom(roomRef.current);
     }
 
-    // Connection timeout - prevent endless loading
     const timeout = setTimeout(() => {
       if (!socketService.isConnected()) {
         setConnectionStatus(ConnectionStatus.ERROR);
@@ -130,19 +133,6 @@ export function useChat(
     };
   }, []);
 
-  useEffect(() => {
-    if (connectionStatus !== ConnectionStatus.CONNECTED) return;
-
-    const prevRoom = previousRoomRef.current;
-    if (prevRoom && prevRoom !== currentRoom) {
-      socketService.leaveRoom(prevRoom);
-    }
-
-    socketService.joinRoom(currentRoom);
-    setMessages([]);
-    previousRoomRef.current = currentRoom;
-  }, [currentRoom, connectionStatus]);
-
   const sendMessage = useCallback(
     (text: string) => {
       if (
@@ -153,22 +143,13 @@ export function useChat(
         return;
 
       socketService.sendMessage({
-        roomId: currentRoom,
+        roomId: roomRef.current,
         message: text.trim(),
         username: user.username,
         userId: user._id,
       });
     },
-    [currentRoom, user, connectionStatus]
-  );
-
-  const switchRoom = useCallback(
-    (roomId: string) => {
-      if (roomId !== currentRoom) {
-        setCurrentRoom(roomId);
-      }
-    },
-    [currentRoom]
+    [user, connectionStatus]
   );
 
   const reconnect = useCallback(() => {
@@ -180,11 +161,10 @@ export function useChat(
   return {
     messages,
     rooms,
-    currentRoom,
+    currentRoom: initialRoom,
     connectionStatus,
     error,
     sendMessage,
-    switchRoom,
     reconnect,
   };
 }

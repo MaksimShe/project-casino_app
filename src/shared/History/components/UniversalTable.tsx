@@ -19,6 +19,7 @@ import {
   PLINKO_COLUMN_ORDER,
   MINES_COLUMN_ORDER,
 } from '../constants';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface UniversalTableProps {
   data: Record<string, unknown>[];
@@ -33,6 +34,8 @@ export function UniversalTable({
   crashHistoryType,
   isLoading = false,
 }: UniversalTableProps) {
+  const { t } = useTranslation();
+
   // Generate columns dynamically from data
   const columns = useMemo<ColumnDef<Record<string, unknown>>[]>(() => {
     if (!data || data.length === 0) return [];
@@ -68,10 +71,10 @@ export function UniversalTable({
 
     return sortedKeys.map(key => ({
       accessorKey: key,
-      header: formatColumnName(key),
-      cell: info => formatValue(key, info.getValue()),
+      header: formatColumnName(key, t),
+      cell: info => formatValue(key, info.getValue(), t),
     }));
-  }, [data, gameType, crashHistoryType]);
+  }, [data, gameType, crashHistoryType, t]);
 
   const table = useReactTable({
     data: data || [],
@@ -86,7 +89,7 @@ export function UniversalTable({
   if (shouldShowLoading && (!data || data.length === 0)) {
     return (
       <div className={`py-8 text-center ${TABLE_STYLES.LOADING_TEXT_COLOR}`}>
-        Loading history...
+        {t.history.loading}
       </div>
     );
   }
@@ -94,7 +97,7 @@ export function UniversalTable({
   if (!data || data.length === 0) {
     return (
       <div className={`py-8 text-center ${TABLE_STYLES.NO_DATA_TEXT_COLOR}`}>
-        No history data available
+        {t.history.noData}
       </div>
     );
   }

@@ -1,8 +1,9 @@
 import { useMinesStore } from '@/stores/useMinesStore';
 import { MinesCellState, type GridSize } from '@/types/mines';
 import { MinesCell } from './MinesCell';
-import { EndGameModal } from './EndGameModal';
+import { EndGameModal } from '@/shared/EndGameModal';
 import { GRID_DIMENSIONS } from '@/components/MinesGame/constants';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface MinesBoardProps {
   onCellClick: (index: number) => void;
@@ -10,6 +11,7 @@ interface MinesBoardProps {
 }
 
 export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
+  const { t } = useTranslation();
   const {
     gridSize,
     cells,
@@ -52,8 +54,9 @@ export const MinesBoard = ({ onCellClick, onNewGame }: MinesBoardProps) => {
           isWin={showWinModal}
           amount={modalData.amount}
           multiplier={modalData.multiplier}
-          tilesRevealed={modalData.tilesRevealed}
-          onNewGame={onNewGame}
+          additionalInfo={`${t.modalWindows.tilesRevealed} ${modalData.tilesRevealed}`}
+          onClose={onNewGame}
+          betAmount={modalData.betAmount}
         />
       )}
     </div>

@@ -47,20 +47,3 @@ export function useLogin() {
     retry: false,
   });
 }
-
-export function useLogout() {
-  const router = useRouter();
-
-  return useMutation<void, AuthApiError, void>({
-    mutationFn: () => authService.logout(),
-    onSuccess: () => {
-      authService.removeTokens();
-      router.push(ROUTES.LOGIN);
-    },
-    onError: () => {
-      authService.removeTokens();
-      router.push(ROUTES.LOGIN);
-    },
-    retry: false,
-  });
-}

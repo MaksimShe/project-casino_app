@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { type FC } from 'react';
 import { type Game } from '../constants';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface Props {
   game: Game;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
+  const { t } = useTranslation();
   return (
     <div className="relative aspect-[300/370] w-[clamp(160px,20vw,300px)] transition-transform duration-300 hover:scale-[102%] max-lg:w-full">
       <div
@@ -17,7 +19,9 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
           boxShadow: `0px 0px 16px 0px ${game.badge.shadowColor}`,
         }}
       >
-        <p className="font-bold text-white">{game.badge.text}</p>
+        <p className="font-bold text-[var(--main-text-color)]">
+          {game.badge.text}
+        </p>
       </div>
 
       <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-[0px_0px_100px_1px_#FFFFFF4D]">
@@ -32,18 +36,18 @@ export const GameSelectorItem: FC<Props> = ({ game, priority = false }) => {
       </div>
 
       <div className="absolute top-1/3 left-1/2 w-10/12 -translate-x-1/2 rounded-xl bg-[#28252832] p-4 backdrop-blur-sm max-lg:p-2">
-        <p className="text-center text-3xl font-black text-white max-lg:text-base">
+        <p className="text-center text-3xl font-black text-white max-xl:text-base">
           {game.name}
         </p>
-        <p className="text-white max-lg:w-32 max-lg:text-xs">
+        <p className="text-center text-white max-xl:text-xs">
           {game.description}
         </p>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4">
+      <div className="absolute bottom-3 left-1/2 w-10/12 -translate-x-1/2 max-lg:bottom-4 lg:bottom-4 xl:bottom-6">
         <a href={game.link}>
-          <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-white transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
-            Free play
+          <button className="w-full rounded-4xl bg-gradient-to-t from-[#FF0047] to-[#FF417B] px-8 py-3 font-bold text-[var(--main-text-color)] transition-shadow duration-300 hover:shadow-[0_0_18px_0_#FF5A8C] max-lg:px-4 max-lg:py-2 max-lg:text-xs">
+            {t.games.startGame}
           </button>
         </a>
       </div>
